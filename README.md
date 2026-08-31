@@ -1,4 +1,4 @@
-# Vacuula Setup Wizard (UI only demo)
+# Vacuula Setup Wizard (UI only initially)
 
 Goals for this is to:
 1. Look good
@@ -38,8 +38,7 @@ NOTE! If you add strings (do it in english) increment strings version! I dont wa
   display_name)`. Replace `_simulate_detection` but keep signal(s).
 - **`app/core/installer.py`** — `InstallerLauncher.launch(model_id)`
   currently just logs which script *would* (based on rng from robot 
-  detector placeholder). Real scripts `_SCRIPTS` with
-  real script paths per model and replace the `TODO` with an actual
-  (non-blocking) launch, e.g. `QProcess`.
+  detector placeholder). Real scripts go into `_SCRIPTS` (paths per model)
+  and replace the `TODO` with an actual (non-blocking) launch, e.g. `QProcess`.
 - **`assets/wireframe_connect.svg`** — ai generated placeholder cause im lazy
 its ugly and will be replaced with something more instructive.
