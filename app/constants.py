@@ -1,0 +1,73 @@
+"""An attempt to keep variables declared at one place"""
+
+from __future__ import annotations
+
+from pathlib import Path
+from typing import NamedTuple
+
+# --------------------------------------------------------------------------
+# Filesystem layout
+# --------------------------------------------------------------------------
+APP_ROOT: Path = Path(__file__).resolve().parent.parent
+ASSETS_DIR: Path = APP_ROOT / "assets"
+LOCALES_DIR: Path = APP_ROOT / "locales"
+
+LOGO_SVG: Path = ASSETS_DIR / "logo.svg"
+WIREFRAME_SVG: Path = ASSETS_DIR / "wireframe_connect.svg"
+
+COMPUTER_SVG: Path = ASSETS_DIR / "computer.svg"
+SERVER_SVG: Path = ASSETS_DIR / "server.svg"
+
+# --------------------------------------------------------------------------
+# Window & layout geometry
+# --------------------------------------------------------------------------
+WINDOW_SIZE: tuple[int, int] = (1040, 640) #I think os will scale this and not take it litteraly
+LEFT_PANEL_RATIO: float = 0.38  # fraction of the window width
+
+LOGO_SIZE_CENTERED: int = 654   # logo size during the intro splash
+LOGO_SIZE_DOCKED: int = 300     # logo size once settled in the left panel
+
+WIREFRAME_SIZE: tuple[int, int] = (320, 176) # seems to look okay with the placeholder wireframe
+
+# --------------------------------------------------------------------------
+# Animation timings (ms)
+# --------------------------------------------------------------------------
+INTRO_DELAY_MS: int = 500
+LOGO_MOVE_DURATION_MS: int = 1000
+PANEL_FADE_DURATION_MS: int = 450
+SCREEN_FADE_OUT_MS: int = 200
+SCREEN_FADE_IN_MS: int = 380
+
+# PLACEHOLDER SHENANIGANS, will be removed
+FAKE_DETECTION_DELAY_MS: int = 8000
+
+
+class LanguageMeta(NamedTuple):
+    # Native name is used for flag hover in picker
+    flag: str
+    native_name: str
+
+
+# Every UI language MUST have both an entry here *and* a matching
+# ``locales/<code>.json`` catalog. 
+# Sorted by language code by program
+LANGUAGES: dict[str, LanguageMeta] = {
+    "sv": LanguageMeta(flag="🇸🇪", native_name="Svenska"),
+    "en": LanguageMeta(flag="🇬🇧", native_name="English"),
+    "sk": LanguageMeta(flag="🇸🇰", native_name="Svenska"),
+    "cz": LanguageMeta(flag="🇨🇿", native_name="Svenska"),
+    "hu": LanguageMeta(flag="🇭🇺", native_name="Svenska"),
+    "fi": LanguageMeta(flag="🇫🇮", native_name="Svenska"),
+    "dk": LanguageMeta(flag="🇸🇪", native_name="Svenska"),
+    "jp": LanguageMeta(flag="🇯🇵", native_name="Svenska"),
+    "ge": LanguageMeta(flag="🇩🇪", native_name="Svenska"),
+    "is": LanguageMeta(flag="🇮🇸", native_name="Svenska"),
+    
+}
+DEFAULT_LANGUAGE = "en" #might be replaced with system locale? I dunno how to fetch safely crossplatform
+
+# Backgroundflair, maybe do languages actually translated to?
+FLAIR_WELCOME_WORDS: list[str] = [
+    "Welcome", "Willkommen", "Bienvenue", "Bienvenida", "Benvenuto",
+    "Bem-vindo", "いらっしゃいませ", "Välkommen", "Velkommen", "Tervetuloa",
+]
