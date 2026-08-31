@@ -39,7 +39,7 @@ SCREEN_FADE_OUT_MS: int = 200
 SCREEN_FADE_IN_MS: int = 380
 
 # PLACEHOLDER SHENANIGANS, will be removed
-FAKE_DETECTION_DELAY_MS: int = 8000
+FAKE_DETECTION_DELAY_MS: int = 20000
 
 
 class LanguageMeta(NamedTuple):
@@ -54,15 +54,6 @@ class LanguageMeta(NamedTuple):
 LANGUAGES: dict[str, LanguageMeta] = {
     "sv": LanguageMeta(flag="🇸🇪", native_name="Svenska"),
     "en": LanguageMeta(flag="🇬🇧", native_name="English"),
-    "sk": LanguageMeta(flag="🇸🇰", native_name="Svenska"),
-    "cz": LanguageMeta(flag="🇨🇿", native_name="Svenska"),
-    "hu": LanguageMeta(flag="🇭🇺", native_name="Svenska"),
-    "fi": LanguageMeta(flag="🇫🇮", native_name="Svenska"),
-    "dk": LanguageMeta(flag="🇸🇪", native_name="Svenska"),
-    "jp": LanguageMeta(flag="🇯🇵", native_name="Svenska"),
-    "ge": LanguageMeta(flag="🇩🇪", native_name="Svenska"),
-    "is": LanguageMeta(flag="🇮🇸", native_name="Svenska"),
-    
 }
 DEFAULT_LANGUAGE = "en" #might be replaced with system locale? I dunno how to fetch safely crossplatform
 
