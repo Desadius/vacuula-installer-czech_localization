@@ -49,7 +49,7 @@ class ConnectScreen(QWidget):
     def _build_searching_page(self) -> QWidget:
         page = QWidget(self)
         layout = QVBoxLayout(page)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         layout.setSpacing(24)
 
         self._wireframe = QSvgWidget(str(WIREFRAME_SVG), page)

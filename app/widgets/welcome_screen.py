@@ -30,7 +30,7 @@ class WelcomeScreen(QWidget):
         fg_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         fg_layout.setSpacing(16)
 
-        self._flag_button = FlagButton(self._translator, center_on=self, parent=foreground)
+        self._flag_button = FlagButton(self._translator, foreground)
         self._tagline_label = QLabel(foreground)
         self._tagline_label.setObjectName("taglineLabel")
         self._tagline_label.setAlignment(Qt.AlignmentFlag.AlignCenter)

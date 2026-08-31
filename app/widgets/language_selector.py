@@ -13,15 +13,9 @@ _GRID_COLUMNS = 4
 class FlagButton(QToolButton):
     """Shows the current language's flag; click for a menu of languages."""
 
-    def __init__(
-        self,
-        translator: Translator,
-        center_on: QWidget,
-        parent: QWidget | None = None,
-    ) -> None:
+    def __init__(self, translator: Translator, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._translator = translator
-        self._center_on = center_on
 
         self.setObjectName("flagButton")
         self.setFixedSize(_FLAG_SIZE, _FLAG_SIZE)
@@ -31,7 +25,6 @@ class FlagButton(QToolButton):
 
         self._menu = QMenu(self)
         self._menu.setObjectName("languageMenu")
-        #self.setMenu(self._menu)
         self._menu.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self._build_menu()
         
@@ -41,7 +34,8 @@ class FlagButton(QToolButton):
         self._refresh()
 
     def _show_language_menu(self) -> None:
-        anchor_center = self._center_on.mapToGlobal(self._center_on.rect().center())
+        anchor = self.parentWidget() or self
+        anchor_center = anchor.mapToGlobal(anchor.rect().center())
         menu_size = self._menu.sizeHint()
         top_left = anchor_center - QPoint(menu_size.width() // 2, menu_size.height() // 2)
         self._menu.popup(top_left)
