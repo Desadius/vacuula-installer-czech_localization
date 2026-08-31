@@ -28,7 +28,9 @@ python main.py
    ```python
    "fr": LanguageMeta(flag="🇫🇷", native_name="Français"),
    ```
-NOTE! If you add strings (do it in english) increment strings version! I dont wanna be botherd figuring out which languages are outdated at runtime
+NOTE! If you add or update strings increment strings version in the updated file(s)!!
+
+NOTE! The locale.json with the higest "String-version" is technically the translation to translate from, but lets keep it to en.json.
 
 
 ## Placeholders:

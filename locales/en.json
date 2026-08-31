@@ -1,13 +1,13 @@
 {
-  "String-version": "2",
-  "app.window_title": "Vaacula-ifiyer",
+  "String-version": "3",
+  "app.window_title": "Vacuula-ifiyer",
 
   "welcome.tagline": "Let's get your robot vacuum new <i>life</i>",
   "welcome.continue": "Continue",
   "welcome.language_tooltip": "Change language",
 
-  "serversearch.title": "Vaacula needs a server",
-  "serversearch.body": "Before <i>biting</i> your robot a server needs to be setup. Follow instructions here if not done already",
+  "serversearch.title": "Vacuula needs a server",
+  "serversearch.body": "Before <i>biting</i> your robot a server needs to be setup. Follow instructions <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'>here</a> if not done already",
   "serversearch.detailinfo": "🛈 The server needs to be accessible on both the network the robot will be connected to and on the network controlling devices will be - if separate",
   "serversearch.status.searching": "Searching for a server",
   "serversearch.status.found": "Server found at {ip}!",
@@ -16,7 +16,7 @@
   "connect.status.waiting": "No robot detected yet",
   "connect.status.detected": "{model} detected",
   "connect.start_install": "Start install",
-  "connect.installing": "Starting\u2026",
+  "connect.installing": "Starting...",
 
-  "install.launching": "Installing for {model}\u2026"
+  "install.launching": "Installing Vacuula in {model}"
 }

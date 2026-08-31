@@ -1,22 +1,22 @@
 {
-  "String-version": "2",
-  "app.window_title": "Vaacula-ifierare",
+  "String-version": "3",
+  "app.window_title": "Vacuula-ifierare",
 
   "welcome.tagline": "Dags att ge din robot nytt <i>liv</i>",
   "welcome.continue": "Fortsätt",
   "welcome.language_tooltip": "Byt språk",
 
-  "serversearch.title": "Vaacula behöver en server",
-  "serversearch.body": "Innan din robot kan <i>bitas</i> måste en server vara uppsatt. Följ instruktionerna här om du inte redan gjort det",
+  "serversearch.title": "Vacuula behöver en server",
+  "serversearch.body": "Innan din robot kan <i>bitas</i> måste en server vara uppsatt. Följ instruktionerna <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'>här</a> om du inte redan gjort det",
   "serversearch.detailinfo": "🛈 Servern måste vara tillgänglig på både nätverket robotdammsugaren kommer ansluta till och nätverket styrenheter (mobil, dator) är anslutna till - ifall det skiljer sig",
   "serversearch.status.searching": "Letar efter en server",
   "serversearch.status.found": "Fann en server på {ip}!",
 
   "connect.title": "Anslut din robotdammsugare med en USB kabel",
-  "connect.status.waiting": "Robotdammsugare ej detekterad än",
+  "connect.status.waiting": "Ingen robotdammsugare detekterad än",
   "connect.status.detected": "Fann en {model}",
   "connect.start_install": "Starta installation",
-  "connect.installing": "Påbörjar\u2026",
+  "connect.installing": "Börjar...",
 
-  "install.launching": "Installerar för {model}\u2026"
+  "install.launching": "Installerar Vacuula i {model}"
 }
