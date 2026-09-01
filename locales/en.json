@@ -1,5 +1,5 @@
 {
-  "String-version": "3",
+  "String-version": "4",
   "app.window_title": "Vacuula-ifiyer",
 
   "welcome.tagline": "Let's get your robot vacuum new <i>life</i>",
@@ -8,7 +8,7 @@
 
   "serversearch.title": "Vacuula needs a server",
   "serversearch.body": "Before <i>biting</i> your robot a server needs to be setup. Follow instructions <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'>here</a> if not done already",
-  "serversearch.detailinfo": "🛈 The server needs to be accessible on both the network the robot will be connected to and on the network controlling devices will be - if separate",
+  "serversearch.detailinfo": "🛈 <i>The server needs to be accessible on both the network the robot will be connected to and on the network controlling devices will be - if separate</i>",
   "serversearch.status.searching": "Searching for a server",
   "serversearch.status.found": "Server found at {ip}!",
 
