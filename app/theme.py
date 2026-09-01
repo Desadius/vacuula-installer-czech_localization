@@ -60,12 +60,6 @@ QLabel#taglineLabel {{
     font-size: 14px;
 }}
 
-QLabel#titleLabel {{
-    color: {PALETTE.text_primary};
-    font-size: 18px;
-    font-weight: 600;
-}}
-
 QLabel#connectInstructionLabel {{
     color: {PALETTE.text_primary};
     font-size: 18px;
@@ -74,8 +68,20 @@ QLabel#connectInstructionLabel {{
 
 QLabel#serversearchTitleLabel {{
     color: {PALETTE.text_primary};
-    font-size: 30px;
-    font-weight: 600;
+    font-size: 40px;
+    font-weight: 700;
+}}
+
+QLabel#serversearchBodyLabel {{
+    color: {PALETTE.text_primary};
+    font-weight: 500;
+    font-size: 18px;
+
+}}
+
+QLabel#serversearchDetailLabel {{
+    color: {PALETTE.text_primary};
+    font-size: 14px;
 }}
 
 QLabel#serverSearchDOTS {{

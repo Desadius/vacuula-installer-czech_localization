@@ -1,12 +1,14 @@
 """
 Before starting robot hacking biting or w/e a server needs to be set up.
 This screen just shows feedback if a vacuula-server.local has been
-detected, no iteraction except TODO: make "here" a link that opens browser (i dunno how)
+detected, no iteraction except "here" link that opens browser for future server
+install istructions.
 """
+# Contains some jank bacause I obsessed about not allowing text to be wider than the text in the "title"
 
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, QRect, Signal
 from PySide6.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QWidget, QStackedLayout
 from app.widgets.spinner import SpinnerWidget
 from app.i18n import Translator
@@ -14,19 +16,32 @@ from PySide6.QtSvgWidgets import QSvgWidget
 
 from app.constants import COMPUTER_SVG, SERVER_SVG
 
+class _WidthTrackingLabel(QLabel):
+    """QLabel that announces changes to its own width."""
+    # I was having problems with text not updating,
+    # turns out resizes are lazyloaded so made explicit
+
+    widthChanged = Signal()
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        if event.size().width() != event.oldSize().width():
+            self.widthChanged.emit()
+
 class FindVaaculaServer(QWidget):
 
     startFindServerRequested = Signal(str)
 
-    """Simple informational screen shown while locating a Vaacula server."""
+    """Simple informational screen shown while locating a Vacuula server."""
 
     def __init__(self, translator: Translator, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._translator = translator
         self._server_ip: str | None = None
+        self._title_width = 0
 
         outer = QVBoxLayout(self)
-        outer.setContentsMargins(1, 40, 1, 26)
+        outer.setContentsMargins(20, 40, 20, 26)
         outer.setSpacing(18)
 
         self._central_stack = QStackedLayout()
@@ -38,29 +53,33 @@ class FindVaaculaServer(QWidget):
         outer.addLayout(self._build_status_row())
 
         self._translator.languageChanged.connect(self._retranslate)
+        self._title_label.widthChanged.connect(self._apply_label_margins)
         self._retranslate()
         self.reset_searching()
 
     def _build_info_page(self) -> QWidget:
         page = QWidget(self)
         layout = QVBoxLayout(page)
-        layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         layout.setSpacing(24)
 
 
-        self._title_label = QLabel(page)
+        self._title_label = _WidthTrackingLabel(page)
         self._title_label.setObjectName("serversearchTitleLabel")
         self._title_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self._title_label.setWordWrap(True)
 
         self._body_label = QLabel(page)
         self._body_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self._body_label.setObjectName("serversearchBodyLabel")
         self._body_label.setWordWrap(True)
+        self._body_label.setOpenExternalLinks(True)
 
         self._icon_row = self._build_icon_row(page)
 
         self._detailinfo_label = QLabel(page)
         self._detailinfo_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self._detailinfo_label.setObjectName("serversearchDetailLabel")
         self._detailinfo_label.setWordWrap(True)
 
         layout.addWidget(self._title_label)
@@ -121,11 +140,46 @@ class FindVaaculaServer(QWidget):
             row.addWidget(self._spinner)
             row.addStretch(1)
             return row
+    
+    # Part of getting title textwidth as limit for other Qlabels
+    def _apply_label_margins(self) -> None:
+        available = self._title_label.width()
+        if self._title_width <= available:
+            content_width = self._title_width
+        else:
+            # Title needs to wrap. Word wrap breaks on whole words, so its
+            # widest wrapped line will be narrower than `available` - using
+            # `available` here would let body/detail wrap wider than the
+            # title actually renders, the opposite of the intent.
+            content_width = self._wrapped_title_width(available)
+        extra = max(0, available - content_width)
+        left, right = extra // 2, extra - extra // 2
+        for label in (self._title_label, self._body_label, self._detailinfo_label):
+            label.setContentsMargins(left, 0, right, 0)
+
+    # Part of getting title textwidth as limit for other Qlabels
+    def _wrapped_title_width(self, available: int) -> int:
+        """Width of the title's widest line once wrapped to fit `available`."""
+        fm = self._title_label.fontMetrics()
+        rect = fm.boundingRect(
+            QRect(0, 0, available, 32767),
+            Qt.TextFlag.TextWordWrap,
+            self._title_label.text(),
+        )
+        return rect.width()
+
 
     def _retranslate(self) -> None:
         self._title_label.setText(self._translator.tr("serversearch.title"))
         self._body_label.setText(self._translator.tr("serversearch.body"))
         self._detailinfo_label.setText(self._translator.tr("serversearch.detailinfo"))
+
+        # Part of getting title textwidth as limit for other Qlabels
+        self._title_label.setContentsMargins(0, 0, 0, 0)
+        self._title_label.setWordWrap(False)
+        self._title_width = self._title_label.sizeHint().width()
+        self._title_label.setWordWrap(True)
+        self._apply_label_margins()
 
         if self._server_ip is None:
             self._status_label.setText(self._translator.tr("serversearch.status.searching"))
