@@ -13,7 +13,7 @@ ASSETS_DIR: Path = APP_ROOT / "assets"
 LOCALES_DIR: Path = APP_ROOT / "locales"
 
 LOGO_SVG: Path = ASSETS_DIR / "logo.svg"
-WIREFRAME_SVG: Path = ASSETS_DIR / "wireframe_connect.svg"
+CONNECT_SVG: Path = ASSETS_DIR / "connect_instr.svg"
 
 COMPUTER_SVG: Path = ASSETS_DIR / "computer.svg"
 SERVER_SVG: Path = ASSETS_DIR / "server.svg"
@@ -30,7 +30,7 @@ LOGO_SIZE_DOCKED: int = 300     # logo size once settled in the left panel
 BACK_BUTTON_SIZE: int = 36
 BACK_BUTTON_MARGIN: int = 16
 
-WIREFRAME_SIZE: tuple[int, int] = (320, 176) # seems to look okay with the placeholder wireframe
+WIREFRAME_SIZE: tuple[int, int] = (400, 200)
 
 # --------------------------------------------------------------------------
 # Animation timings (ms)
@@ -42,7 +42,7 @@ SCREEN_FADE_OUT_MS: int = 200
 SCREEN_FADE_IN_MS: int = 380
 
 # PLACEHOLDER SHENANIGANS, will be removed
-FAKE_DETECTION_DELAY_MS: int = 20000
+FAKE_DETECTION_DELAY_MS: int = 15000
 
 
 class LanguageMeta(NamedTuple):

@@ -10,7 +10,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QStackedLayout, QVBoxLayout, QWidget
 
-from app.constants import WIREFRAME_SIZE, WIREFRAME_SVG
+from app.constants import CONNECT_SVG, WIREFRAME_SIZE
 from app.i18n import Translator
 from app.widgets.spinner import SpinnerWidget
 
@@ -52,7 +52,7 @@ class ConnectScreen(QWidget):
         layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         layout.setSpacing(24)
 
-        self._wireframe = QSvgWidget(str(WIREFRAME_SVG), page)
+        self._wireframe = QSvgWidget(str(CONNECT_SVG), page)
         self._wireframe.setFixedSize(*WIREFRAME_SIZE)
 
         self._instruction_label = QLabel(page)
@@ -60,8 +60,15 @@ class ConnectScreen(QWidget):
         self._instruction_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._instruction_label.setWordWrap(True)
 
+        self._how_to_label = QLabel(page)
+        self._how_to_label.setObjectName("serversearchDetailLabel")
+        self._how_to_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._how_to_label.setWordWrap(True)
+
+
         layout.addWidget(self._wireframe, alignment=Qt.AlignmentFlag.AlignHCenter)
         layout.addWidget(self._instruction_label)
+        layout.addWidget(self._how_to_label)
         return page
 
     def _build_detected_page(self) -> QWidget:
@@ -128,6 +135,7 @@ class ConnectScreen(QWidget):
 
     def _retranslate(self) -> None:
         self._instruction_label.setText(self._translator.tr("connect.title"))
+        self._how_to_label.setText(self._translator.tr("connect.howto"))
         if self._model_id is None:
             self._status_label.setText(self._translator.tr("connect.status.waiting"))
             self._start_install_button.setText(self._translator.tr("connect.start_install"))
