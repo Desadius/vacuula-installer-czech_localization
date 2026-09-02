@@ -18,7 +18,7 @@ from app.constants import COMPUTER_SVG, SERVER_SVG
 
 class _WidthTrackingLabel(QLabel):
     """QLabel that announces changes to its own width."""
-    # I was having problems with text not updating,
+    # I was having problems with text width not updating,
     # turns out resizes are lazyloaded so made explicit
 
     widthChanged = Signal()

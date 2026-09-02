@@ -27,6 +27,9 @@ LEFT_PANEL_RATIO: float = 0.38  # fraction of the window width
 LOGO_SIZE_CENTERED: int = 654   # logo size during the intro splash
 LOGO_SIZE_DOCKED: int = 300     # logo size once settled in the left panel
 
+BACK_BUTTON_SIZE: int = 36
+BACK_BUTTON_MARGIN: int = 16
+
 WIREFRAME_SIZE: tuple[int, int] = (320, 176) # seems to look okay with the placeholder wireframe
 
 # --------------------------------------------------------------------------

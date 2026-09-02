@@ -6,10 +6,13 @@ in ``app.core`` -- here are signals connecting ui and core.
 """
 from __future__ import annotations
 
+from collections.abc import Callable
+
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QRect, QTimer
 from PySide6.QtWidgets import QGraphicsOpacityEffect, QMainWindow, QStackedLayout, QVBoxLayout, QWidget
 
 from app.constants import (
+    BACK_BUTTON_MARGIN,
     FAKE_DETECTION_DELAY_MS,
     INTRO_DELAY_MS,
     LEFT_PANEL_RATIO,
@@ -28,7 +31,7 @@ from app.i18n import Translator
 from app.widgets.connect_screen import ConnectScreen
 from app.widgets.logo import LogoWidget
 from app.widgets.welcome_screen import WelcomeScreen
-
+from app.widgets.back_button import BackButton
 from app.widgets.find_vaacula_server import FindVaaculaServer
 
 
@@ -57,6 +60,11 @@ class MainWindow(QMainWindow):
         self._left_panel = QWidget(central)
         self._left_panel.setObjectName("leftPanel")
         self._left_panel.setGeometry(self._left_panel_rect())
+
+        self._back_action: Callable[[], None] | None = None
+        self._back_button = BackButton(self._left_panel)
+        self._back_button.move(BACK_BUTTON_MARGIN, BACK_BUTTON_MARGIN)
+        self._back_button.clicked.connect(self._go_back)
 
         self._right_panel = QWidget(central)
         self._right_panel.setObjectName("rightPanel")
@@ -177,6 +185,17 @@ class MainWindow(QMainWindow):
         animation.finished.connect(lambda: self._active_animations.remove(animation))
         animation.start()
 
+    # -- back navigation ---------------------------------------------------------
+
+    def _set_back_action(self, action: Callable[[], None] | None) -> None:
+        """Set what clicking "back" does right now (or hide the button)."""
+        self._back_action = action
+        self._back_button.setVisible(action is not None)
+
+    def _go_back(self) -> None:
+        if self._back_action is not None:
+            self._back_action()
+
     # -- signal wiring & handlers ------------------------------------------------
 
     def _connect_signals(self) -> None:
@@ -188,17 +207,26 @@ class MainWindow(QMainWindow):
     def _handle_continue(self) -> None:
         self._crossfade_to(self._server_search_screen)
         self._server_detector.start(FAKE_DETECTION_DELAY_MS)
+        self._set_back_action(self._back_to_welcome)
+
+    def _back_to_welcome(self) -> None:
+        self._detector.stop()
+        self._server_detector.stop()
+        self._crossfade_to(self._welcome_screen)
+        self._set_back_action(None)
 
     def _handle_server_present(self) -> None:
         self._connect_screen.reset_searching()
         self._crossfade_to(self._connect_screen)
         self._detector.start(FAKE_DETECTION_DELAY_MS)
+        self._set_back_action(self._back_to_welcome)
 
     def _handle_robot_detected(self, model_id: str, display_name: str) -> None:
         self._connect_screen.show_robot_detected(model_id, display_name)
 
     def _handle_start_install(self, model_id: str) -> None:
         self._installer.launch(model_id)
+        self._set_back_action(None)
 
     def _retranslate(self) -> None:
         self.setWindowTitle(self._translator.tr("app.window_title"))

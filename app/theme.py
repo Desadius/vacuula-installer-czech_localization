@@ -132,6 +132,18 @@ QMenu#languageMenu::item:selected {{
     background: transparent;
 }}
 
+QToolButton#backButton {{
+    color: {PALETTE.text_muted};
+    font-size: 24px;
+    font-weight: 700;
+    background: transparent;
+    border: none;
+}}
+
+QToolButton#backButton:hover {{
+    color: {PALETTE.text_primary};
+}}
+
 QPushButton#continueButton {{
     background-color: {PALETTE.accent_blue};
     color: white;
