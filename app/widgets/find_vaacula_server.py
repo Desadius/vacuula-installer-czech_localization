@@ -8,13 +8,15 @@ install istructions.
 
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, QRect, Signal
+from PySide6.QtCore import Qt, QRect, Signal, QVariantAnimation, QParallelAnimationGroup, QEasingCurve
 from PySide6.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QWidget, QStackedLayout
 from app.widgets.spinner import SpinnerWidget
 from app.i18n import Translator
 from PySide6.QtSvgWidgets import QSvgWidget
+from PySide6.QtGui import QColor
 
 from app.constants import COMPUTER_SVG, SERVER_SVG
+from app.theme import PALETTE
 
 class _WidthTrackingLabel(QLabel):
     """QLabel that announces changes to its own width."""
@@ -95,29 +97,29 @@ class FindVaaculaServer(QWidget):
         row.setSpacing(12)
         row.setContentsMargins(0, 0, 0, 0)
 
-        computer = QSvgWidget(str(COMPUTER_SVG), parent)
-        computer.setFixedSize(100, 100)
+        self._computer = QSvgWidget(str(COMPUTER_SVG), parent)
+        self._computer.setFixedSize(100, 100)
 
-        dots_left = QLabel("•   •   •", parent)
-        dots_left.setObjectName("serverSearchDOTS")
-        dots_left.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._dots_left = QLabel("•   •   •", parent)
+        self._dots_left.setObjectName("serverSearchDOTS")
+        self._dots_left.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        x_mark = QLabel("✕", parent)
-        x_mark.setObjectName("serverSearchCROSS")
-        x_mark.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._x_mark = QLabel("✕", parent)
+        self._x_mark.setObjectName("serverSearchCROSS")
+        self._x_mark.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
-        dots_right = QLabel("•   •   •", parent)
-        dots_right.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        dots_right.setObjectName("serverSearchDOTS")
+        self._dots_right = QLabel("•   •   •", parent)
+        self._dots_right.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._dots_right.setObjectName("serverSearchDOTS")
 
-        server = QSvgWidget(str(SERVER_SVG), parent)
-        server.setFixedSize(100, 100)
+        self._server = QSvgWidget(str(SERVER_SVG), parent)
+        self._server.setFixedSize(100, 100)
 
-        row.addWidget(computer)
-        row.addWidget(dots_left)
-        row.addWidget(x_mark)
-        row.addWidget(dots_right)
-        row.addWidget(server)
+        row.addWidget(self._computer)
+        row.addWidget(self._dots_left)
+        row.addWidget(self._x_mark)
+        row.addWidget(self._dots_right)
+        row.addWidget(self._server)
 
         return container
 
@@ -126,6 +128,35 @@ class FindVaaculaServer(QWidget):
         self._central_stack.setCurrentWidget(self._info_page)
         self._status_label.setText(self._translator.tr("serversearch.status.searching"))
         self._spinner.start()
+
+    def fade_text_colour(self, label, start_hex, end_hex, duration_ms=1000):
+        anim = QVariantAnimation(parent=label)
+        anim.setStartValue(QColor(start_hex))
+        anim.setEndValue(QColor(end_hex))
+        anim.setDuration(duration_ms)
+        anim.setEasingCurve(QEasingCurve.Type.InOutCubic)
+
+        # Update just the color; other object-name styles remain intact
+        anim.valueChanged.connect(
+            lambda color: label.setStyleSheet(f"color: {color.name()};")
+        )
+
+        anim.start()
+        return anim  
+
+    def show_server_detected(self, ip: str) -> QParallelAnimationGroup:
+        self._x_mark.setText("✅")
+        self._spinner.stop()
+        self._status_label.setText(self._translator.tr("serversearch.status.found", ip=ip))
+        color_anim1 = self.fade_text_colour(self._dots_left, PALETTE.text_muted, "#1dd73c", 1300)
+        color_anim2 = self.fade_text_colour(self._dots_right, PALETTE.text_muted, "#1dd73c", 1300)
+        group = QParallelAnimationGroup()
+        group.addAnimation(color_anim2)
+        group.addAnimation(color_anim1)
+        
+        return group
+
+
 
     def _build_status_row(self) -> QHBoxLayout:
             row = QHBoxLayout()

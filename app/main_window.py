@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
-from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QRect, QTimer
+from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QParallelAnimationGroup, QRect, QTimer
 from PySide6.QtWidgets import QGraphicsOpacityEffect, QMainWindow, QStackedLayout, QVBoxLayout, QWidget
 
 from app.constants import (
@@ -34,6 +34,8 @@ from app.widgets.welcome_screen import WelcomeScreen
 from app.widgets.back_button import BackButton
 from app.widgets.find_vaacula_server import FindVaaculaServer
 
+from app.core.session import SessionData
+
 
 def _clear_graphics_effect(widget: QWidget) -> None:
     # Pyside has annoying stub, this gets rid of errors shown by linter
@@ -44,11 +46,12 @@ class MainWindow(QMainWindow):
     def __init__(self, translator: Translator) -> None:
         super().__init__()
         self._translator = translator
+        self._session = SessionData()
 
         # Keep references to in-flight animations: QPropertyAnimation
         # doesn't guarantee its C++ side survives being garbage
         # collected mid-animation otherwise.
-        self._active_animations: list[QPropertyAnimation] = []
+        self._active_animations: list[QPropertyAnimation | QParallelAnimationGroup] = []
 
         self.setFixedSize(*WINDOW_SIZE)
         self._translator.languageChanged.connect(self._retranslate)
@@ -215,18 +218,28 @@ class MainWindow(QMainWindow):
         self._crossfade_to(self._welcome_screen)
         self._set_back_action(None)
 
-    def _handle_server_present(self) -> None:
+    def _handle_server_present(self, ip) -> None:
+        anim = self._server_search_screen.show_server_detected(ip)
+        self._active_animations.append(anim)
+        # Dont @ me
+        anim.finished.connect(lambda: QTimer.singleShot(2000, lambda : self._crossfade_to(self._connect_screen)))
+        anim.finished.connect(lambda: self._active_animations.remove(anim))
+        anim.start()
         self._connect_screen.reset_searching()
-        self._crossfade_to(self._connect_screen)
+        
+        #self._crossfade_to(self._connect_screen)
         self._detector.start(FAKE_DETECTION_DELAY_MS)
         self._set_back_action(self._back_to_welcome)
 
     def _handle_robot_detected(self, model_id: str, display_name: str) -> None:
+        self._session.robot_model_id = model_id
+        self._session.robot_model_display_name = display_name
         self._connect_screen.show_robot_detected(model_id, display_name)
 
-    def _handle_start_install(self, model_id: str) -> None:
-        self._installer.launch(model_id)
-        self._set_back_action(None)
+
+    def _handle_start_install(self) -> None:
+        self._installer.launch(self._session)
+        self._set_back_action(None) #don't interrupt install
 
     def _retranslate(self) -> None:
         self.setWindowTitle(self._translator.tr("app.window_title"))

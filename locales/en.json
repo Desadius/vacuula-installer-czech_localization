@@ -1,5 +1,5 @@
 {
-  "String-version": "4",
+  "String-version": "5",
   "app.window_title": "Vacuula-ifiyer",
 
   "welcome.tagline": "Let's get your robot vacuum new <i>life</i>",
@@ -13,6 +13,7 @@
   "serversearch.status.found": "Server found at {ip}!",
 
   "connect.title": "Connect a robot to your computer with a USB cable",
+  "connect.howto": "🛈 <i>There is a USB-C contact under the dustbin, the green &quot;cable&quot; in the illustration ends at its approximate location</i>",
   "connect.status.waiting": "No robot detected yet",
   "connect.status.detected": "{model} detected",
   "connect.start_install": "Start install",
