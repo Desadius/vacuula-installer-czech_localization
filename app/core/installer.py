@@ -8,6 +8,8 @@ import logging
 
 from PySide6.QtCore import QObject, Signal
 
+from app.core.session import SessionData
+
 logger = logging.getLogger(__name__)
 
 # Matching on serial number now, easy to change and technically arbitrary, but fetcher must work for any supported vac
@@ -32,17 +34,25 @@ class InstallerLauncher(QObject):
     installStarted = Signal(str)  # model_id
     installFinished = Signal(str, bool)  # model_id, success
 
-    def launch(self, model_id: str) -> None:
-        script = _SCRIPTS.get(model_id, None)
-        if script == None:
-            logger.error("No model match!")
-            return
-        
-        self.installStarted.emit(model_id)
+    def launch(self, session: SessionData) -> None:
+        model_id = session.robot_model_id
+        install_suceeded = False
+        if model_id == None:
+            logger.error("Invalid session state, no model_id")
+            return #maybe not return, just go to installfinished(bla, False)?
+        else:
+            script = _SCRIPTS.get(model_id, None)
+            if script == None:
+                logger.error("No model match!")
+                return #maybe not return, just go to installfinished(bla, False)?
 
-        # TODO: real install scripts
-        # TODO: prob needs wifi ssid, pass and cert from server
-        #   QProcess.startDetached(sys.executable, [str(scripts_dir / script)])
-        logger.info("Placeholder: would launch install script %r for %r", script, model_id)
+            self.installStarted.emit(model_id)
 
-        self.installFinished.emit(model_id, True)
+            # TODO: real install scripts
+            # Take needed info from session (SessionData)
+            #   QProcess.startDetached(sys.executable, [str(scripts_dir / script)])
+            logger.info("Placeholder: would launch install script %r for %r", script, session)
+            # Bla bla
+            install_suceeded = True
+
+        self.installFinished.emit(model_id, install_suceeded)
