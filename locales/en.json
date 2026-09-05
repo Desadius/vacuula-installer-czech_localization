@@ -1,5 +1,5 @@
 {
-  "String-version": "5",
+  "String-version": "6",
   "app.window_title": "Vacuula-ifiyer",
 
   "welcome.tagline": "Let's get your robot vacuum new <i>life</i>",
@@ -18,6 +18,13 @@
   "connect.status.detected": "{model} detected",
   "connect.start_install": "Start install",
   "connect.installing": "Starting...",
+
+  "wifi.title": "Connect your robot to WiFi",
+  "wifi.explanation": "Vacuula needs to reach your server!",
+  "wifi.ssid.title": "Name of wifi network (SSID)",
+  "wifi.pass.title": "Password, can be blank",
+  "wifi.disclaimer": "🛈 <i>Note that the Neato devices supported by Vacuula do <b>not support</b> WPA3, make sure your network uses WPA2 or WPA2/WPA3 mixed mode. It is also advisable to connect the robot to 2.4GHz if available</i>",
+  "wifi.button": "Continue",
 
   "install.launching": "Installing Vacuula in {model}"
 }
