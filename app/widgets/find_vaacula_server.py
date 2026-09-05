@@ -11,6 +11,7 @@ from __future__ import annotations
 from PySide6.QtCore import Qt, QRect, Signal, QVariantAnimation, QParallelAnimationGroup, QEasingCurve
 from PySide6.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QWidget, QStackedLayout
 from app.widgets.spinner import SpinnerWidget
+from app.widgets.width_tracking_label import WidthTrackingLabel
 from app.i18n import Translator
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtGui import QColor
@@ -18,17 +19,6 @@ from PySide6.QtGui import QColor
 from app.constants import COMPUTER_SVG, SERVER_SVG
 from app.theme import PALETTE
 
-class _WidthTrackingLabel(QLabel):
-    """QLabel that announces changes to its own width."""
-    # I was having problems with text width not updating,
-    # turns out resizes are lazyloaded so made explicit
-
-    widthChanged = Signal()
-
-    def resizeEvent(self, event) -> None:
-        super().resizeEvent(event)
-        if event.size().width() != event.oldSize().width():
-            self.widthChanged.emit()
 
 class FindVaaculaServer(QWidget):
 
@@ -66,7 +56,7 @@ class FindVaaculaServer(QWidget):
         layout.setSpacing(24)
 
 
-        self._title_label = _WidthTrackingLabel(page)
+        self._title_label = WidthTrackingLabel(page)
         self._title_label.setObjectName("serversearchTitleLabel")
         self._title_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self._title_label.setWordWrap(True)
