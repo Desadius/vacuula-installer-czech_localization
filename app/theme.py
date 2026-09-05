@@ -23,6 +23,8 @@ class Palette:
     accent_blue: str = "#5c73f6"
     accent_blue_hover: str = "#707cff"
     accent_blue_pressed: str = "#4758c9"
+    accent_blue_desaturated: str = "#2d324d"
+
 
     accent_green: str = "#0f9616"
     accent_green_hover: str = "#0f9616"
@@ -154,6 +156,11 @@ QPushButton#continueButton {{
     font-weight: 600;
 }}
 
+QPushButton#continueButton:disabled {{
+    background-color: {PALETTE.accent_blue_desaturated};
+    color: {PALETTE.text_muted};
+}}
+
 QPushButton#continueButton:hover {{
     background-color: {PALETTE.accent_blue_hover};
 }}
@@ -196,4 +203,27 @@ QPushButton#goldButton:disabled {{
     background: {PALETTE.border_soft};
     color: {PALETTE.text_muted};
 }}
+
+#wifiInput {{
+    background-color: rgba(255, 255, 255, 14);
+    border: 1px solid {PALETTE.border_soft};
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: {PALETTE.text_primary};
+    font-size: 14px;
+    selection-background-color: {PALETTE.accent_blue};
+}}
+ 
+#wifiInput:focus {{
+    border: 1px solid {PALETTE.accent_blue};
+    background-color: rgba(255, 255, 255, 22);
+}}
+
+
+QLabel#wifiExplanationLabel {{
+    color: {PALETTE.text_muted};
+    font-weight: 500;
+    font-size: 18px;
+}}
+
 """

@@ -33,6 +33,7 @@ from app.widgets.logo import LogoWidget
 from app.widgets.welcome_screen import WelcomeScreen
 from app.widgets.back_button import BackButton
 from app.widgets.find_vaacula_server import FindVaaculaServer
+from app.widgets.wifi_screen import WifiScreen
 
 from app.core.session import SessionData
 
@@ -88,6 +89,9 @@ class MainWindow(QMainWindow):
 
         self._server_search_screen = FindVaaculaServer(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._server_search_screen)
+
+        self._connect_to_wifi_screen = WifiScreen(self._translator, self._right_panel)
+        self._screen_stack.addWidget(self._connect_to_wifi_screen)
 
         # Logo starts centered on the whole window, on top of everything,
         # then animates into its resting spot in the left panel.
@@ -206,15 +210,17 @@ class MainWindow(QMainWindow):
         self._server_detector.serverDetected.connect(self._handle_server_present)
         self._detector.robotDetected.connect(self._handle_robot_detected)
         self._connect_screen.startInstallRequested.connect(self._handle_start_install)
+        self._connect_to_wifi_screen.wifiAdded.connect(self._handle_wifi_details_added)
+
 
     def _handle_continue(self) -> None:
         self._crossfade_to(self._server_search_screen)
-        self._server_detector.start(FAKE_DETECTION_DELAY_MS)
+        self._server_detector.start(FAKE_DETECTION_DELAY_MS)# Temp placeholder
         self._set_back_action(self._back_to_welcome)
 
     def _back_to_welcome(self) -> None:
-        self._detector.stop()
-        self._server_detector.stop()
+        self._detector.stop()# Temp placeholder
+        self._server_detector.stop()# Temp placeholder
         self._crossfade_to(self._welcome_screen)
         self._set_back_action(None)
 
@@ -222,14 +228,27 @@ class MainWindow(QMainWindow):
         anim = self._server_search_screen.show_server_detected(ip)
         self._active_animations.append(anim)
         # Dont @ me
-        anim.finished.connect(lambda: QTimer.singleShot(2000, lambda : self._crossfade_to(self._connect_screen)))
+        anim.finished.connect(lambda: QTimer.singleShot(2000, lambda : self._crossfade_to(self._connect_to_wifi_screen)))
         anim.finished.connect(lambda: self._active_animations.remove(anim))
         anim.start()
         self._connect_screen.reset_searching()
         
-        #self._crossfade_to(self._connect_screen)
-        self._detector.start(FAKE_DETECTION_DELAY_MS)
         self._set_back_action(self._back_to_welcome)
+
+    def _handle_wifi_details_added(self, ssid, password) -> None:
+        self._session.wifi_ssid = ssid
+        self._session.wifi_pass = password
+        self._detector.start(FAKE_DETECTION_DELAY_MS)# Temp placeholder
+        self._crossfade_to(self._connect_screen)
+        self._detector.start(FAKE_DETECTION_DELAY_MS)# Temp placeholder
+        self._set_back_action(self._back_to_wifi)
+
+    def _back_to_wifi(self) -> None:
+        self._detector.stop() # Temp placeholder
+        self._crossfade_to(self._connect_to_wifi_screen)
+        self._set_back_action(self._back_to_welcome)
+        self._connect_to_wifi_screen.wifi_revalidate_input()
+
 
     def _handle_robot_detected(self, model_id: str, display_name: str) -> None:
         self._session.robot_model_id = model_id
