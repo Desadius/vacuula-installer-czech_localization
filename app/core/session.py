@@ -4,13 +4,18 @@ Data used by installers, presense of data by main windows for skipping screens (
 from __future__ import annotations
 from dataclasses import dataclass
 
+import usb.core
+
 @dataclass
 class SessionData:
     server_ip: str | None = None
     server_certificate: str | None = None
-    robot_model_id: str | None = None
+
+    robot_serial_nbr: str | None = None # Prob not used by scripts?
     robot_model_display_name: str | None = None
-    firmware_version: str | None = None
+    robot_usb_device: usb.core.Devices | None = None
+    firmware_version: str | None = None # Not use, maybe not needed
+
     wifi_ssid: str | None = None
     wifi_pass: str | None = None
 

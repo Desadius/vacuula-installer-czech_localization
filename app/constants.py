@@ -43,6 +43,7 @@ SCREEN_FADE_IN_MS: int = 380
 
 # PLACEHOLDER SHENANIGANS, will be removed
 FAKE_DETECTION_DELAY_MS: int = 5000
+USB_POLLING_DELAY_MS: int = 2345 
 
 
 class LanguageMeta(NamedTuple):

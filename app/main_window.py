@@ -14,6 +14,7 @@ from PySide6.QtWidgets import QGraphicsOpacityEffect, QMainWindow, QStackedLayou
 from app.constants import (
     BACK_BUTTON_MARGIN,
     FAKE_DETECTION_DELAY_MS,
+    USB_POLLING_DELAY_MS,
     INTRO_DELAY_MS,
     LEFT_PANEL_RATIO,
     LOGO_MOVE_DURATION_MS,
@@ -36,6 +37,7 @@ from app.widgets.find_vaacula_server import FindVaaculaServer
 from app.widgets.wifi_screen import WifiScreen
 
 from app.core.session import SessionData
+import usb.core
 
 
 def _clear_graphics_effect(widget: QWidget) -> None:
@@ -206,27 +208,30 @@ class MainWindow(QMainWindow):
     # -- signal wiring & handlers ------------------------------------------------
 
     def _connect_signals(self) -> None:
-        self._welcome_screen.continueRequested.connect(self._handle_continue)
+        self._welcome_screen.continueRequested.connect(self._handle_welcome_continue)
         self._server_detector.serverDetected.connect(self._handle_server_present)
         self._detector.robotDetected.connect(self._handle_robot_detected)
+        self._detector.multipleRobotsDetected.connect(self._handle_multiple_robots)
         self._connect_screen.startInstallRequested.connect(self._handle_start_install)
         self._connect_to_wifi_screen.wifiAdded.connect(self._handle_wifi_details_added)
 
 
-    def _handle_continue(self) -> None:
+    def _handle_welcome_continue(self) -> None:
         self._crossfade_to(self._server_search_screen)
         self._server_detector.start(FAKE_DETECTION_DELAY_MS)# Temp placeholder
         self._set_back_action(self._back_to_welcome)
 
     def _back_to_welcome(self) -> None:
-        self._detector.stop()# Temp placeholder
-        self._server_detector.stop()# Temp placeholder
+        self._detector.stop()
+        self._server_detector.stop()
         self._crossfade_to(self._welcome_screen)
         self._set_back_action(None)
 
-    def _handle_server_present(self, ip) -> None:
+    def _handle_server_present(self, ip, cert) -> None:
         anim = self._server_search_screen.show_server_detected(ip)
         self._active_animations.append(anim)
+        self._session.server_ip = ip
+        self._session.server_certificate = cert
         # Dont @ me
         anim.finished.connect(lambda: QTimer.singleShot(2000, lambda : self._crossfade_to(self._connect_to_wifi_screen)))
         anim.finished.connect(lambda: self._active_animations.remove(anim))
@@ -238,9 +243,8 @@ class MainWindow(QMainWindow):
     def _handle_wifi_details_added(self, ssid, password) -> None:
         self._session.wifi_ssid = ssid
         self._session.wifi_pass = password
-        self._detector.start(FAKE_DETECTION_DELAY_MS)# Temp placeholder
+        self._detector.start(USB_POLLING_DELAY_MS)# Temp placeholder
         self._crossfade_to(self._connect_screen)
-        self._detector.start(FAKE_DETECTION_DELAY_MS)# Temp placeholder
         self._set_back_action(self._back_to_wifi)
 
     def _back_to_wifi(self) -> None:
@@ -250,10 +254,19 @@ class MainWindow(QMainWindow):
         self._connect_to_wifi_screen.wifi_revalidate_input()
 
 
-    def _handle_robot_detected(self, model_id: str, display_name: str) -> None:
-        self._session.robot_model_id = model_id
+    def _handle_robot_detected(self, display_name: str, serial_nbr: str, device: usb.core.Devices) -> None:
+        self._session.robot_serial_nbr = serial_nbr
         self._session.robot_model_display_name = display_name
-        self._connect_screen.show_robot_detected(model_id, display_name)
+        self._session.robot_usb_device = device
+        self._connect_screen.show_robot_detected(display_name, serial_nbr)
+
+    def _handle_multiple_robots(self) -> None:
+        # TODO: Inform user about one at a time limit
+        None # Tmp python bsittery
+
+    def _handle_robot_disconnected(self) -> None:
+        # TODO: For detecting reboot or unintentional disconnections
+        None
 
 
     def _handle_start_install(self) -> None:

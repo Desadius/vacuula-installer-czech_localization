@@ -14,7 +14,7 @@ from PySide6.QtCore import QObject, QTimer, Signal
 class ServerDetector(QObject):
 
     serverSearchStarted = Signal() # använder jag ens denna?
-    serverDetected = Signal(str)  # ip
+    serverDetected = Signal(str, str)  # ip cert
 
     logger = logging.getLogger(__name__)
 
@@ -35,4 +35,4 @@ class ServerDetector(QObject):
         self._timer.stop()
 
     def _simulate_detection(self) -> None:
-        self.serverDetected.emit("127.0.0.1")
+        self.serverDetected.emit("127.0.0.1", "bananer är goda 1 2 3!")
