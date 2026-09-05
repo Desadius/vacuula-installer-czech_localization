@@ -145,7 +145,7 @@ class FindVaaculaServer(QWidget):
         return anim  
 
     def show_server_detected(self, ip: str) -> QParallelAnimationGroup:
-        self._x_mark.setText("✅")
+        self._x_mark.setText("🔗")
         self._spinner.stop()
         self._status_label.setText(self._translator.tr("serversearch.status.found", ip=ip))
         color_anim1 = self.fade_text_colour(self._dots_left, PALETTE.text_muted, "#1dd73c", 1300)
