@@ -222,12 +222,15 @@ class MainWindow(QMainWindow):
         self._set_back_action(self._back_to_welcome)
 
     def _back_to_welcome(self) -> None:
+        # TODO: conditionally skip pages if session is already populated? Or recheck?
         self._detector.stop()
         self._server_detector.stop()
+        self._server_search_screen.reset_searching() # I think these are necessary
+        self._connect_screen.reset_searching()
         self._crossfade_to(self._welcome_screen)
         self._set_back_action(None)
 
-    def _handle_server_present(self, ip, cert) -> None:
+    def _handle_server_present(self, ip: str, cert: str) -> None:
         anim = self._server_search_screen.show_server_detected(ip)
         self._active_animations.append(anim)
         self._session.server_ip = ip
@@ -240,7 +243,7 @@ class MainWindow(QMainWindow):
         
         self._set_back_action(self._back_to_welcome)
 
-    def _handle_wifi_details_added(self, ssid, password) -> None:
+    def _handle_wifi_details_added(self, ssid: str, password: str) -> None:
         self._session.wifi_ssid = ssid
         self._session.wifi_pass = password
         self._detector.start(USB_POLLING_DELAY_MS)# Temp placeholder

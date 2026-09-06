@@ -18,7 +18,6 @@ from __future__ import annotations
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QLabel, QPushButton, QStackedLayout, QVBoxLayout, QWidget, QLineEdit
 
-from app.constants import CONNECT_SVG, WIREFRAME_SIZE
 from app.i18n import Translator
 from app.widgets.ssid_input import SsidInput 
 from app.widgets.width_tracking_label import WidthTrackingLabel
@@ -79,7 +78,7 @@ class WifiScreen(QWidget):
         self._password_input = QLineEdit(page)
         self._password_input.setObjectName("wifiInput")
         self._password_input.setFixedWidth(350)
-        self._password_input.setEchoMode(QLineEdit.EchoMode.Password)
+        self._password_input.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
         self._password_input.returnPressed.connect(self._handle_wifi_continue_clicked)
 
         self._wifi_disclaimer = QLabel(page)

@@ -9,6 +9,10 @@
 
     If both succeed the information is sent as signals, main_windows saves it
     in the session.
+
+    NOTE: Does NOT support self-signed certs if server, proxy or w/e redirects to https!
+    For that we would have to a. disable verification or b. use same selfsigned on all 
+    server deployments and preprogram its public part here - none are desirable.
 """
 
 from __future__ import annotations
@@ -40,13 +44,13 @@ class _DetectionWorker(QRunnable):
 
         try:
             response = requests.get(
-                f"http://{ip}{PATH_TO_SERVER_CERT}",
+                f"http://{ip}{PATH_TO_SERVER_CERT}", # For https the server can redirect but it MUST have a public cert in that case!
                 headers={"Host": M_DNS_HOSTNAME},
                 timeout=3,
             )
             response.raise_for_status()
         except requests.RequestException:
-            logger.warning("Resolved host but failed to fetch cert", exc_info=True)
+            logger.warning("Resolved host but failed to fetch cert", exc_info=False) # exc_info is incredibly verbose
             #self.signals.not_found.emit()
 
             # TODO: temp detection:

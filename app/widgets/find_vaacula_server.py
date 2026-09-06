@@ -117,36 +117,39 @@ class FindVaaculaServer(QWidget):
         self._server_ip = None
         self._central_stack.setCurrentWidget(self._info_page)
         self._status_label.setText(self._translator.tr("serversearch.status.searching"))
+        self._dots_left.setStyleSheet("")
+        self._dots_right.setStyleSheet("")
+        self._x_mark.setText("✕")
         self._spinner.start()
 
-    def fade_text_colour(self, label, start_hex, end_hex, duration_ms=1000):
+    def _fade_text_colour(self, label: QLabel, start_hex: str, end_hex: str, duration_ms: int = 1000):
         anim = QVariantAnimation(parent=label)
         anim.setStartValue(QColor(start_hex))
         anim.setEndValue(QColor(end_hex))
         anim.setDuration(duration_ms)
         anim.setEasingCurve(QEasingCurve.Type.InOutCubic)
 
-        # Update just the color; other object-name styles remain intact
-        anim.valueChanged.connect(
-            lambda color: label.setStyleSheet(f"color: {color.name()};")
-        )
-
+        # minor TODO: Do I need to re-set the fontsize?
+        def _apply_color(color: QColor) -> None:
+            label.setStyleSheet(f"color: {color.name()};font-size: 24px;")
+        anim.valueChanged.connect(_apply_color)
         anim.start()
-        return anim  
+        return anim
+
 
     def show_server_detected(self, ip: str) -> QParallelAnimationGroup:
         self._x_mark.setText("🔗")
+        self._x_mark.setStyleSheet("font-size: 32px;") # Anoyingly 🔗 is bigger than ✕ for a given fontsize.. Empiric match
         self._spinner.stop()
         self._status_label.setText(self._translator.tr("serversearch.status.found", ip=ip))
-        color_anim1 = self.fade_text_colour(self._dots_left, PALETTE.text_muted, "#1dd73c", 1300)
-        color_anim2 = self.fade_text_colour(self._dots_right, PALETTE.text_muted, "#1dd73c", 1300)
+        color_anim1 = self._fade_text_colour(self._dots_left, PALETTE.text_muted, "#1dd73c", 1300)
+        color_anim2 = self._fade_text_colour(self._dots_right, PALETTE.text_muted, "#1dd73c", 1300)
         group = QParallelAnimationGroup()
         group.addAnimation(color_anim2)
         group.addAnimation(color_anim1)
         
         return group
-
-
+    
 
     def _build_status_row(self) -> QHBoxLayout:
             row = QHBoxLayout()
