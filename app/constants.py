@@ -41,9 +41,11 @@ PANEL_FADE_DURATION_MS: int = 450
 SCREEN_FADE_OUT_MS: int = 200
 SCREEN_FADE_IN_MS: int = 380
 
-# PLACEHOLDER SHENANIGANS, will be removed
-FAKE_DETECTION_DELAY_MS: int = 5000
-USB_POLLING_DELAY_MS: int = 2345 
+NETWORK_POLLING_DELAY_MS: int = 5000
+USB_POLLING_DELAY_MS: int = 2345
+
+M_DNS_HOSTNAME: str = "vacuula-server.local"
+PATH_TO_SERVER_CERT: str = "/vacuula/cert"
 
 
 class LanguageMeta(NamedTuple):

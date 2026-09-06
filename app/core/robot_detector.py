@@ -3,14 +3,25 @@ Multiple robots not allowed
 Can be used to detect disconnection, care about polling rate
 """
 from __future__ import annotations
-
+from dataclasses import dataclass
 from enum import IntEnum, auto
 import usb.core
 
 from PySide6.QtCore import QObject, QTimer, Signal
 
-VENDOR_ID = 0x1D6B
-GEN4_ID = 0x0100
+@dataclass(frozen=True)
+class RobotUsbId:
+    vendor_id: int
+    product_id: int
+    display_name: str
+
+# TODO: Refactor to find model name other way, there were only two vendor/product id combinations..
+# TODO: Needs to differentiate between gen2 and 3, for example by connecting over serial on the same usb; baud 115200
+
+ROBOT_IDS: tuple[RobotUsbId, ...] = (
+    RobotUsbId(vendor_id=0x1D6B, product_id=0x0100, display_name="Gen 4"),
+    RobotUsbId(vendor_id=0x2108, product_id=0x780c, display_name="Gen 2/3"),
+)
 
 class State(IntEnum):
     NONE = 0
@@ -18,7 +29,13 @@ class State(IntEnum):
     MULTIPLE = auto()
 
 class RobotDetector(QObject):
-    """Fires :attr:`robotDetected` once, a fixed delay after :meth:`start`."""
+    """Fires
+        :attr:`robotDetected` when robot is detected,
+        :attr:`robotDisconnected` when robot looses connection,
+        :attr:`multipleRobotsDetected` if more than one detected,
+    Only firing on change of state
+    If class is deconstructed it can be initialised with the expected state
+    """
 
     robotDisconnected = Signal()
     robotDetected = Signal(str, str, usb.core.Device)  # display_name, serial, device
@@ -43,17 +60,21 @@ class RobotDetector(QObject):
         self._timer.stop()
 
     def _update_robots(self):
-        devices = list(usb.core.find(find_all=True, idVendor=VENDOR_ID, idProduct=GEN4_ID))
+        matches: list[tuple[usb.core.Device, RobotUsbId]] = []
+        for robot_id in ROBOT_IDS:
+            found = usb.core.find(
+                find_all=True, idVendor=robot_id.vendor_id, idProduct=robot_id.product_id
+            )
+            matches.extend((dev, robot_id) for dev in found) # Not sure this error actually is a problem
 
-        if len(devices) == 0:
+        if len(matches) == 0:
             if self._last_state == State.ONE:
                 self.robotDisconnected.emit()
             self._last_state = State.NONE
 
-        elif len(devices) == 1:
-            name, serial = self._get_name_and_serial(devices[0])
-            self.robotDetected.emit(name, serial, devices[0])
-            self._last_state = State.ONE
+        elif len(matches) == 1:
+            device, robot_id = matches[0]
+            self.robotDetected.emit(robot_id.display_name, self._get_serial(device), device)
 
         else:
             if self._last_state != State.MULTIPLE:
@@ -61,8 +82,8 @@ class RobotDetector(QObject):
             self._last_state = State.MULTIPLE
 
     @staticmethod
-    def _get_name_and_serial(dev: usb.core.Device) -> tuple[str, str]:
+    def _get_serial(dev: usb.core.Device) -> str:
         try:
-            return (f"{dev.manufacturer} {dev.product}", f"{dev.serial_number}")
+            return f"{dev.serial_number}"
         except ValueError:
-            return (repr(dev), "")
+            return ""

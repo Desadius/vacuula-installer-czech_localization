@@ -13,7 +13,7 @@ from PySide6.QtWidgets import QGraphicsOpacityEffect, QMainWindow, QStackedLayou
 
 from app.constants import (
     BACK_BUTTON_MARGIN,
-    FAKE_DETECTION_DELAY_MS,
+    NETWORK_POLLING_DELAY_MS,
     USB_POLLING_DELAY_MS,
     INTRO_DELAY_MS,
     LEFT_PANEL_RATIO,
@@ -218,7 +218,7 @@ class MainWindow(QMainWindow):
 
     def _handle_welcome_continue(self) -> None:
         self._crossfade_to(self._server_search_screen)
-        self._server_detector.start(FAKE_DETECTION_DELAY_MS)# Temp placeholder
+        self._server_detector.start(NETWORK_POLLING_DELAY_MS)
         self._set_back_action(self._back_to_welcome)
 
     def _back_to_welcome(self) -> None:
@@ -254,7 +254,7 @@ class MainWindow(QMainWindow):
         self._connect_to_wifi_screen.wifi_revalidate_input()
 
 
-    def _handle_robot_detected(self, display_name: str, serial_nbr: str, device: usb.core.Devices) -> None:
+    def _handle_robot_detected(self, display_name: str, serial_nbr: str, device: usb.core.Device) -> None:
         self._session.robot_serial_nbr = serial_nbr
         self._session.robot_model_display_name = display_name
         self._session.robot_usb_device = device
@@ -262,11 +262,11 @@ class MainWindow(QMainWindow):
 
     def _handle_multiple_robots(self) -> None:
         # TODO: Inform user about one at a time limit
-        None # Tmp python bsittery
+        return None # Tmp python bsittery
 
     def _handle_robot_disconnected(self) -> None:
         # TODO: For detecting reboot or unintentional disconnections
-        None
+        return None
 
 
     def _handle_start_install(self) -> None:
