@@ -20,8 +20,8 @@ It also enforces the length limit in a non confusable way (does not cut multibyt
 """
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QKeyEvent, QSyntaxHighlighter, QTextCharFormat
+from PySide6.QtCore import Qt, Signal, QMimeData
+from PySide6.QtGui import QKeyEvent, QSyntaxHighlighter, QTextCharFormat, QTextDocument
 from PySide6.QtWidgets import QPlainTextEdit, QWidget, QSizePolicy
 
 from app.theme import PALETTE
@@ -32,7 +32,7 @@ MAX_SSID_BYTES = 32
 class _WhitespaceHighlighter(QSyntaxHighlighter):
     """Highlights leading/trailing whitespace"""
     # Uses difference between len(strip) and len to detect leading/trailing whitespace
-    def __init__(self, document) -> None:
+    def __init__(self, document: QTextDocument) -> None:
         super().__init__(document)
         self._format = QTextCharFormat()
         self._format.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
@@ -90,7 +90,7 @@ class SsidInput(QPlainTextEdit):
             return
         super().keyPressEvent(event)
 
-    def insertFromMimeData(self, source) -> None:  # noqa: N802 (Qt override)
+    def insertFromMimeData(self, source: QMimeData) -> None:  # noqa: N802 (Qt override)
         # Only one line ssid:s, no newlines allowed
         text = source.text().replace("\r\n", " ").replace("\n", " ").replace("\r", " ") # support of multiple os jank
         self.textCursor().insertText(text)

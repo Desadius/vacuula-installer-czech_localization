@@ -37,7 +37,7 @@ from app.widgets.find_vaacula_server import FindVaaculaServer
 from app.widgets.wifi_screen import WifiScreen
 
 from app.core.session import SessionData
-import usb.core
+import usb.core # type: ignore[reportMissingTypeStubs]
 
 
 def _clear_graphics_effect(widget: QWidget) -> None:

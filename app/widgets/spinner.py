@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from PySide6.QtCore import QRectF, Qt, QTimer
-from PySide6.QtGui import QColor, QPainter, QPen
+from PySide6.QtGui import QColor, QPainter, QPen, QPaintEvent
 from PySide6.QtWidgets import QWidget
 
 from app.theme import PALETTE
@@ -39,7 +39,7 @@ class SpinnerWidget(QWidget):
         self._angle = (self._angle + _STEP_DEGREES) % 360
         self.update()
 
-    def paintEvent(self, event) -> None:  # noqa: N802 (Qt override)
+    def paintEvent(self, event: QPaintEvent) -> None:  # noqa: N802 (Qt override)
         del event
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)

@@ -5,7 +5,7 @@ from __future__ import annotations
 import random
 
 from PySide6.QtCore import Qt, QPointF
-from PySide6.QtGui import QColor, QFont, QFontMetricsF, QPainter
+from PySide6.QtGui import QColor, QFont, QFontMetricsF, QPainter, QPaintEvent
 from PySide6.QtWidgets import QWidget
 
 from app.constants import FLAIR_WELCOME_WORDS
@@ -104,7 +104,7 @@ class BackgroundFlairWidget(QWidget):
 
         return items
 
-    def paintEvent(self, event) -> None:  # noqa: N802
+    def paintEvent(self, event: QPaintEvent) -> None:  # noqa: N802
         del event
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)

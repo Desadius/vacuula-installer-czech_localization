@@ -5,7 +5,7 @@ Can be used to detect disconnection, care about polling rate
 from __future__ import annotations
 from dataclasses import dataclass
 from enum import IntEnum, auto
-import usb.core
+import usb.core # type: ignore[reportMissingTypeStubs]
 
 from PySide6.QtCore import QObject, QTimer, Signal
 
@@ -44,7 +44,7 @@ class RobotDetector(QObject):
     multipleRobotsDetected = Signal()
 
 
-    def __init__(self, parent: QObject | None = None, lastState = State.NONE) -> None:
+    def __init__(self, parent: QObject | None = None, lastState: State = State.NONE) -> None:
         super().__init__(parent)
         self._timer = QTimer(self)
         self._timer.setSingleShot(False)

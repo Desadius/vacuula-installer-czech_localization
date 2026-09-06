@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QLabel
 from PySide6.QtCore import Signal
+from PySide6.QtGui import QResizeEvent
 
 class WidthTrackingLabel(QLabel):
     """QLabel that announces changes to its own width."""
@@ -8,7 +9,7 @@ class WidthTrackingLabel(QLabel):
 
     widthChanged = Signal()
 
-    def resizeEvent(self, event) -> None:
+    def resizeEvent(self, event: QResizeEvent) -> None:
         super().resizeEvent(event)
         if event.size().width() != event.oldSize().width():
             self.widthChanged.emit()

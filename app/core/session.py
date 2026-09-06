@@ -4,7 +4,7 @@ Data used by installers, presense of data by main windows for skipping screens (
 from __future__ import annotations
 from dataclasses import dataclass
 
-import usb.core
+import usb.core # type: ignore[reportMissingTypeStubs]
 
 @dataclass
 class SessionData:
