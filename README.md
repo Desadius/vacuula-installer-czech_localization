@@ -35,6 +35,12 @@ pip install -r requirements.txt
 python main.py
 ```
 
+To pass server detection screen without a server (using avahi-utils):
+```bash
+avahi-publish -a vacuula-server.local <a-random-but-valid-ip>
+```
+
+
 ## Adding a language
 
 1. Copy `locales/en.json` to `locales/<code>.json` and translate the values.
@@ -52,6 +58,6 @@ NOTE! While locale.json with the higest "Strings-version" is technically the tra
 
 ## Placeholders:
 - **`app/core/installer.py`** — `InstallerLauncher.launch(model_id)`
-  currently just logs which script *would* (based on rng from robot 
-  detector placeholder). Real scripts go into `_SCRIPTS` (paths per model)
-  and replace the `TODO` with an actual (non-blocking) launch, e.g. `QProcess`.
+  A placeholder draft, needs some refactoring but the working principle is there.
+  Real scripts go into `_SCRIPTS` (paths per model) and replace the `TODO` with
+  an actual (non-blocking) launch, e.g. `QProcess`.
