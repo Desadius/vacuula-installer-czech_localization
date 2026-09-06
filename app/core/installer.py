@@ -35,9 +35,9 @@ class InstallerLauncher(QObject):
     installFinished = Signal(str, bool)  # model_id, success
 
     def launch(self, session: SessionData) -> None:
-        model_id = session.robot_model_id
+        model_id = session.robot_serial_nbr
         install_suceeded = False
-        print("Got: ",session.wifi_pass,session.wifi_ssid,session.robot_model_id, session.server_ip, session.server_certificate)
+        print("Got: ",session.wifi_pass,session.wifi_ssid,session.robot_serial_nbr, session.server_ip, session.server_certificate)
         if model_id == None:
             logger.error("Invalid session state, no model_id")
             return #maybe not return, just go to installfinished(bla, False)?
