@@ -257,11 +257,10 @@ class MainWindow(QMainWindow):
         self._connect_to_wifi_screen.wifi_revalidate_input()
 
 
-    def _handle_robot_detected(self, display_name: str, serial_nbr: str, device: usb.core.Device) -> None:
-        self._session.robot_serial_nbr = serial_nbr
+    def _handle_robot_detected(self, display_name: str, device: usb.core.Device) -> None:
         self._session.robot_model_display_name = display_name
         self._session.robot_usb_device = device
-        self._connect_screen.show_robot_detected(display_name, serial_nbr)
+        self._connect_screen.show_robot_detected(display_name)
 
     def _handle_multiple_robots(self) -> None:
         # TODO: Inform user about one at a time limit

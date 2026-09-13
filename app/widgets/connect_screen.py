@@ -109,9 +109,9 @@ class ConnectScreen(QWidget):
         self._start_install_button.setEnabled(True)
         self._spinner.start()
 
-    def show_robot_detected(self, display_name: str, serial_nbr: str,) -> None:
+    def show_robot_detected(self, display_name: str) -> None:
         """Swap in the golden install button for the given detected robot."""
-        self._model_id = serial_nbr
+        
         self._model_display_name = display_name
         self._start_install_button.setText(self._translator.tr("connect.start_install"))
         self._status_label.setText(
