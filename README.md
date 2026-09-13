@@ -15,16 +15,17 @@ Have not decided on compiler, if you have experience with one lets use it!
 
 ## Current TODO:s in order of priority
 
-1. Add logic (using serial) to separate out gen2 from gen3
-2. Add actual installing scripts (they are to be called from installer.py in core). Everything the script needs should be in the session Class instance that main_window can pass it when start-install is requested..
-3. Improve WiFi UX, using robots original procedure if computer running this app has wifi/bluetooth (show wifi networks robot can see only as a drop down menu) otherwise full ssid input as is now.
-4. Release-ready? Then compile!
-4. Separate start-install page from connect_screen, allowing to re-order pages, and let that have a page for install progress.
-4. Get pretty name (Neato D7, Neato D10 etc. instead of just generation as is current)
-4. Add translations (help wanted, what languages do yall speak?)
-5. Prettyfy and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
-5. Prettify the connect vacuula svg, remoing the WIP banner
-6. Release-ready! Compile!
+1. ~~Add logic (using serial) to separate out gen2 from gen3~~
+2. Separate start-install page from connect_screen, allowing to re-order pages, and let that have a page for install progress.
+3. For gen 2 & 3 ask user to connect to robots wifi then allow to select available wifi networks from robot directly - gen4 uses current wifi page 
+4. Add actual installing scripts (they are to be called from installer.py in core). Everything the script needs should be in the session Class instance that main_window can pass it when start-install is requested..
+5. Release-ready? Then compile (multiplatform)!
+6. Installation progress with signals yo!
+7. ~~Get pretty name (Neato D7, Neato D10 etc. instead of just generation as is current)~~
+7. Add translations (help wanted, what languages do yall speak?)
+7. Prettyfy and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
+7. Prettify the connect vacuula svg, remoing the WIP banner
+8. Release-ready! Compile!
 
 ## Run it as dev
 
