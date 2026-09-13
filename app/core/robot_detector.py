@@ -43,6 +43,7 @@ ROBOT_IDS: tuple[RobotUsbId, ...] = (
     RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D10", usb_iSerial_part="N2", usb_iSerial_part_pos=4),
     RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D9", usb_iSerial_part="N1", usb_iSerial_part_pos=4),
     RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D8", usb_iSerial_part="N3", usb_iSerial_part_pos=4),
+    RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D800", usb_iSerial_part="N5", usb_iSerial_part_pos=4), # presumed, source is: jk, image on the internet
     RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D7", serial_model="BotVacD7Connected"),
     RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D6", serial_model="BotVacD6Connected"),
     RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D5", serial_model="BotVacD5Connected"),
