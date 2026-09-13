@@ -44,12 +44,12 @@ ROBOT_IDS: tuple[RobotUsbId, ...] = (
     RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D9", usb_iSerial_part="N1", usb_iSerial_part_pos=4),
     RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D8", usb_iSerial_part="N3", usb_iSerial_part_pos=4),
     RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D800", usb_iSerial_part="N5", usb_iSerial_part_pos=4), # presumed, source is: jk, image on the internet
-    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D7", serial_model="BotVacD7Connected"),
-    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D6", serial_model="BotVacD6Connected"),
-    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D5", serial_model="BotVacD5Connected"),
-    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D4", serial_model="BotVacD4Connected"),
-    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D3", serial_model="BotVacD3Connected"),
-    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac Connected", serial_model="BotVacConnected"),
+    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D7", usb_iManufacturer="Acme Corporation", usb_iProduct="CDC Serial Peripheral", serial_model="BotVacD7Connected"),
+    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D6", usb_iManufacturer="Acme Corporation", usb_iProduct="CDC Serial Peripheral", serial_model="BotVacD6Connected"),
+    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D5", usb_iManufacturer="Acme Corporation", usb_iProduct="CDC Serial Peripheral", serial_model="BotVacD5Connected"),
+    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D4", usb_iManufacturer="Acme Corporation", usb_iProduct="CDC Serial Peripheral", serial_model="BotVacD4Connected"),
+    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D3", usb_iManufacturer="Acme Corporation", usb_iProduct="CDC Serial Peripheral", serial_model="BotVacD3Connected"),
+    RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac Connected", usb_iManufacturer="Acme Corporation", usb_iProduct="CDC Serial Peripheral", serial_model="BotVacConnected"),
 )
 
 
@@ -103,14 +103,37 @@ class RobotDetector(QObject):
             ids_by_usb_id.setdefault(key, []).append(robot_id)
 
         resolved: list[tuple[usb.core.Device, RobotUsbId]] = []
-        for (vendor, product), candidates in ids_by_usb_id.items():
-            for dev in usb.core.find(find_all=True, idVendor=vendor, idProduct=product):
-                descriptor_matches = [c for c in candidates if self._descriptor_matches(dev, c)]
-                if not descriptor_matches:
-                    continue
-                robot_id = self._resolve_robot(dev, descriptor_matches)
-                if robot_id is not None:
-                    resolved.append((dev, robot_id))
+        #for (vendor, product), candidates in ids_by_usb_id.items():
+        #    for dev in usb.core.find(find_all=True, idVendor=vendor, idProduct=product):
+        #        print("hittade en")
+        #        descriptor_matches = [c for c in candidates if self._descriptor_matches(dev, c)]
+        #        print(descriptor_matches)
+        #        if not descriptor_matches:
+        #            print("passade visst inte")
+        #            continue
+        #        robot_id = self._resolve_robot(dev, descriptor_matches)
+        #        if robot_id is not None:
+        #            resolved.append((dev, robot_id))
+                
+
+        for dev in usb.core.find(find_all=True, idVendor=GEN4_USB[0], idProduct=GEN4_USB[1]):
+            print("Gen4")
+            descriptor_matches = [c for c in ids_by_usb_id[(0x1D6B, 0x0100)] if self._descriptor_matches(dev, c)]
+            if not descriptor_matches:
+                print("passade visst inte")
+                continue
+            robot_id = self._resolve_robot(dev, descriptor_matches)
+            if robot_id is not None:
+                resolved.append((dev, robot_id))
+           
+
+        for dev in usb.core.find(find_all=True, idVendor=GEN23_USB[0], idProduct=GEN23_USB[1]):
+            print("Gen23")
+            descriptor_matches = [c for c in ids_by_usb_id[(0x2108, 0x780c)]]
+            robot_id = self._resolve_robot(dev, descriptor_matches)
+            if robot_id is not None:
+                resolved.append((dev, robot_id))
+
 
         if len(resolved) == 0:
             if self._last_state == State.ONE:
@@ -138,7 +161,9 @@ class RobotDetector(QObject):
         try:
             manufacturer = usb.util.get_string(dev, dev.iManufacturer) if dev.iManufacturer else None
             product = usb.util.get_string(dev, dev.iProduct) if dev.iProduct else None
-        except (usb.core.USBError, ValueError, NotImplementedError):
+        except (usb.core.USBError, ValueError, NotImplementedError) as e:
+            print(e)
+            print("usberror")
             return False
         return manufacturer == robot_id.usb_iManufacturer and product == robot_id.usb_iProduct
 
@@ -149,7 +174,7 @@ class RobotDetector(QObject):
         way to resolve it.
         """
         usb_id = [dev.idVendor, dev.idProduct]
-
+        
         if usb_id == GEN4_USB:
             return self._match_by_usb_serial(dev, candidates)
 
@@ -161,6 +186,7 @@ class RobotDetector(QObject):
     @staticmethod
     def _match_by_usb_serial(dev: usb.core.Device, candidates: list[RobotUsbId]) -> RobotUsbId | None:
         serial_number = RobotDetector._get_serial(dev)
+
         for candidate in candidates:
             start = candidate.usb_iSerial_part_pos
             end = start + len(candidate.usb_iSerial_part)
@@ -173,7 +199,6 @@ class RobotDetector(QObject):
         cached = self._resolved_cache.get(cache_key)
         if cached in candidates:
             return cached
-
         version_output = self._query_get_version(dev)
         if version_output is None:
             return None

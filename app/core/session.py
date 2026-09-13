@@ -11,7 +11,7 @@ class SessionData:
     server_ip: str | None = None
     server_certificate: str | None = None
 
-    #robot_serial_nbr: str | None = None # Prob not used by scripts?
+    robot_serial_nbr: str | None = None
     robot_model_display_name: str | None = None
     robot_usb_device: usb.core.Device | None = None
     firmware_version: str | None = None # Not use, maybe not needed
