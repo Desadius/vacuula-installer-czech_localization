@@ -6,6 +6,7 @@ from dataclasses import dataclass
 
 import usb.core # type: ignore[reportMissingTypeStubs]
 
+
 @dataclass
 class SessionData:
     server_ip: str | None = None
@@ -14,6 +15,7 @@ class SessionData:
     robot_serial_nbr: str | None = None
     robot_model_display_name: str | None = None
     robot_usb_device: usb.core.Device | None = None
+    robot_serial_dev: str | None = None #TODO maybe needs to be SysFS?
     firmware_version: str | None = None # Not use, maybe not needed
 
     wifi_ssid: str | None = None

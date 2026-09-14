@@ -122,9 +122,11 @@ class ConnectScreen(QWidget):
 
     # -- internal ------------------------------------------------------------
 
+    # TODO change button to conditionally visible for factory reset/update
     def _handle_start_install_clicked(self) -> None:
-        if self._model_id is None:
-            return
+        print("hej!")
+        #if self._model_id is None:
+        #    return
         self._start_install_button.setEnabled(False)
         self._start_install_button.setText(self._translator.tr("connect.installing"))
         self._status_label.setText(

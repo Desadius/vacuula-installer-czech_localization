@@ -206,7 +206,7 @@ class MainWindow(QMainWindow):
             self._back_action()
 
     # -- signal wiring & handlers ------------------------------------------------
-
+    # TODO rename from handle_event to go_to_page, let signal be descriptor what event happened and function what is to happen
     def _connect_signals(self) -> None:
         self._welcome_screen.continueRequested.connect(self._handle_welcome_continue)
         self._server_detector.serverDetected.connect(self._handle_server_present)
@@ -217,9 +217,11 @@ class MainWindow(QMainWindow):
 
 
     def _handle_welcome_continue(self) -> None:
-        self._crossfade_to(self._server_search_screen)
-        self._server_detector.start(NETWORK_POLLING_DELAY_MS)
-        self._set_back_action(self._back_to_welcome)
+        self._crossfade_to(self._connect_to_wifi_screen)
+        self._connect_to_wifi_screen.set_gen23_page()
+        #self._crossfade_to(self._server_search_screen)
+        #self._server_detector.start(NETWORK_POLLING_DELAY_MS)
+        #self._set_back_action(self._back_to_welcome)
 
     def _back_to_welcome(self) -> None:
         # TODO: conditionally skip pages if session is already populated? Or recheck?
@@ -236,7 +238,7 @@ class MainWindow(QMainWindow):
         self._session.server_ip = ip
         self._session.server_certificate = cert
         # Dont @ me
-        anim.finished.connect(lambda: QTimer.singleShot(2000, lambda : self._crossfade_to(self._connect_to_wifi_screen)))
+        anim.finished.connect(lambda: QTimer.singleShot(2000, lambda : {self._crossfade_to(self._connect_screen) , self._detector.start(USB_POLLING_DELAY_MS)}))
         anim.finished.connect(lambda: self._active_animations.remove(anim))
         anim.start()
         self._connect_screen.reset_searching()
@@ -261,6 +263,7 @@ class MainWindow(QMainWindow):
         self._session.robot_model_display_name = display_name
         self._session.robot_usb_device = device
         self._connect_screen.show_robot_detected(display_name)
+        self._detector.stop() #maybe keep running for disconnect notices? TODO
 
     def _handle_multiple_robots(self) -> None:
         # TODO: Inform user about one at a time limit
@@ -272,8 +275,11 @@ class MainWindow(QMainWindow):
 
 
     def _handle_start_install(self) -> None:
-        self._installer.launch(self._session)
-        self._set_back_action(None) #don't interrupt install
+        #self._installer.launch(self._session)
+        #self._set_back_action(None) #don't interrupt install
+        print("hallå?")
+        self._crossfade_to(self._connect_to_wifi_screen)
+        self._connect_to_wifi_screen.set_gen23_page()
 
     def _retranslate(self) -> None:
         self.setWindowTitle(self._translator.tr("app.window_title"))

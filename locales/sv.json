@@ -13,7 +13,7 @@
   "serversearch.status.found": "Fann en server på {ip}!",
 
   "connect.title": "Anslut din robotdammsugare med en USB kabel",
-  "connect.howto": "🛈 <i>Det finns en USB-C-anslutning under dammuppsamlaren, den gröna streckade &quot;kabeln&quot; går till dess ungefärliga position</i>.",
+  "connect.howto": "🛈 <i>Det finns en USB-anslutning under dammuppsamlaren, den gröna streckade &quot;kabeln&quot; går till dess ungefärliga position</i>.",
   "connect.status.waiting": "Ingen robotdammsugare detekterad än",
   "connect.status.detected": "Fann en {model}",
   "connect.start_install": "Starta installation",

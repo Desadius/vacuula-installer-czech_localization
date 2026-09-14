@@ -1,10 +1,11 @@
 {
-  "String-version": "6",
+  "String-version": "7",
   "app.window_title": "Vacuula-ifiyer",
 
   "welcome.tagline": "Let's get your robot vacuum new <i>life</i>",
   "welcome.continue": "Continue",
   "welcome.language_tooltip": "Change language",
+  "welcome.find_help": "?¿ If you encounter any issues during installation, don't hesitate to get in touch on <a href='https://github.com/vacuula/vacuula-installer'>GitHub</a>, <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> or your closest technical friend!",
 
   "serversearch.title": "Vacuula needs a server",
   "serversearch.body": "Before <i>biting</i> your robot a server needs to be setup. Follow instructions <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'>here</a> if not done already",
@@ -13,7 +14,7 @@
   "serversearch.status.found": "Server found at {ip}!",
 
   "connect.title": "Connect a robot to your computer with a USB cable",
-  "connect.howto": "🛈 <i>There is a USB-C contact under the dustbin, the green &quot;cable&quot; in the illustration ends at its approximate location</i>",
+  "connect.howto": "🛈 <i>There is a USB contact under the dustbin, the green &quot;cable&quot; in the illustration ends at its approximate location</i>",
   "connect.status.waiting": "No robot detected yet",
   "connect.status.detected": "{model} detected",
   "connect.start_install": "Start install",
@@ -22,9 +23,13 @@
   "wifi.title": "Connect your robot to WiFi",
   "wifi.explanation": "Vacuula needs to reach your server!",
   "wifi.ssid.title": "Name of wifi network (SSID)",
+  "wifi.ssid.gen23.title": "Select from available networks",
   "wifi.pass.title": "Password, can be blank",
   "wifi.disclaimer": "🛈 <i>Note that the Neato devices supported by Vacuula do <b>not support</b> WPA3, make sure your network uses WPA2 or WPA2/WPA3 mixed mode. It is also advisable to connect the robot to 2.4GHz if available</i>",
   "wifi.button": "Continue",
+  "wifi.gen23.explanation.title": "Your computer needs to connect to your robots WiFi for the installation procedure",
+  "wifi.gen23.explanation.body": "Please switch your computers WiFi connection to \"{robot-wifi-ssid}\". This is only needed during installation",
+  "wifi.gen23.disclaimer": "🛈 <i>Only networks visible to the robot can be selected. The Neato devices supported by Vacuula do <b>not support</b> WPA3, make sure your network uses WPA2 or WPA2/WPA3 mixed mode. It is also advisable to connect the robot to 2.4GHz if available</i>",
 
   "install.launching": "Installing Vacuula in {model}"
 }
