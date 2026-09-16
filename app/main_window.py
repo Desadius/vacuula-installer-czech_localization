@@ -219,6 +219,7 @@ class MainWindow(QMainWindow):
     def _handle_welcome_continue(self) -> None:
         self._crossfade_to(self._connect_to_wifi_screen)
         self._connect_to_wifi_screen.set_gen23_page()
+        self._connect_to_wifi_screen.set_gen23_wifi_options(["hej","då", "Antons hemliga wifi ", "  tillåtet wifi  "])
         #self._crossfade_to(self._server_search_screen)
         #self._server_detector.start(NETWORK_POLLING_DELAY_MS)
         #self._set_back_action(self._back_to_welcome)
@@ -277,7 +278,6 @@ class MainWindow(QMainWindow):
     def _handle_start_install(self) -> None:
         #self._installer.launch(self._session)
         #self._set_back_action(None) #don't interrupt install
-        print("hallå?")
         self._crossfade_to(self._connect_to_wifi_screen)
         self._connect_to_wifi_screen.set_gen23_page()
 
