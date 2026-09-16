@@ -117,7 +117,7 @@ jobs:
       # Plain linuxdeploy still earns its place here: proper AppRun
       # generation, desktop/icon integration, and a safety-net scan for
       # any system library PyInstaller's own hooks might have missed.
-      - name: Package artifact (Linux): build AppImage
+      - name: "Package artifact (Linux): build AppImage"
         if: runner.os == 'Linux'
         run: |
           ./linuxdeploy-x86_64.AppImage --appimage-extract-and-run \
