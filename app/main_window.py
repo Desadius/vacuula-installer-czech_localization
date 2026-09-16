@@ -8,6 +8,8 @@ from __future__ import annotations
 
 from collections.abc import Callable
 
+import sys
+
 from PySide6.QtCore import QEasingCurve, QPropertyAnimation, QParallelAnimationGroup, QRect, QTimer
 from PySide6.QtWidgets import QGraphicsOpacityEffect, QMainWindow, QStackedLayout, QVBoxLayout, QWidget
 
@@ -101,7 +103,7 @@ class MainWindow(QMainWindow):
         self._logo.setGeometry(self._logo_centered_rect())
         self._logo.raise_()
 
-        self._detector = RobotDetector(self)
+        self._robot_detector = RobotDetector(self)
         self._installer = InstallerLauncher(self)
         self._server_detector = ServerDetector(self)
 
@@ -208,78 +210,99 @@ class MainWindow(QMainWindow):
     # -- signal wiring & handlers ------------------------------------------------
     # TODO rename from handle_event to go_to_page, let signal be descriptor what event happened and function what is to happen
     def _connect_signals(self) -> None:
-        self._welcome_screen.continueRequested.connect(self._handle_welcome_continue)
-        self._server_detector.serverDetected.connect(self._handle_server_present)
-        self._detector.robotDetected.connect(self._handle_robot_detected)
-        self._detector.multipleRobotsDetected.connect(self._handle_multiple_robots)
-        self._connect_screen.startInstallRequested.connect(self._handle_start_install)
-        self._connect_to_wifi_screen.wifiAdded.connect(self._handle_wifi_details_added)
-
-
-    def _handle_welcome_continue(self) -> None:
-        self._crossfade_to(self._connect_to_wifi_screen)
-        self._connect_to_wifi_screen.set_gen23_page()
-        self._connect_to_wifi_screen.set_gen23_wifi_options(["hej","då", "Antons hemliga wifi ", "  tillåtet wifi  "])
-        #self._crossfade_to(self._server_search_screen)
-        #self._server_detector.start(NETWORK_POLLING_DELAY_MS)
-        #self._set_back_action(self._back_to_welcome)
-
-    def _back_to_welcome(self) -> None:
         # TODO: conditionally skip pages if session is already populated? Or recheck?
-        self._detector.stop()
-        self._server_detector.stop()
-        self._server_search_screen.reset_searching() # I think these are necessary
-        self._connect_screen.reset_searching()
-        self._crossfade_to(self._welcome_screen)
-        self._set_back_action(None)
+        self._welcome_screen.continueRequested.connect(self._select_dev_or_server_screen)
 
-    def _handle_server_present(self, ip: str, cert: str) -> None:
+        self._server_detector.serverDetected.connect(self._goto_connect_robot_screen)
+
+        self._robot_detector.robotDetected.connect(self._goto_connect_robot_screen_firmware)
+        self._robot_detector.multipleRobotsDetected.connect(self._handle_multiple_robots)
+        # TODO robot disconnected, just pass to handler inside connect_robot_screen
+
+        self._connect_screen.startInstallRequested.connect(self._goto_wifi_screen) # TODO wrong name signal and order
+        self._connect_to_wifi_screen.wifiAdded.connect(self._goto_install_screen)
+
+
+    def _select_dev_or_server_screen(self)->None:
+        if not getattr(sys, "frozen", False):
+            self._goto_dev_only_screen() # Not implemented yet
+            #self._goto_server_search_screen() # Temporary
+        else:
+            self._goto_server_search_screen()
+
+    def _goto_dev_only_screen(self)->None:
+        print("Not implemented yet") #TODO
+        self._crossfade_to(self._connect_screen)
+        self._connect_screen.reset_searching()
+        #self._connect_to_wifi_screen.set_gen23_page()
+        #self._connect_to_wifi_screen.set_gen23_wifi_options(["Antons hemliga wifi ", "  tillåtet wifi  "])
+
+    def _goto_server_search_screen(self) -> None:
+        self._crossfade_to(self._server_search_screen)
+        self._server_detector.start(NETWORK_POLLING_DELAY_MS)
+        self._set_back_action(self._back_to_welcome)
+
+    def _goto_connect_robot_screen(self, ip: str, cert: str) -> None:
         anim = self._server_search_screen.show_server_detected(ip)
         self._active_animations.append(anim)
         self._session.server_ip = ip
         self._session.server_certificate = cert
         # Dont @ me
-        anim.finished.connect(lambda: QTimer.singleShot(2000, lambda : {self._crossfade_to(self._connect_screen) , self._detector.start(USB_POLLING_DELAY_MS)}))
+        anim.finished.connect(lambda: QTimer.singleShot(2000, lambda : {self._crossfade_to(self._connect_screen) , self._robot_detector.start(USB_POLLING_DELAY_MS)}))
         anim.finished.connect(lambda: self._active_animations.remove(anim))
         anim.start()
         self._connect_screen.reset_searching()
-        
         self._set_back_action(self._back_to_welcome)
 
-    def _handle_wifi_details_added(self, ssid: str, password: str) -> None:
-        self._session.wifi_ssid = ssid
-        self._session.wifi_pass = password
-        self._detector.start(USB_POLLING_DELAY_MS)# Temp placeholder
-        self._crossfade_to(self._connect_screen)
-        self._set_back_action(self._back_to_wifi)
-
-    def _back_to_wifi(self) -> None:
-        self._detector.stop() # Temp placeholder
-        self._crossfade_to(self._connect_to_wifi_screen)
-        self._set_back_action(self._back_to_welcome)
-        self._connect_to_wifi_screen.wifi_revalidate_input()
-
-
-    def _handle_robot_detected(self, display_name: str, device: usb.core.Device) -> None:
+    def _goto_connect_robot_screen_firmware(self, display_name: str, device: usb.core.Device) -> None:
         self._session.robot_model_display_name = display_name
         self._session.robot_usb_device = device
         self._connect_screen.show_robot_detected(display_name)
-        self._detector.stop() #maybe keep running for disconnect notices? TODO
+        self._robot_detector.stop() #maybe keep running for disconnect notices? TODO
 
     def _handle_multiple_robots(self) -> None:
         # TODO: Inform user about one at a time limit
         return None # Tmp python bsittery
-
+    
     def _handle_robot_disconnected(self) -> None:
         # TODO: For detecting reboot or unintentional disconnections
         return None
 
 
-    def _handle_start_install(self) -> None:
-        #self._installer.launch(self._session)
-        #self._set_back_action(None) #don't interrupt install
+    def _goto_wifi_screen(self)->None:
+        match self._session.robot_model_display_name:
+            case "Neato D10" | "Neato D9" | "Neato D8":
+                self._crossfade_to(self._connect_to_wifi_screen)
+            case "Neato Botvac D7"|"Neato Botvac D6"|"Neato Botvac D5"|"Neato Botvac D4"|"Neato Botvac D3"|"Neato Botvac Connected":
+                self._crossfade_to(self._connect_to_wifi_screen)
+                self._connect_to_wifi_screen.set_gen23_page()
+            case "Neato D800":
+                print("I don't think this one is supported") # temp TODO
+            case _:
+                print("How the hell did you get here?")
+
+    def _goto_install_screen(self, ssid: str, password: str) -> None:
+        self._session.wifi_ssid = ssid
+        self._session.wifi_pass = password
+        self._robot_detector.start(USB_POLLING_DELAY_MS)# Temp placeholder
+        self._crossfade_to(self._connect_screen)
+        self._set_back_action(self._back_to_wifi)
+
+
+    def _back_to_welcome(self) -> None:
+        self._robot_detector.stop()
+        self._server_detector.stop()
+        self._server_search_screen.reset_searching()
+        self._connect_screen.reset_searching()
+        self._crossfade_to(self._welcome_screen)
+        self._set_back_action(None)
+
+    def _back_to_wifi(self) -> None:
+        self._robot_detector.stop() # Temp placeholder
         self._crossfade_to(self._connect_to_wifi_screen)
-        self._connect_to_wifi_screen.set_gen23_page()
+        self._set_back_action(self._back_to_welcome)
+        self._connect_to_wifi_screen.wifi_revalidate_input()
+
 
     def _retranslate(self) -> None:
         self.setWindowTitle(self._translator.tr("app.window_title"))

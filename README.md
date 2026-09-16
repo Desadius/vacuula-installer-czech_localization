@@ -19,12 +19,11 @@ Have not decided on compiler, if you have experience with one lets use it!
 2. Separate start-install page from connect_screen, allowing to re-order pages, and let that have a page for install progress.
 3. For gen 2 & 3 ask user to connect to robots wifi then allow to select available wifi networks from robot directly - gen4 uses current wifi page 
 4. Add actual installing scripts (they are to be called from installer.py in core). Everything the script needs should be in the session Class instance that main_window can pass it when start-install is requested..
-5. Release-ready? Then compile (multiplatform)!
-6. Installation progress with signals yo!
-7. ~~Get pretty name (Neato D7, Neato D10 etc. instead of just generation as is current)~~
+5. ~~Release-ready? Then compile (multiplatform)!~~
+6. ~~Get pretty name (Neato D7, Neato D10 etc. instead of just generation as is current)~~
 7. Add translations (help wanted, what languages do yall speak?)
-7. Prettyfy and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
-7. Prettify the connect vacuula svg, remoing the WIP banner
+7. Prettify and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
+7. Prettify the connect vacuula svg, remoing the WIP banner (robot->out with dustbin + robot<->computer)
 8. Release-ready! Compile!
 
 ## Run it as dev

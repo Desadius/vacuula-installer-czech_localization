@@ -69,7 +69,7 @@ class RobotDetector(QObject):
     """
 
     robotDisconnected = Signal()
-    robotDetected = Signal(str, usb.core.Device)  # display_name, serial, device TODO
+    robotDetected = Signal(str, usb.core.Device)  # display_name, serial_device TODO, usb_device
 
     # Probably never happens but needs to be handled:
     multipleRobotsDetected = Signal()
