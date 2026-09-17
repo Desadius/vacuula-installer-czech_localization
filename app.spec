@@ -6,9 +6,6 @@
 # Platform differences (onefile exe / onedir for AppImage / .app bundle)
 # and the SVG-to-native-icon conversion are handled below via sys.platform.
 #
-# APP_NAME is kept in sync with the workflow's env: block. ENTRY_POINT is
-# the package's __init__, which already exposes main() behind a
-# `if __name__ == "__main__"` guard - no separate shim needed.
 
 import sys
 from pathlib import Path

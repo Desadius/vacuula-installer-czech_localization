@@ -27,10 +27,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      # uv is the package manager now: pyproject.toml + uv.lock are the
-      # single source of truth. setup-uv installs the interpreter (the
-      # project targets 3.11 via .python-version / requires-python) and
-      # caches the uv cache keyed on the lockfile.
+      # Use uv for deps and cache lock file
       - name: Set up uv
         uses: astral-sh/setup-uv@v10.1.0
         with:
@@ -64,21 +61,11 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install libusb
 
-      # Provision .venv from the committed lockfile. --locked makes the
-      # job fail if uv.lock is stale instead of silently re-resolving;
-      # --no-dev keeps the release build free of dev-only tools.
+      # Omit dev deps and fail on stale lock file
       - name: Install Python dependencies
         run: uv sync --locked --no-dev
 
-      # PyInstaller and pillow are build-only tools, so they stay out of
-      # the runtime dependency list and are pulled in on the fly with
-      # `--with`. pillow is only used at build time (spec-file icon
-      # packing on Windows/macOS) - it is not a runtime dependency of the
-      # app itself.
-      #
-      # Platform differences (onefile / onedir / .app bundle, and SVG ->
-      # native icon conversion) are all handled inside app.spec now, so
-      # this one command covers every OS in the matrix.
+      # Need pillow for app icon file format conversion
       - name: Build with PyInstaller
         run: >-
           uv run --locked --no-dev
