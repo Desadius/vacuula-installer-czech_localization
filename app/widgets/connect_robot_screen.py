@@ -15,7 +15,7 @@ from app.i18n import Translator
 from app.widgets.spinner import SpinnerWidget
 
 
-class ConnectScreen(QWidget):
+class ConnectRobotScreen(QWidget):
     """Emits :attr:`startInstallRequested` with the detected model id."""
 
     startInstallRequested = Signal(str)

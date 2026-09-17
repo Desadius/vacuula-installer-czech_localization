@@ -9,9 +9,7 @@ Goals for this is to:
 
 Goals are NOT:
 1. Server install walk-trough
-
-For release it will be compiled, which would be nice to set up as github actions. For linux prob as appimage?
-Have not decided on compiler, if you have experience with one lets use it!
+2. Un-rainbower
 
 ## Current TODO:s in order of priority
 
@@ -39,7 +37,7 @@ To pass server detection screen without a server (using avahi-utils):
 ```bash
 avahi-publish -a vacuula-server.local <a-random-but-valid-ip>
 ```
-
+You can also use that if the server mDNS does not reach the robot network (but the robot can connect to the ip)
 
 ## Adding a language
 

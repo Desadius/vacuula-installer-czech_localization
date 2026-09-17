@@ -31,7 +31,7 @@ from app.core.installer import InstallerLauncher
 from app.core.robot_detector import RobotDetector
 from app.core.server_detector import ServerDetector
 from app.i18n import Translator
-from app.widgets.connect_screen import ConnectScreen
+from app.widgets.connect_robot_screen import ConnectRobotScreen
 from app.widgets.logo import LogoWidget
 from app.widgets.welcome_screen import WelcomeScreen
 from app.widgets.back_button import BackButton
@@ -87,7 +87,7 @@ class MainWindow(QMainWindow):
         right_layout.addLayout(self._screen_stack)
 
         self._welcome_screen = WelcomeScreen(self._translator, self._right_panel)
-        self._connect_screen = ConnectScreen(self._translator, self._right_panel)
+        self._connect_screen = ConnectRobotScreen(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._welcome_screen)
         self._screen_stack.addWidget(self._connect_screen)
 
