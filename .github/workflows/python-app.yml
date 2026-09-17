@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# This workflow verifies the uv lockfile and lints the code with Ruff and Ty.
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
 
 name: Python application
@@ -13,25 +13,40 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  lint:
 
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: Set up Python 3.10
-      uses: actions/setup-python@v3
-      with:
-        python-version: "3.10"
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install flake8
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-    - name: Lint with flake8
-      run: |
-        # stop the build if there are Python syntax errors or undefined names
-        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
+    # uv provisions the interpreter (project targets 3.11 via
+    # .python-version / pyproject.toml) and caches the uv cache keyed on
+    # the committed lockfile.
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v10.1.0
+      with:
+        python-version: "3.11"
+        enable-cache: true
+        cache-dependency-glob: "uv.lock"
+
+    # Fail fast if pyproject.toml and uv.lock have drifted apart.
+    - name: Check uv.lock is up to date
+      run: uv lock --check
+
+    # Install the locked runtime + dev dependency groups (ruff, ty).
+    - name: Install dependencies
+      run: uv sync --locked
+
+    - name: Lint with Ruff
+      run: |
+        # Fail the build on syntax errors and undefined names (same intent
+        # as the previous flake8 --select=E9,F63,F7,F82 invocation).
+        uv run --locked ruff check --select E9,F63,F7,F82 .
+
+        # Report everything else (long lines, complexity, ...) as warnings
+        # only. 127 chars matches the old flake8 config.
+        uv run --locked ruff check --select E501,C901 --line-length 127 --exit-zero .
+
+    - name: Type-check with ty
+      run: uv run --locked ty check --output-format github

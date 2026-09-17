@@ -23,3 +23,9 @@ build-backend = "uv_build"
 
 [tool.ty.environment]
 python = ".venv"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.16.8",
+    "ty>=0.0.81",
+]

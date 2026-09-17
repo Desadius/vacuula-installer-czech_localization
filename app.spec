@@ -6,27 +6,32 @@
 # Platform differences (onefile exe / onedir for AppImage / .app bundle)
 # and the SVG-to-native-icon conversion are handled below via sys.platform.
 #
-# Keep APP_NAME and ENTRY_POINT in sync with the workflow's env: block.
+# APP_NAME is kept in sync with the workflow's env: block. ENTRY_POINT is
+# the package's __init__, which already exposes main() behind a
+# `if __name__ == "__main__"` guard - no separate shim needed.
 
 import sys
 from pathlib import Path
 
 APP_NAME = "VacuulaInstaller"
-ENTRY_POINT = "main.py"
-SVG_ICON = Path("assets/logo.svg")
+ENTRY_POINT = "src/vacuula_installer/__init__.py"
+SVG_ICON = Path("src/assets/logo.svg")
 BUILD_DIR = Path("build_icons")
 
 # ---------------------------------------------------------------------------
 # Bundled data. Plain tuples here avoid the --add-data ':' vs ';' split
 # between Windows and POSIX entirely.
 # ---------------------------------------------------------------------------
+# Sources come from the src/ layout; the destinations match what
+# constants.APP_ROOT (the package's parent dir) expects at runtime.
 datas = [
-    ("locales", "locales"),
-    ("assets", "assets"),
+    ("src/locales", "locales"),
+    ("src/assets", "assets"),
 ]
 
 # ---------------------------------------------------------------------------
-# Icon handling. The project keeps a single SVG source (assets/logo.svg).
+# Icon handling. The project keeps a single SVG source
+# (src/assets/logo.svg).
 # Windows/macOS need it converted to their native icon container format;
 # Linux has no equivalent for a bare executable, so the AppImage workflow
 # step uses the SVG directly instead of anything built here.
@@ -97,7 +102,7 @@ icon_path = app_icon()
 # ---------------------------------------------------------------------------
 a = Analysis(
     [ENTRY_POINT],
-    pathex=[],
+    pathex=["src"],
     binaries=[],
     datas=datas,
     hiddenimports=[],

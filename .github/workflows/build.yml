@@ -8,7 +8,6 @@ on:
 
 env:
   APP_NAME: VacuulaInstaller
-  ENTRY_POINT: main.py
   PYTHON_VERSION: "3.11"
 
 jobs:
@@ -28,10 +27,16 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      # uv is the package manager now: pyproject.toml + uv.lock are the
+      # single source of truth. setup-uv installs the interpreter (the
+      # project targets 3.11 via .python-version / requires-python) and
+      # caches the uv cache keyed on the lockfile.
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.1.0
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock"
 
       # PySide6's "xcb" platform plugin needs these at runtime, and not
       # all of them are preinstalled on the minimal Linux runner image.
@@ -42,6 +47,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y \
             libusb-1.0-0 \
+            libgl1 \
             patchelf \
             libxcb-cursor0 \
             libxkbcommon-x11-0 \
@@ -58,18 +64,27 @@ jobs:
         if: runner.os == 'macOS'
         run: brew install libusb
 
+      # Provision .venv from the committed lockfile. --locked makes the
+      # job fail if uv.lock is stale instead of silently re-resolving;
+      # --no-dev keeps the release build free of dev-only tools.
       - name: Install Python dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install "PySide6>=6.6" "pyusb>=1.3.1" "requests>=2.34.2" "pyserial>=3.5" pyinstaller pillow
-          # pillow is only used at build time (spec-file icon packing on
-          # Windows) - it is not a runtime dependency of the app itself.
+        run: uv sync --locked --no-dev
 
+      # PyInstaller and pillow are build-only tools, so they stay out of
+      # the runtime dependency list and are pulled in on the fly with
+      # `--with`. pillow is only used at build time (spec-file icon
+      # packing on Windows/macOS) - it is not a runtime dependency of the
+      # app itself.
+      #
       # Platform differences (onefile / onedir / .app bundle, and SVG ->
       # native icon conversion) are all handled inside app.spec now, so
       # this one command covers every OS in the matrix.
       - name: Build with PyInstaller
-        run: pyinstaller --noconfirm --clean app.spec
+        run: >-
+          uv run --locked --no-dev
+          --with pyinstaller
+          --with pillow
+          pyinstaller --noconfirm --clean app.spec
 
       - name: Package artifact (Windows)
         if: runner.os == 'Windows'
@@ -124,7 +139,7 @@ jobs:
             --appdir AppDir \
             --executable "AppDir/usr/bin/${{ env.APP_NAME }}" \
             --desktop-file "${{ env.APP_NAME }}.desktop" \
-            --icon-file assets/logo.svg \
+            --icon-file src/assets/logo.svg \
             --output appimage
           mv "${{ env.APP_NAME }}"-*.AppImage "${{ env.APP_NAME }}-linux.AppImage"
 
