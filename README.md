@@ -29,10 +29,7 @@ Have not decided on compiler, if you have experience with one lets use it!
 ## Run it as dev
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python main.py
+uv run vacuula-installer
 ```
 
 To pass server detection screen without a server (using avahi-utils):
@@ -43,8 +40,8 @@ avahi-publish -a vacuula-server.local <a-random-but-valid-ip>
 
 ## Adding a language
 
-1. Copy `locales/en.json` to `locales/<code>.json` and translate the values.
-2. Add one line to `LANGUAGES` in `app/constants.py`:
+1. Copy `src/locales/en.json` to `src/locales/<code>.json` and translate the values.
+2. Add one line to `LANGUAGES` in `src/vacuula_installer/constants.py`:
    ```python
    "fr": LanguageMeta(flag="🇫🇷", native_name="Français"),
    ```
@@ -57,7 +54,7 @@ NOTE! While locale.json with the higest "Strings-version" is technically the tra
 
 
 ## Placeholders:
-- **`app/core/installer.py`** — `InstallerLauncher.launch(model_id)`
+- **`src/vacuula_installer/core/installer.py`** — `InstallerLauncher.launch(model_id)`
   A placeholder draft, needs some refactoring but the working principle is there.
   Real scripts go into `_SCRIPTS` (paths per model) and replace the `TODO` with
   an actual (non-blocking) launch, e.g. `QProcess`.
