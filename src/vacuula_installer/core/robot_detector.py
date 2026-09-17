@@ -5,6 +5,7 @@ Can be used to detect disconnection, care about polling rate
 Lots here was generated using claude sonnet, for example the cross platform serial stuff cause I could not bother
 """
 from __future__ import annotations
+
 from dataclasses import dataclass
 from enum import IntEnum, auto
 
@@ -12,7 +13,6 @@ import serial  # type: ignore[reportMissingTypeStubs]
 import serial.tools.list_ports  # type: ignore[reportMissingTypeStubs]
 import usb.core  # type: ignore[reportMissingTypeStubs]
 import usb.util  # type: ignore[reportMissingTypeStubs]
-
 from PySide6.QtCore import QObject, QTimer, Signal
 
 # idVendor, idProduct

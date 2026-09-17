@@ -56,7 +56,7 @@ from vacuula_installer.widgets.wifi_screen import WifiScreen
 def _clear_graphics_effect(widget: QWidget) -> None:
     # Pyside has annoying stub, this gets rid of errors shown by linter
     # QT documents None as proper way to clear effect: https://doc.qt.io/qt-6/qgraphicsitem.html#setGraphicsEffect
-    widget.setGraphicsEffect(None)  # type: ignore[arg-type]
+    widget.setGraphicsEffect(None)  # ty: ignore[invalid-argument-type]
 
 
 class MainWindow(QMainWindow):

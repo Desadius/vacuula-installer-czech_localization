@@ -29,7 +29,7 @@ _MAX_PLACEMENT_ATTEMPTS = 40
 
 
 class _FlairItem:
-    __slots__ = ("text", "x_ratio", "y_ratio", "angle", "point_size", "opacity")
+    __slots__ = ("angle", "opacity", "point_size", "text", "x_ratio", "y_ratio")
 
     def __init__(
         self,
@@ -118,7 +118,7 @@ class BackgroundFlairWidget(QWidget):
 
         return items
 
-    def paintEvent(self, event: QPaintEvent) -> None:  # noqa: N802
+    def paintEvent(self, event: QPaintEvent) -> None:
         del event
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)

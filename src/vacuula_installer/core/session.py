@@ -2,9 +2,10 @@
 Data used by installers, presense of data by main windows for skipping screens (TODO)
 """
 from __future__ import annotations
+
 from dataclasses import dataclass
 
-import usb.core # type: ignore[reportMissingTypeStubs]
+import usb.core  # type: ignore[reportMissingTypeStubs]
 
 
 @dataclass

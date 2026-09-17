@@ -90,13 +90,13 @@ class SsidInput(QPlainTextEdit):
         """True if the current text is 1-32 bytes once UTF-8 encoded."""
         return 0 < len(self.toPlainText().encode("utf-8")) <= MAX_SSID_BYTES
 
-    def keyPressEvent(self, event: QKeyEvent) -> None:  # noqa: N802 (Qt override)
+    def keyPressEvent(self, event: QKeyEvent) -> None:
         if event.key() in (Qt.Key.Key_Return, Qt.Key.Key_Enter):
             self.returnPressed.emit()
             return
         super().keyPressEvent(event)
 
-    def insertFromMimeData(self, source: QMimeData) -> None:  # noqa: N802 (Qt override)
+    def insertFromMimeData(self, source: QMimeData) -> None:
         # Only one line ssid:s, no newlines allowed
         text = (
             source.text().replace("\r\n", " ").replace("\n", " ").replace("\r", " ")

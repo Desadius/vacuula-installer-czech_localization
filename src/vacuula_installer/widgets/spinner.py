@@ -39,7 +39,7 @@ class SpinnerWidget(QWidget):
         self._angle = (self._angle + _STEP_DEGREES) % 360
         self.update()
 
-    def paintEvent(self, event: QPaintEvent) -> None:  # noqa: N802 (Qt override)
+    def paintEvent(self, event: QPaintEvent) -> None:
         del event
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
