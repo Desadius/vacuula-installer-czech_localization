@@ -14,12 +14,20 @@ TODO: A wifi core class that attempts to use the original robot selfdetection me
 
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, Signal, QRect
-from PySide6.QtWidgets import QLabel, QPushButton, QStackedLayout, QVBoxLayout, QWidget, QLineEdit, QComboBox
+from PySide6.QtCore import QRect, Qt, Signal
+from PySide6.QtWidgets import (
+    QComboBox,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QStackedLayout,
+    QVBoxLayout,
+    QWidget,
+)
 
-from app.i18n import Translator
-from app.widgets.ssid_input import SsidInput 
-from app.widgets.width_tracking_label import WidthTrackingLabel
+from vacuula_installer.i18n import Translator
+from vacuula_installer.widgets.ssid_input import SsidInput
+from vacuula_installer.widgets.width_tracking_label import WidthTrackingLabel
 
 
 class WifiScreen(QWidget):
@@ -81,7 +89,9 @@ class WifiScreen(QWidget):
         self._password_inputGen23.setObjectName("wifiInput")
         self._password_inputGen23.setFixedWidth(350)
         self._password_inputGen23.setEchoMode(QLineEdit.EchoMode.PasswordEchoOnEdit)
-        self._password_inputGen23.returnPressed.connect(self._handle_wifi_continue_clicked)
+        self._password_inputGen23.returnPressed.connect(
+            self._handle_wifi_continue_clicked
+        )
 
         self._wifi_disclaimerGen23 = QLabel(page)
         self._wifi_disclaimerGen23.setObjectName("serversearchDetailLabel")
@@ -92,7 +102,9 @@ class WifiScreen(QWidget):
         self._wifi_continue_buttonGen23.setObjectName("continueButton")
         self._wifi_continue_buttonGen23.setEnabled(True)
         self._wifi_continue_buttonGen23.setCursor(Qt.CursorShape.PointingHandCursor)
-        self._wifi_continue_buttonGen23.clicked.connect(self._handle_wifi_continue_clicked)
+        self._wifi_continue_buttonGen23.clicked.connect(
+            self._handle_wifi_continue_clicked
+        )
 
         layout.addWidget(self._wifi_title_labelGen23)
         layout.addSpacing(24)
@@ -100,18 +112,23 @@ class WifiScreen(QWidget):
         layout.addSpacing(24)
         layout.addWidget(self._ssid_field_labelGen23)
         layout.addSpacing(2)
-        layout.addWidget(self._wifi_combo_boxGen23, alignment=Qt.AlignmentFlag.AlignHCenter)
+        layout.addWidget(
+            self._wifi_combo_boxGen23, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
         layout.addSpacing(8)
         layout.addWidget(self._password_field_labelGen23)
         layout.addSpacing(2)
-        layout.addWidget(self._password_inputGen23, alignment=Qt.AlignmentFlag.AlignHCenter)
+        layout.addWidget(
+            self._password_inputGen23, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
         layout.addSpacing(24)
         layout.addWidget(self._wifi_disclaimerGen23)
         layout.addSpacing(30)
-        layout.addWidget(self._wifi_continue_buttonGen23, alignment=Qt.AlignmentFlag.AlignHCenter)
+        layout.addWidget(
+            self._wifi_continue_buttonGen23, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
 
         return page
-
 
     def _build_wifi_page(self) -> QWidget:
         page = QWidget(self)
@@ -129,7 +146,6 @@ class WifiScreen(QWidget):
         self._wifi_conn_expl.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self._wifi_conn_expl.setWordWrap(True)
         self._wifi_conn_expl.setObjectName("wifiExplanationLabel")
-
 
         self._ssid_field_label = QLabel(page)
         self._ssid_field_label.setObjectName("serversearchBodyLabel")
@@ -166,7 +182,7 @@ class WifiScreen(QWidget):
         layout.addWidget(self._wifi_conn_expl)
         layout.addSpacing(24)
         layout.addWidget(self._ssid_field_label)
-        layout.addSpacing(2) 
+        layout.addSpacing(2)
         layout.addWidget(self._ssid_input, alignment=Qt.AlignmentFlag.AlignHCenter)
         layout.addSpacing(8)
         layout.addWidget(self._password_field_label)
@@ -175,7 +191,9 @@ class WifiScreen(QWidget):
         layout.addSpacing(24)
         layout.addWidget(self._wifi_disclaimer)
         layout.addSpacing(30)
-        layout.addWidget(self._wifi_continue_button, alignment=Qt.AlignmentFlag.AlignHCenter)
+        layout.addWidget(
+            self._wifi_continue_button, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
         return page
 
     def _apply_label_margins(self) -> None:
@@ -207,15 +225,16 @@ class WifiScreen(QWidget):
     # Just trigger on back navigation to fix valid input not allowing continue
     def wifi_revalidate_input(self) -> None:
         self._update_wifi_continue_enabled()
- 
+
     def _update_wifi_continue_enabled(self) -> None:
         self._wifi_continue_button.setEnabled(self._ssid_input.is_valid())
 
- 
     def _handle_wifi_continue_clicked(self) -> None:
         if not self._ssid_input.is_valid():
             return
-        ssid = self._ssid_input.toPlainText()  # not stripped -- whitespace is valid SSID content
+        ssid = (
+            self._ssid_input.toPlainText()
+        )  # not stripped -- whitespace is valid SSID content
         password = self._password_input.text()
         self._wifi_continue_button.setEnabled(False)
         self.wifiAdded.emit(ssid, password)
@@ -227,7 +246,6 @@ class WifiScreen(QWidget):
 
     def set_gen23_page(self) -> None:
         self._central_stack.setCurrentWidget(self._gen23_wifi_page)
-
 
     def _retranslate(self) -> None:
 
@@ -245,7 +263,9 @@ class WifiScreen(QWidget):
 
         self._wifi_title_labelGen23.setText(self._translator.tr("wifi.title"))
         self._wifi_conn_explGen23.setText(self._translator.tr("wifi.explanation"))
-        self._ssid_field_labelGen23.setText(self._translator.tr("wifi.ssid.gen23.title"))
+        self._ssid_field_labelGen23.setText(
+            self._translator.tr("wifi.ssid.gen23.title")
+        )
         self._password_field_labelGen23.setText(self._translator.tr("wifi.pass.title"))
         self._wifi_disclaimerGen23.setText(self._translator.tr("wifi.gen23.disclaimer"))
         self._wifi_continue_buttonGen23.setText(self._translator.tr("wifi.button"))
@@ -255,4 +275,3 @@ class WifiScreen(QWidget):
         self._title_widthGen23 = self._wifi_title_labelGen23.sizeHint().width()
         self._wifi_title_labelGen23.setWordWrap(True)
         self._apply_label_margins()
-        

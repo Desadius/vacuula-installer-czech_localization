@@ -1,26 +1,32 @@
 """Server detector
 
-    Server detector simply asks for vacuula-server.local (mDNS)
-    using OS cabability, mac, most linux distros have supported this for ages,
-    windows since some release of win 10: basically everything, allows us to
-    not have to do a custom mDNS client...
-    
-    If a IP is returned it will fetch the cert from the server.
+Server detector simply asks for vacuula-server.local (mDNS)
+using OS cabability, mac, most linux distros have supported this for ages,
+windows since some release of win 10: basically everything, allows us to
+not have to do a custom mDNS client...
 
-    If both succeed the information is sent as signals, main_windows saves it
-    in the session.
+If a IP is returned it will fetch the cert from the server.
 
-    NOTE: Does NOT support self-signed certs if server, proxy or w/e redirects to https!
-    For that we would have to a. disable verification or b. use same selfsigned on all 
-    server deployments and preprogram its public part here - none are desirable.
+If both succeed the information is sent as signals, main_windows saves it
+in the session.
+
+NOTE: Does NOT support self-signed certs if server, proxy or w/e redirects to https!
+For that we would have to a. disable verification or b. use same selfsigned on all
+server deployments and preprogram its public part here - none are desirable.
 """
 
 from __future__ import annotations
-import logging, socket, requests
-from PySide6.QtCore import QObject, QTimer, Signal, QRunnable, QThreadPool, Slot
-from app.constants import M_DNS_HOSTNAME, PATH_TO_SERVER_CERT
+
+import logging
+import socket
+
+import requests
+from PySide6.QtCore import QObject, QRunnable, QThreadPool, QTimer, Signal, Slot
+
+from vacuula_installer.constants import M_DNS_HOSTNAME, PATH_TO_SERVER_CERT
 
 logger = logging.getLogger(__name__)
+
 
 class _DetectionWorkerSignals(QObject):
     found = Signal(str, str)  # ip, cert
@@ -44,14 +50,16 @@ class _DetectionWorker(QRunnable):
 
         try:
             response = requests.get(
-                f"http://{ip}{PATH_TO_SERVER_CERT}", # For https the server can redirect but it MUST have a public cert in that case!
+                f"http://{ip}{PATH_TO_SERVER_CERT}",  # For https the server can redirect but it MUST have a public cert in that case!
                 headers={"Host": M_DNS_HOSTNAME},
                 timeout=3,
             )
             response.raise_for_status()
         except requests.RequestException:
-            logger.warning("Resolved host but failed to fetch cert", exc_info=False) # exc_info is incredibly verbose
-            #self.signals.not_found.emit()
+            logger.warning(
+                "Resolved host but failed to fetch cert", exc_info=False
+            )  # exc_info is incredibly verbose
+            # self.signals.not_found.emit()
 
             # TODO: temp detection:
             self.signals.found.emit(ip, "Bananer är goda 1 2 3")
@@ -67,7 +75,7 @@ class _DetectionWorker(QRunnable):
                 M_DNS_HOSTNAME, None, socket.AF_UNSPEC, socket.SOCK_STREAM
             )
         except OSError:
-            return None # For example no such mDNS record can be found
+            return None  # For example no such mDNS record can be found
 
         for family, _type, _proto, _canonname, sockaddr in addr_info:
             if family in (socket.AF_INET, socket.AF_INET6):
@@ -75,6 +83,7 @@ class _DetectionWorker(QRunnable):
                 if isinstance(host, str):
                     return host
         return None
+
 
 class ServerDetector(QObject):
     """Polls for M_DNS_HOSTNAME and emits its IP + cert once found."""

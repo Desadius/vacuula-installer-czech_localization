@@ -1,14 +1,16 @@
 """Round flag button showing (and letting the user switch) the UI language."""
+
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, QPoint
+from PySide6.QtCore import QPoint, Qt
 from PySide6.QtWidgets import QGridLayout, QMenu, QToolButton, QWidget, QWidgetAction
 
-from app.constants import LANGUAGES
-from app.i18n import Translator
+from vacuula_installer.constants import LANGUAGES
+from vacuula_installer.i18n import Translator
 
 _FLAG_SIZE = 64
 _GRID_COLUMNS = 4
+
 
 class FlagButton(QToolButton):
     """Shows the current language's flag; click for a menu of languages."""
@@ -27,17 +29,18 @@ class FlagButton(QToolButton):
         self._menu.setObjectName("languageMenu")
         self._menu.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
         self._build_menu()
-        
 
-        self.clicked.connect(self._show_language_menu) #ny
-        self._translator.languageChanged.connect(self._on_language_changed)#ny
+        self.clicked.connect(self._show_language_menu)  # ny
+        self._translator.languageChanged.connect(self._on_language_changed)  # ny
         self._refresh()
 
     def _show_language_menu(self) -> None:
         anchor = self.parentWidget() or self
         anchor_center = anchor.mapToGlobal(anchor.rect().center())
         menu_size = self._menu.sizeHint()
-        top_left = anchor_center - QPoint(menu_size.width() // 2, menu_size.height() // 2)
+        top_left = anchor_center - QPoint(
+            menu_size.width() // 2, menu_size.height() // 2
+        )
         self._menu.popup(top_left)
 
     def _build_menu(self) -> None:
@@ -71,6 +74,7 @@ class FlagButton(QToolButton):
             del checked
             self._translator.set_language(code)
             self._menu.close()
+
         return _select
 
     def _on_language_changed(self) -> None:

@@ -3,16 +3,24 @@ robot is rooted n stuff.
 
 Has two internal pages to switch between, however TODO: a third for wifi should be added
 """
+
 # TODO: Text explaining it is reversible might be fit for the "detected" page
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtSvgWidgets import QSvgWidget
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QStackedLayout, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QPushButton,
+    QStackedLayout,
+    QVBoxLayout,
+    QWidget,
+)
 
-from app.constants import CONNECT_SVG, WIREFRAME_SIZE
-from app.i18n import Translator
-from app.widgets.spinner import SpinnerWidget
+from vacuula_installer.constants import CONNECT_SVG, WIREFRAME_SIZE
+from vacuula_installer.i18n import Translator
+from vacuula_installer.widgets.spinner import SpinnerWidget
 
 
 class ConnectScreen(QWidget):
@@ -65,7 +73,6 @@ class ConnectScreen(QWidget):
         self._how_to_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self._how_to_label.setWordWrap(True)
 
-
         layout.addWidget(self._wireframe, alignment=Qt.AlignmentFlag.AlignHCenter)
         layout.addWidget(self._instruction_label)
         layout.addWidget(self._how_to_label)
@@ -81,7 +88,9 @@ class ConnectScreen(QWidget):
         self._start_install_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self._start_install_button.clicked.connect(self._handle_start_install_clicked)
 
-        layout.addWidget(self._start_install_button, alignment=Qt.AlignmentFlag.AlignHCenter)
+        layout.addWidget(
+            self._start_install_button, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
         return page
 
     def _build_status_row(self) -> QHBoxLayout:
@@ -111,7 +120,7 @@ class ConnectScreen(QWidget):
 
     def show_robot_detected(self, display_name: str) -> None:
         """Swap in the golden install button for the given detected robot."""
-        
+
         self._model_display_name = display_name
         self._start_install_button.setText(self._translator.tr("connect.start_install"))
         self._status_label.setText(
@@ -125,7 +134,7 @@ class ConnectScreen(QWidget):
     # TODO change button to conditionally visible for factory reset/update
     def _handle_start_install_clicked(self) -> None:
         print("hej!")
-        #if self._model_id is None:
+        # if self._model_id is None:
         #    return
         self._start_install_button.setEnabled(False)
         self._start_install_button.setText(self._translator.tr("connect.installing"))
@@ -140,8 +149,12 @@ class ConnectScreen(QWidget):
         self._how_to_label.setText(self._translator.tr("connect.howto"))
         if self._model_id is None:
             self._status_label.setText(self._translator.tr("connect.status.waiting"))
-            self._start_install_button.setText(self._translator.tr("connect.start_install"))
+            self._start_install_button.setText(
+                self._translator.tr("connect.start_install")
+            )
         else:
             self._status_label.setText(
-                self._translator.tr("connect.status.detected", model=self._model_display_name)
+                self._translator.tr(
+                    "connect.status.detected", model=self._model_display_name
+                )
             )

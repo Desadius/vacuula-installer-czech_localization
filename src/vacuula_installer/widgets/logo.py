@@ -1,13 +1,13 @@
-"""The Vaacula logo badge. Just adds ✨flair✨
-"""
+"""The Vaacula logo badge. Just adds ✨flair✨"""
+
 from __future__ import annotations
 
 from PySide6.QtGui import QColor
 from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import QGraphicsDropShadowEffect, QWidget
 
-from app.constants import LOGO_SVG
-from app.theme import PALETTE
+from vacuula_installer.constants import LOGO_SVG
+from vacuula_installer.theme import PALETTE
 
 
 class LogoWidget(QSvgWidget):

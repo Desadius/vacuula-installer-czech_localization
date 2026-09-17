@@ -18,24 +18,28 @@ when enter is pressed for smoooth ui
 
 It also enforces the length limit in a non confusable way (does not cut multibyte utf8 like emojis to single bytes to fit)
 """
+
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, Signal, QMimeData
+from PySide6.QtCore import QMimeData, Qt, Signal
 from PySide6.QtGui import QKeyEvent, QSyntaxHighlighter, QTextCharFormat, QTextDocument
-from PySide6.QtWidgets import QPlainTextEdit, QWidget, QSizePolicy
+from PySide6.QtWidgets import QPlainTextEdit, QSizePolicy, QWidget
 
-from app.theme import PALETTE
+from vacuula_installer.theme import PALETTE
 
 MAX_SSID_BYTES = 32
 
 
 class _WhitespaceHighlighter(QSyntaxHighlighter):
     """Highlights leading/trailing whitespace"""
+
     # Uses difference between len(strip) and len to detect leading/trailing whitespace
     def __init__(self, document: QTextDocument) -> None:
         super().__init__(document)
         self._format = QTextCharFormat()
-        self._format.setUnderlineStyle(QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
+        self._format.setUnderlineStyle(
+            QTextCharFormat.UnderlineStyle.SpellCheckUnderline
+        )
         self._format.setUnderlineColor(PALETTE.accent_green)
 
     def highlightBlock(self, text: str) -> None:
@@ -78,7 +82,9 @@ class SsidInput(QPlainTextEdit):
         # Clanker provided fix
         self.ensurePolished()
         margins = self.contentsMargins()
-        self.setFixedHeight(self.fontMetrics().height() + margins.top() + margins.bottom())
+        self.setFixedHeight(
+            self.fontMetrics().height() + margins.top() + margins.bottom()
+        )
 
     def is_valid(self) -> bool:
         """True if the current text is 1-32 bytes once UTF-8 encoded."""
@@ -92,7 +98,9 @@ class SsidInput(QPlainTextEdit):
 
     def insertFromMimeData(self, source: QMimeData) -> None:  # noqa: N802 (Qt override)
         # Only one line ssid:s, no newlines allowed
-        text = source.text().replace("\r\n", " ").replace("\n", " ").replace("\r", " ") # support of multiple os jank
+        text = (
+            source.text().replace("\r\n", " ").replace("\n", " ").replace("\r", " ")
+        )  # support of multiple os jank
         self.textCursor().insertText(text)
 
     def _enforce_byte_limit(self) -> None:

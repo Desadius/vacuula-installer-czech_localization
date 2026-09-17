@@ -1,12 +1,12 @@
-"""A small rotating-arc spinner, painted directly with QPainter.
-"""
+"""A small rotating-arc spinner, painted directly with QPainter."""
+
 from __future__ import annotations
 
 from PySide6.QtCore import QRectF, Qt, QTimer
-from PySide6.QtGui import QColor, QPainter, QPen, QPaintEvent
+from PySide6.QtGui import QColor, QPainter, QPaintEvent, QPen
 from PySide6.QtWidgets import QWidget
 
-from app.theme import PALETTE
+from vacuula_installer.theme import PALETTE
 
 _STEP_DEGREES = 10
 _INTERVAL_MS = 35
@@ -50,6 +50,8 @@ class SpinnerWidget(QWidget):
         painter.setPen(pen)
 
         margin = _PEN_WIDTH
-        rect = QRectF(margin, margin, self._diameter - 2 * margin, self._diameter - 2 * margin)
+        rect = QRectF(
+            margin, margin, self._diameter - 2 * margin, self._diameter - 2 * margin
+        )
         # Was confused about spinning rate, apparently Qt angles are in 1/16th of a degree
         painter.drawArc(rect, -self._angle * 16, _ARC_SPAN_DEGREES * 16)
