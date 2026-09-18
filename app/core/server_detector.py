@@ -1,9 +1,7 @@
 """Server detector
 
-    Server detector simply asks for vacuula-server.local (mDNS)
-    using OS cabability, mac, most linux distros have supported this for ages,
-    windows since some release of win 10: basically everything, allows us to
-    not have to do a custom mDNS client...
+    Server detector uses zeroconf python package that should be cross,
+    compatible with all OS.
     
     If a IP is returned it will fetch the cert from the server.
 
@@ -16,15 +14,65 @@
 """
 
 from __future__ import annotations
-import logging, socket, requests
+import logging, requests, threading
 from PySide6.QtCore import QObject, QTimer, Signal, QRunnable, QThreadPool, Slot
-from app.constants import M_DNS_HOSTNAME, PATH_TO_SERVER_CERT
+from zeroconf import Zeroconf, ServiceBrowser, ServiceInfo, ServiceListener
+from app.constants import M_DNS_SERVICE_TYPE
 
 logger = logging.getLogger(__name__)
 
 class _DetectionWorkerSignals(QObject):
     found = Signal(str, str)  # ip, cert
     not_found = Signal()
+
+
+class _ServiceListener(ServiceListener):
+    """Receives mDNS service discovery results."""
+
+    def __init__(self) -> None:
+        self.info: ServiceInfo | None = None
+        self.event = threading.Event()
+
+    def add_service(
+        self,
+        zeroconf: Zeroconf,
+        service_type: str,
+        name: str,
+    ) -> None:
+        info = zeroconf.get_service_info(
+            service_type,
+            name,
+            timeout=1000,
+        )
+
+        if info is not None:
+            self.info = info
+            self.event.set()
+
+    def update_service(
+        self,
+        zeroconf: Zeroconf,
+        service_type: str,
+        name: str,
+    ) -> None:
+        # A service can be updated after initially appearing.
+        info = zeroconf.get_service_info(
+            service_type,
+            name,
+            timeout=1000,
+        )
+
+        if info is not None:
+            self.info = info
+            self.event.set()
+
+    def remove_service(
+        self,
+        zeroconf: Zeroconf,
+        service_type: str,
+        name: str,
+    ) -> None:
+        pass
 
 
 class _DetectionWorker(QRunnable):
@@ -37,15 +85,52 @@ class _DetectionWorker(QRunnable):
 
     @Slot()
     def run(self) -> None:
-        ip = self._resolve_vacuula()
-        if ip is None:
+        info = self._discover_vacuula()
+
+        if info is None:
             self.signals.not_found.emit()
             return
 
+        addresses = info.parsed_addresses()
+
+        if not addresses:
+            logger.warning("Vacuula service found but has no addresses")
+            self.signals.not_found.emit()
+            return
+
+        # Prefer IPv4.
+        ip = next(
+            (addr for addr in addresses if ":" not in addr),
+            addresses[0],
+        )
+
+        # DNS-SD TXT records are bytes -> bytes.
+        properties = {
+            self._decode_property(key): self._decode_property(value)
+            for key, value in info.properties.items()
+        }
+
+        cert_path = properties.get("cert-path")
+
+        if not cert_path:
+            logger.warning(
+                "Vacuula service found but has no cert-path property"
+            )
+            self.signals.not_found.emit()
+            return
+
+        port = info.port
+
+        url = f"http://{ip}:{port}{cert_path}"
+
+        logger.debug(
+            "Vacuula server discovered at %s",
+            url,
+        )
+
         try:
             response = requests.get(
-                f"http://{ip}{PATH_TO_SERVER_CERT}", # For https the server can redirect but it MUST have a public cert in that case!
-                headers={"Host": M_DNS_HOSTNAME},
+                url,
                 timeout=3,
             )
             response.raise_for_status()
@@ -61,20 +146,32 @@ class _DetectionWorker(QRunnable):
         self.signals.found.emit(ip, response.text)
 
     @staticmethod
-    def _resolve_vacuula() -> str | None:
-        try:
-            addr_info = socket.getaddrinfo(
-                M_DNS_HOSTNAME, None, socket.AF_UNSPEC, socket.SOCK_STREAM
-            )
-        except OSError:
-            return None # For example no such mDNS record can be found
+    def _discover_vacuula() -> ServiceInfo | None:
+        zeroconf = Zeroconf()
+        listener = _ServiceListener()
 
-        for family, _type, _proto, _canonname, sockaddr in addr_info:
-            if family in (socket.AF_INET, socket.AF_INET6):
-                host = sockaddr[0]
-                if isinstance(host, str):
-                    return host
-        return None
+        browser = ServiceBrowser(
+            zeroconf,
+            M_DNS_SERVICE_TYPE,
+            listener,
+        )
+
+        try:
+            # Wait until a service is discovered or timeout expires.
+            listener.event.wait(3.0)
+            return listener.info
+        finally:
+            # Stop browsing and release the mDNS socket.
+            browser.cancel()
+            zeroconf.close()
+
+    @staticmethod
+    def _decode_property(value: bytes | str) -> str:
+        if isinstance(value, bytes):
+            return value.decode("utf-8", errors="replace")
+
+        return value
+
 
 class ServerDetector(QObject):
     """Polls for M_DNS_HOSTNAME and emits its IP + cert once found."""

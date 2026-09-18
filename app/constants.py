@@ -44,8 +44,7 @@ SCREEN_FADE_IN_MS: int = 380
 NETWORK_POLLING_DELAY_MS: int = 5000
 USB_POLLING_DELAY_MS: int = 2345
 
-M_DNS_HOSTNAME: str = "vacuula-server.local"
-PATH_TO_SERVER_CERT: str = "/vacuula/cert"
+M_DNS_SERVICE_TYPE: str = "_vacuula-server._tcp.local."
 
 
 class LanguageMeta(NamedTuple):
