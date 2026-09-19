@@ -46,7 +46,7 @@ from vacuula_installer.core.server_detector import ServerDetector
 from vacuula_installer.core.session import SessionData
 from vacuula_installer.i18n import Translator
 from vacuula_installer.widgets.back_button import BackButton
-from vacuula_installer.widgets.connect_screen import ConnectScreen
+from vacuula_installer.widgets.connect_robot_screen import ConnectRobotScreen
 from vacuula_installer.widgets.find_vaacula_server import FindVaaculaServer
 from vacuula_installer.widgets.logo import LogoWidget
 from vacuula_installer.widgets.welcome_screen import WelcomeScreen
@@ -99,7 +99,7 @@ class MainWindow(QMainWindow):
         right_layout.addLayout(self._screen_stack)
 
         self._welcome_screen = WelcomeScreen(self._translator, self._right_panel)
-        self._connect_screen = ConnectScreen(self._translator, self._right_panel)
+        self._connect_screen = ConnectRobotScreen(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._welcome_screen)
         self._screen_stack.addWidget(self._connect_screen)
 
