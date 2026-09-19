@@ -223,25 +223,18 @@ class MainWindow(QMainWindow):
 
     # -- signal wiring & handlers ------------------------------------------------
     # TODO rename from handle_event to go_to_page, let signal be descriptor what event happened and function what is to happen
+
     def _connect_signals(self) -> None:
         # TODO: conditionally skip pages if session is already populated? Or recheck?
-        self._welcome_screen.continueRequested.connect(
-            self._select_dev_or_server_screen
-        )
+        self._welcome_screen.continueRequested.connect(self._select_dev_or_server_screen)
 
         self._server_detector.serverDetected.connect(self._goto_connect_robot_screen)
 
-        self._robot_detector.robotDetected.connect(
-            self._goto_connect_robot_screen_firmware
-        )
-        self._robot_detector.multipleRobotsDetected.connect(
-            self._handle_multiple_robots
-        )
+        self._robot_detector.robotDetected.connect(self._goto_connect_robot_screen_firmware)
+        self._robot_detector.multipleRobotsDetected.connect(self._handle_multiple_robots)
         # TODO robot disconnected, just pass to handler inside connect_robot_screen
 
-        self._connect_screen.startInstallRequested.connect(
-            self._goto_wifi_screen
-        )  # TODO wrong name signal and order
+        self._connect_screen.startInstallRequested.connect(self._goto_wifi_screen)  # TODO wrong name signal and order
         self._connect_to_wifi_screen.wifiAdded.connect(self._goto_install_screen)
 
     def _select_dev_or_server_screen(self) -> None:
@@ -253,6 +246,7 @@ class MainWindow(QMainWindow):
 
     def _goto_dev_only_screen(self) -> None:
         print("Not implemented yet")  # TODO
+        # Shortcut place!
         self._crossfade_to(self._connect_screen)
         self._connect_screen.reset_searching()
         # self._connect_to_wifi_screen.set_gen23_page()

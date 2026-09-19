@@ -79,6 +79,9 @@ class ConnectRobotScreen(QWidget):
         return page
 
     def _build_detected_page(self) -> QWidget:
+
+        # TODO This page is where firware is going to be checked and updated if needed
+        # TODO offer firware update even if updated? (as firware reset, clear settings etc)?
         page = QWidget(self)
         layout = QVBoxLayout(page)
         layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
