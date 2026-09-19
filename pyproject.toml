@@ -1,10 +1,11 @@
 [project]
 name = "vacuula-installer"
 version = "0.1.0"
-description = "Add your description here"
+description = "Install Vacuula on your Neato robot"
 readme = "README.md"
 authors = [
-    { name = "Fjalar", email = "fjalarhognason@gmail.com" }
+    {   name = "Max", email = "max.vacuula@eterkludd.se" },
+    {   name = "Fjalar", email = "fjalarhognason@gmail.com" }
 ]
 requires-python = ">=3.11"
 dependencies = [

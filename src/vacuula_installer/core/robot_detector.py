@@ -159,8 +159,8 @@ class RobotDetector(QObject):
         pair - so also check the manufacturer/product string descriptors.
         """
         try:
-            manufacturer = usb.util.get_string(dev, dev.iManufacturer) if dev.iManufacturer else None
-            product = usb.util.get_string(dev, dev.iProduct) if dev.iProduct else None
+            manufacturer = usb.util.get_string(dev, dev.iManufacturer) if dev.iManufacturer else None  # ty: ignore[unresolved-attribute]
+            product = usb.util.get_string(dev, dev.iProduct) if dev.iProduct else None  # ty: ignore[unresolved-attribute]
         except (usb.core.USBError, ValueError, NotImplementedError) as e:
             print(e)
             print("usberror")
@@ -173,7 +173,7 @@ class RobotDetector(QObject):
         exactly which model it is. Each USB id group has exactly one valid
         way to resolve it.
         """
-        usb_id = [dev.idVendor, dev.idProduct]
+        usb_id = [dev.idVendor, dev.idProduct]  # ty: ignore[unresolved-attribute]
         
         if usb_id == GEN4_USB:
             return self._match_by_usb_serial(dev, candidates)
@@ -204,7 +204,7 @@ class RobotDetector(QObject):
             return None
         for candidate in candidates:
             if candidate.serial_model in version_output:
-                self._resolved_cache[cache_key] = candidate
+                self._resolved_cache[cache_key] = candidate  # ty: ignore[invalid-assignment]
                 return candidate
         return None
 
@@ -219,7 +219,7 @@ class RobotDetector(QObject):
         vid_pid_matches = [
             port
             for port in serial.tools.list_ports.comports()
-            if port.vid == dev.idVendor and port.pid == dev.idProduct
+            if port.vid == dev.idVendor and port.pid == dev.idProduct  # ty: ignore[unresolved-attribute]
         ]
         if target_serial:
             for port in vid_pid_matches:
