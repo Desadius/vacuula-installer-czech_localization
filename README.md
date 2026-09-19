@@ -13,6 +13,48 @@ Goals are NOT:
 
 ## Current TODO:s in order of priority
 
+```mermaid
+flowchart TD
+    A["Welcome Screen</br>Språk, var man får hjälp"] -->|Frozen, compiled| B[Server search screen]
+    A -->|Not compiled| C[Dev screen]
+    C --> B
+    B --> D
+
+    subgraph D [Connect robot screen]
+        direction TB
+        Da(Step 1: Please connect robot)
+        Db(Step 2: Firmware check)
+        Da --> Db
+    end
+
+    Db -->|gen4| E
+    Db -->|gen2/3| F
+
+    subgraph WIFI [Wifi setup]
+        direction TB
+        E[Enter SSID/PW]
+        F[Connect to robot own Wifi]
+        Fb[Choose Wifi from drop-down]
+        F --> Fb
+    end
+
+    E --> G
+    Fb --> G
+
+    subgraph G [Install screen]
+        direction TB
+        H[Fail page]
+    end
+
+    G --> I[Success page]
+
+    style A fill:#90EE90,stroke:#2e7d32,color:#000
+    style B fill:#90EE90,stroke:#2e7d32,color:#000
+    style E fill:#90EE90,stroke:#2e7d32,color:#000
+    style Da fill:#90EE90,stroke:#2e7d32,color:#000
+    style Fb fill:#90EE90,stroke:#2e7d32,color:#000
+```
+
 1. ~~Add logic (using serial) to separate out gen2 from gen3~~
 2. Separate start-install page from connect_screen, allowing to re-order pages, and let that have a page for install progress.
 3. For gen 2 & 3 ask user to connect to robots wifi then allow to select available wifi networks from robot directly - gen4 uses current wifi page 
@@ -23,6 +65,9 @@ Goals are NOT:
 7. Prettify and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
 7. Prettify the connect vacuula svg, remoing the WIP banner (robot->out with dustbin + robot<->computer)
 8. Release-ready! Compile!
+
+
+
 
 ## Run it as dev
 
