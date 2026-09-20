@@ -144,7 +144,7 @@ QToolButton#backButton:hover {{
     color: {PALETTE.text_primary};
 }}
 
-QPushButton#continueButton {{
+QPushButton {{
     background-color: {PALETTE.accent_blue};
     color: white;
     border: none;
@@ -154,41 +154,19 @@ QPushButton#continueButton {{
     font-weight: 600;
 }}
 
-QPushButton#continueButton:disabled {{
+QPushButton:disabled {{
     background-color: {PALETTE.accent_blue_desaturated};
     color: {PALETTE.text_muted};
 }}
 
-QPushButton#continueButton:hover {{
+QPushButton:hover {{
     background-color: {PALETTE.accent_blue_hover};
 }}
 
-QPushButton#continueButton:pressed {{
+QPushButton:pressed {{
     background-color: {PALETTE.accent_blue_pressed};
 }}
 
-QPushButton#flashButton {{
-    background-color: {PALETTE.accent_blue};
-    color: white;
-    border: none;
-    border-radius: 22px;
-    padding: 12px 42px;
-    font-size: 14px;
-    font-weight: 600;
-}}
-
-QPushButton#flashButton:disabled {{
-    background-color: {PALETTE.accent_blue_desaturated};
-    color: {PALETTE.text_muted};
-}}
-
-QPushButton#flashButton:hover {{
-    background-color: {PALETTE.accent_blue_hover};
-}}
-
-QPushButton#flashButton:pressed {{
-    background-color: {PALETTE.accent_blue_pressed};
-}}
 
 QPushButton#goldButton {{
     background: qlineargradient(
