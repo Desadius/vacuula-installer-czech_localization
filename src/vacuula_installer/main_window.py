@@ -45,12 +45,12 @@ from vacuula_installer.core.robot_detector import RobotDetector
 from vacuula_installer.core.server_detector import ServerDetector
 from vacuula_installer.core.session import SessionData
 from vacuula_installer.i18n import Translator
+from vacuula_installer.screens.connect_robot import ConnectRobotScreen
+from vacuula_installer.screens.find_server import FindServerScreen
+from vacuula_installer.screens.welcome import WelcomeScreen
+from vacuula_installer.screens.wifi import WifiScreen
 from vacuula_installer.widgets.back_button import BackButton
-from vacuula_installer.widgets.connect_robot_screen import ConnectRobotScreen
-from vacuula_installer.widgets.find_vaacula_server import FindVaaculaServer
 from vacuula_installer.widgets.logo import LogoWidget
-from vacuula_installer.widgets.welcome_screen import WelcomeScreen
-from vacuula_installer.widgets.wifi_screen import WifiScreen
 
 
 def _clear_graphics_effect(widget: QWidget) -> None:
@@ -226,15 +226,21 @@ class MainWindow(QMainWindow):
 
     def _connect_signals(self) -> None:
         # TODO: conditionally skip pages if session is already populated? Or recheck?
-        self._welcome_screen.continueRequested.connect(self._select_dev_or_server_screen)
+        self._welcome_screen.continueRequested.connect(
+            self._select_dev_or_server_screen
+        )
 
         self._server_detector.serverDetected.connect(self._goto_connect_robot_screen)
 
-        self._robot_detector.robotDetected.connect(self._goto_connect_robot_screen_firmware)
-        self._robot_detector.multipleRobotsDetected.connect(self._handle_multiple_robots)
+        self._robot_detector.robotDetected.connect(self._goto_firmware_screen)
+        self._robot_detector.multipleRobotsDetected.connect(
+            self._handle_multiple_robots
+        )
         # TODO robot disconnected, just pass to handler inside connect_robot_screen
 
-        self._connect_screen.startInstallRequested.connect(self._goto_wifi_screen)  # TODO wrong name signal and order
+        self._connect_screen.startInstallRequested.connect(
+            self._goto_wifi_screen
+        )  # TODO wrong name signal and order
         self._connect_to_wifi_screen.wifiAdded.connect(self._goto_install_screen)
 
     def _select_dev_or_server_screen(self) -> None:

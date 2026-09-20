@@ -27,7 +27,7 @@ from vacuula_installer.widgets.spinner import SpinnerWidget
 from vacuula_installer.widgets.width_tracking_label import WidthTrackingLabel
 
 
-class FindVaaculaServer(QWidget):
+class FindServerScreen(QWidget):
     startFindServerRequested = Signal(str)
 
     """Simple informational screen shown while locating a Vacuula server."""
