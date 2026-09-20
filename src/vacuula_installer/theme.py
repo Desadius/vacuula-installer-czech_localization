@@ -25,7 +25,6 @@ class Palette:
     accent_blue_pressed: str = "#4758c9"
     accent_blue_desaturated: str = "#2d324d"
 
-
     accent_green: str = "#0f9616"
     accent_green_hover: str = "#0f9616"
     accent_green_pressed: str = "#0f9616"
@@ -94,7 +93,6 @@ QLabel#serverSearchDOTS {{
 QLabel#serverSearchCROSS {{
     color: {PALETTE.text_muted};
     font-size: 40px;
-    
 }}
 
 QLabel#statusLabel {{
@@ -103,7 +101,7 @@ QLabel#statusLabel {{
 }}
 
 QToolButton#flagButton {{
-    background-color: rgba(255, 255, 255, 20); 
+    background-color: rgba(255, 255, 255, 20);
     border: 1px solid {PALETTE.border_soft};
     border-radius: 32px;
     font-size: 28px;
@@ -169,6 +167,29 @@ QPushButton#continueButton:pressed {{
     background-color: {PALETTE.accent_blue_pressed};
 }}
 
+QPushButton#flashButton {{
+    background-color: {PALETTE.accent_blue};
+    color: white;
+    border: none;
+    border-radius: 22px;
+    padding: 12px 42px;
+    font-size: 14px;
+    font-weight: 600;
+}}
+
+QPushButton#flashButton:disabled {{
+    background-color: {PALETTE.accent_blue_desaturated};
+    color: {PALETTE.text_muted};
+}}
+
+QPushButton#flashButton:hover {{
+    background-color: {PALETTE.accent_blue_hover};
+}}
+
+QPushButton#flashButton:pressed {{
+    background-color: {PALETTE.accent_blue_pressed};
+}}
+
 QPushButton#goldButton {{
     background: qlineargradient(
         x1:0, y1:0, x2:0, y2:1,
@@ -213,7 +234,7 @@ QPushButton#goldButton:disabled {{
     font-size: 14px;
     selection-background-color: {PALETTE.accent_blue};
 }}
- 
+
 #wifiInput:focus {{
     border: 1px solid {PALETTE.accent_blue};
     background-color: rgba(255, 255, 255, 22);

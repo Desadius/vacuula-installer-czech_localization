@@ -47,6 +47,7 @@ from vacuula_installer.core.session import SessionData
 from vacuula_installer.i18n import Translator
 from vacuula_installer.screens.connect_robot import ConnectRobotScreen
 from vacuula_installer.screens.find_server import FindServerScreen
+from vacuula_installer.screens.firmware import FirmwareScreen
 from vacuula_installer.screens.welcome import WelcomeScreen
 from vacuula_installer.screens.wifi import WifiScreen
 from vacuula_installer.widgets.back_button import BackButton
@@ -103,7 +104,10 @@ class MainWindow(QMainWindow):
         self._screen_stack.addWidget(self._welcome_screen)
         self._screen_stack.addWidget(self._connect_screen)
 
-        self._server_search_screen = FindVaaculaServer(
+        self._firmware_screen = FirmwareScreen(self._translator, self._right_panel)
+        self._screen_stack.addWidget(self._firmware_screen)
+
+        self._server_search_screen = FindServerScreen(
             self._translator, self._right_panel
         )
         self._screen_stack.addWidget(self._server_search_screen)
@@ -253,7 +257,7 @@ class MainWindow(QMainWindow):
     def _goto_dev_only_screen(self) -> None:
         print("Not implemented yet")  # TODO
         # Shortcut place!
-        self._crossfade_to(self._connect_screen)
+        self._crossfade_to(self._firmware_screen)
         self._connect_screen.reset_searching()
         # self._connect_to_wifi_screen.set_gen23_page()
         # self._connect_to_wifi_screen.set_gen23_wifi_options(["Antons hemliga wifi ", "  tillåtet wifi  "])
@@ -283,13 +287,12 @@ class MainWindow(QMainWindow):
         self._connect_screen.reset_searching()
         self._set_back_action(self._back_to_welcome)
 
-    def _goto_connect_robot_screen_firmware(
-        self, display_name: str, device: usb.core.Device
-    ) -> None:
+    def _goto_firmware_screen(self, display_name: str, device: usb.core.Device) -> None:
         self._session.robot_model_display_name = display_name
         self._session.robot_usb_device = device
         self._connect_screen.show_robot_detected(display_name)
         self._robot_detector.stop()  # maybe keep running for disconnect notices? TODO
+        self._crossfade_to(self._firmware_screen)
 
     def _handle_multiple_robots(self) -> None:
         # TODO: Inform user about one at a time limit
