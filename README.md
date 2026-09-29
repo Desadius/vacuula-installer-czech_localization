@@ -14,7 +14,7 @@ Goals are NOT:
 ## Current TODO:s in order of priority
 
 ```mermaid
-flowchart TD
+flowchart LR
     A["Welcome Screen</br>Språk, var man får hjälp"] -->|Frozen, compiled| B[Server search screen]
     A -->|Not compiled| C[Dev screen]
     C --> B
