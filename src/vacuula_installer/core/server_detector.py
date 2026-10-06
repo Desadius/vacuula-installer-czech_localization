@@ -19,7 +19,7 @@ from __future__ import annotations
 import logging, requests, threading
 from PySide6.QtCore import QObject, QTimer, Signal, QRunnable, QThreadPool, Slot
 from zeroconf import Zeroconf, ServiceBrowser, ServiceInfo, ServiceListener
-from app.constants import M_DNS_SERVICE_TYPE
+from vacuula_installer.constants import M_DNS_SERVICE_TYPE
 
 logger = logging.getLogger(__name__)
 
