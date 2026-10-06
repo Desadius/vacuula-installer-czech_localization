@@ -1,5 +1,6 @@
 from __future__ import annotations
-from PySide6.QtCore import QObject, QTimer, Signal
+
+from PySide6.QtCore import QObject, Signal
 
 #TODO vad klassen behöver: serial device
 
@@ -62,7 +63,7 @@ def getversion_cmd():
 
 
 
-class Gen23WiFiFixer():
+class Gen23WiFiFixer:
 
     gen23_wifiReset = Signal(str, list[str]) #serial(mac), [available wifi network ssid:s]
     gen23_fwResetRequired = Signal() # triggers page showing fw reset progress

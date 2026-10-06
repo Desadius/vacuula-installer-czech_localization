@@ -66,7 +66,7 @@ class Translator(QObject):
         self._language = code
         self.languageChanged.emit(code)
 
-    def tr(self, key: str, **kwargs: object) -> str:
+    def tr(self, key: str, **kwargs: object) -> str:  # ty: ignore[invalid-method-override]
         """Look up ``key`` in the active catalog, falling back to English.
 
         Unknown keys return the key itself so a missing translation is

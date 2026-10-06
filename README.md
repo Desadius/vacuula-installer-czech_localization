@@ -9,11 +9,51 @@ Goals for this is to:
 
 Goals are NOT:
 1. Server install walk-trough
-
-For release it will be compiled, which would be nice to set up as github actions. For linux prob as appimage?
-Have not decided on compiler, if you have experience with one lets use it!
+2. Un-rainbower
 
 ## Current TODO:s in order of priority
+
+```mermaid
+flowchart LR
+    A["Welcome Screen</br>Språk, var man får hjälp"] -->|Frozen, compiled| B[Server search screen]
+    A -->|Not compiled| C[Dev screen]
+    C --> B
+    B --> D
+
+    subgraph D [Connect robot screen]
+        direction TB
+        Da(Step 1: Please connect robot)
+        Db(Step 2: Firmware check)
+        Da --> Db
+    end
+
+    Db -->|gen4| E
+    Db -->|gen2/3| F
+
+    subgraph WIFI [Wifi setup]
+        direction TB
+        E[Enter SSID/PW]
+        F[Connect to robot own Wifi]
+        Fb[Choose Wifi from drop-down]
+        F --> Fb
+    end
+
+    E --> G
+    Fb --> G
+
+    subgraph G [Install screen]
+        direction TB
+        H[Fail page]
+    end
+
+    G --> I[Success page]
+
+    style A fill:#90EE90,stroke:#2e7d32,color:#000
+    style B fill:#90EE90,stroke:#2e7d32,color:#000
+    style E fill:#90EE90,stroke:#2e7d32,color:#000
+    style Da fill:#90EE90,stroke:#2e7d32,color:#000
+    style Fb fill:#90EE90,stroke:#2e7d32,color:#000
+```
 
 1. ~~Add logic (using serial) to separate out gen2 from gen3~~
 2. Separate start-install page from connect_screen, allowing to re-order pages, and let that have a page for install progress.
@@ -26,25 +66,25 @@ Have not decided on compiler, if you have experience with one lets use it!
 7. Prettify the connect vacuula svg, remoing the WIP banner (robot->out with dustbin + robot<->computer)
 8. Release-ready! Compile!
 
+
+
+
 ## Run it as dev
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
-python main.py
+uv run vacuula-installer
 ```
 
 To pass server detection screen without a server (using avahi-utils):
 ```bash
 avahi-publish -a vacuula-server.local <a-random-but-valid-ip>
 ```
-
+You can also use that if the server mDNS does not reach the robot network (but the robot can connect to the ip)
 
 ## Adding a language
 
-1. Copy `locales/en.json` to `locales/<code>.json` and translate the values.
-2. Add one line to `LANGUAGES` in `app/constants.py`:
+1. Copy `src/locales/en.json` to `src/locales/<code>.json` and translate the values.
+2. Add one line to `LANGUAGES` in `src/vacuula_installer/constants.py`:
    ```python
    "fr": LanguageMeta(flag="🇫🇷", native_name="Français"),
    ```
@@ -57,7 +97,7 @@ NOTE! While locale.json with the higest "Strings-version" is technically the tra
 
 
 ## Placeholders:
-- **`app/core/installer.py`** — `InstallerLauncher.launch(model_id)`
+- **`src/vacuula_installer/core/installer.py`** — `InstallerLauncher.launch(model_id)`
   A placeholder draft, needs some refactoring but the working principle is there.
   Real scripts go into `_SCRIPTS` (paths per model) and replace the `TODO` with
   an actual (non-blocking) launch, e.g. `QProcess`.

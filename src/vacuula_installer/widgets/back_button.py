@@ -1,10 +1,11 @@
 """Backbutton, what it does is handled outside"""
+
 from __future__ import annotations
 
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QToolButton, QWidget
 
-from app.constants import BACK_BUTTON_SIZE
+from vacuula_installer.constants import BACK_BUTTON_SIZE
 
 
 class BackButton(QToolButton):

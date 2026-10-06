@@ -5,12 +5,14 @@
     
     If a IP is returned it will fetch the cert from the server.
 
-    If both succeed the information is sent as signals, main_windows saves it
-    in the session.
+If a IP is returned it will fetch the cert from the server.
 
-    NOTE: Does NOT support self-signed certs if server, proxy or w/e redirects to https!
-    For that we would have to a. disable verification or b. use same selfsigned on all 
-    server deployments and preprogram its public part here - none are desirable.
+If both succeed the information is sent as signals, main_windows saves it
+in the session.
+
+NOTE: Does NOT support self-signed certs if server, proxy or w/e redirects to https!
+For that we would have to a. disable verification or b. use same selfsigned on all
+server deployments and preprogram its public part here - none are desirable.
 """
 
 from __future__ import annotations
@@ -20,6 +22,7 @@ from zeroconf import Zeroconf, ServiceBrowser, ServiceInfo, ServiceListener
 from app.constants import M_DNS_SERVICE_TYPE
 
 logger = logging.getLogger(__name__)
+
 
 class _DetectionWorkerSignals(QObject):
     found = Signal(str, str)  # ip, cert
@@ -135,8 +138,10 @@ class _DetectionWorker(QRunnable):
             )
             response.raise_for_status()
         except requests.RequestException:
-            logger.warning("Resolved host but failed to fetch cert", exc_info=False) # exc_info is incredibly verbose
-            #self.signals.not_found.emit()
+            logger.warning(
+                "Resolved host but failed to fetch cert", exc_info=False
+            )  # exc_info is incredibly verbose
+            # self.signals.not_found.emit()
 
             # TODO: temp detection:
             self.signals.found.emit(ip, "Bananer är goda 1 2 3")
@@ -171,6 +176,7 @@ class _DetectionWorker(QRunnable):
             return value.decode("utf-8", errors="replace")
 
         return value
+
 
 
 class ServerDetector(QObject):

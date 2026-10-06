@@ -1,12 +1,13 @@
 """First screen on the right-hand side: language picker + continue."""
+
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtWidgets import QLabel, QPushButton, QStackedLayout, QVBoxLayout, QWidget
 
-from app.i18n import Translator
-from app.widgets.background_flair import BackgroundFlairWidget
-from app.widgets.language_selector import FlagButton
+from vacuula_installer.i18n import Translator
+from vacuula_installer.widgets.background_flair import BackgroundFlairWidget
+from vacuula_installer.widgets.language_selector import FlagButton
 
 
 class WelcomeScreen(QWidget):
@@ -43,7 +44,9 @@ class WelcomeScreen(QWidget):
         fg_layout.addWidget(self._flag_button, alignment=Qt.AlignmentFlag.AlignHCenter)
         fg_layout.addWidget(self._tagline_label)
         fg_layout.addSpacing(10)
-        fg_layout.addWidget(self._continue_button, alignment=Qt.AlignmentFlag.AlignHCenter)
+        fg_layout.addWidget(
+            self._continue_button, alignment=Qt.AlignmentFlag.AlignHCenter
+        )
         fg_layout.addStretch(1)
 
         layers.addWidget(foreground)

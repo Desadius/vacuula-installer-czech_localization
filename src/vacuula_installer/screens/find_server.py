@@ -8,20 +8,26 @@ install istructions.
 
 from __future__ import annotations
 
-from PySide6.QtCore import Qt, QRect, Signal, QVariantAnimation, QParallelAnimationGroup, QEasingCurve
-from PySide6.QtWidgets import QLabel, QHBoxLayout, QVBoxLayout, QWidget, QStackedLayout
-from app.widgets.spinner import SpinnerWidget
-from app.widgets.width_tracking_label import WidthTrackingLabel
-from app.i18n import Translator
-from PySide6.QtSvgWidgets import QSvgWidget
+from PySide6.QtCore import (
+    QEasingCurve,
+    QParallelAnimationGroup,
+    QRect,
+    Qt,
+    QVariantAnimation,
+    Signal,
+)
 from PySide6.QtGui import QColor
+from PySide6.QtSvgWidgets import QSvgWidget
+from PySide6.QtWidgets import QHBoxLayout, QLabel, QStackedLayout, QVBoxLayout, QWidget
 
-from app.constants import COMPUTER_SVG, SERVER_SVG
-from app.theme import PALETTE
+from vacuula_installer.constants import COMPUTER_SVG, SERVER_SVG
+from vacuula_installer.i18n import Translator
+from vacuula_installer.theme import PALETTE
+from vacuula_installer.widgets.spinner import SpinnerWidget
+from vacuula_installer.widgets.width_tracking_label import WidthTrackingLabel
 
 
-class FindVaaculaServer(QWidget):
-
+class FindServerScreen(QWidget):
     startFindServerRequested = Signal(str)
 
     """Simple informational screen shown while locating a Vacuula server."""
@@ -54,7 +60,6 @@ class FindVaaculaServer(QWidget):
         layout = QVBoxLayout(page)
         layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
         layout.setSpacing(24)
-
 
         self._title_label = WidthTrackingLabel(page)
         self._title_label.setObjectName("serversearchTitleLabel")
@@ -122,7 +127,9 @@ class FindVaaculaServer(QWidget):
         self._x_mark.setText("✕")
         self._spinner.start()
 
-    def _fade_text_colour(self, label: QLabel, start_hex: str, end_hex: str, duration_ms: int = 1000):
+    def _fade_text_colour(
+        self, label: QLabel, start_hex: str, end_hex: str, duration_ms: int = 1000
+    ):
         anim = QVariantAnimation(parent=label)
         anim.setStartValue(QColor(start_hex))
         anim.setEndValue(QColor(end_hex))
@@ -132,39 +139,46 @@ class FindVaaculaServer(QWidget):
         # minor TODO: Do I need to re-set the fontsize?
         def _apply_color(color: QColor) -> None:
             label.setStyleSheet(f"color: {color.name()};font-size: 24px;")
+
         anim.valueChanged.connect(_apply_color)
         anim.start()
         return anim
 
-
     def show_server_detected(self, ip: str) -> QParallelAnimationGroup:
         self._x_mark.setText("🔗")
-        self._x_mark.setStyleSheet("font-size: 32px;") # Anoyingly 🔗 is bigger than ✕ for a given fontsize.. Empiric match
+        self._x_mark.setStyleSheet(
+            "font-size: 32px;"
+        )  # Anoyingly 🔗 is bigger than ✕ for a given fontsize.. Empiric match
         self._spinner.stop()
-        self._status_label.setText(self._translator.tr("serversearch.status.found", ip=ip))
-        color_anim1 = self._fade_text_colour(self._dots_left, PALETTE.text_muted, "#1dd73c", 1300)
-        color_anim2 = self._fade_text_colour(self._dots_right, PALETTE.text_muted, "#1dd73c", 1300)
+        self._status_label.setText(
+            self._translator.tr("serversearch.status.found", ip=ip)
+        )
+        color_anim1 = self._fade_text_colour(
+            self._dots_left, PALETTE.text_muted, "#1dd73c", 1300
+        )
+        color_anim2 = self._fade_text_colour(
+            self._dots_right, PALETTE.text_muted, "#1dd73c", 1300
+        )
         group = QParallelAnimationGroup()
         group.addAnimation(color_anim2)
         group.addAnimation(color_anim1)
-        
+
         return group
-    
 
     def _build_status_row(self) -> QHBoxLayout:
-            row = QHBoxLayout()
-            row.setSpacing(10)
-            row.addStretch(1)
-    
-            self._status_label = QLabel(self)
-            self._status_label.setObjectName("statusLabel")
-            self._spinner = SpinnerWidget(self, diameter=16)
-    
-            row.addWidget(self._status_label)
-            row.addWidget(self._spinner)
-            row.addStretch(1)
-            return row
-    
+        row = QHBoxLayout()
+        row.setSpacing(10)
+        row.addStretch(1)
+
+        self._status_label = QLabel(self)
+        self._status_label.setObjectName("statusLabel")
+        self._spinner = SpinnerWidget(self, diameter=16)
+
+        row.addWidget(self._status_label)
+        row.addWidget(self._spinner)
+        row.addStretch(1)
+        return row
+
     # Part of getting title textwidth as limit for other Qlabels
     def _apply_label_margins(self) -> None:
         available = self._title_label.width()
@@ -192,7 +206,6 @@ class FindVaaculaServer(QWidget):
         )
         return rect.width()
 
-
     def _retranslate(self) -> None:
         self._title_label.setText(self._translator.tr("serversearch.title"))
         self._body_label.setText(self._translator.tr("serversearch.body"))
@@ -206,6 +219,10 @@ class FindVaaculaServer(QWidget):
         self._apply_label_margins()
 
         if self._server_ip is None:
-            self._status_label.setText(self._translator.tr("serversearch.status.searching"))
+            self._status_label.setText(
+                self._translator.tr("serversearch.status.searching")
+            )
         else:
-             self._status_label.setText(self._translator.tr("serversearch.status.found", ip=self._server_ip))
+            self._status_label.setText(
+                self._translator.tr("serversearch.status.found", ip=self._server_ip)
+            )

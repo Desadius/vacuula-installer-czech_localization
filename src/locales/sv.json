@@ -26,5 +26,8 @@
   "wifi.disclaimer": "🛈 <i>Notera att Neato-robotarna som stödjs av Vacuula <b>inte stödjer</b> WPA3, se till att nätverket den ansluter till använder WPA2 eller blandat WPA2/WPA3 läge. Det är även klokt att ansluta roboten till 2,4GHz om tillgängligt.</i>",
   "wifi.button": "Fortsätt",
 
+  "firmware.scan": "Kollar om din robots firmware är senaste versionen",
+  "firmware.flash": "Flasha firmware",
+
   "install.launching": "Installerar Vacuula i {model}"
 }
