@@ -44,7 +44,7 @@ SCREEN_FADE_IN_MS: int = 380
 NETWORK_POLLING_DELAY_MS: int = 5000
 USB_POLLING_DELAY_MS: int = 2345
 
-M_DNS_SERVICE_TYPE: str = "_vacuula-server._tcp.local."
+M_DNS_SERVICE_TYPE: str = "_vacuula._tcp.local."
 
 
 class LanguageMeta(NamedTuple):
