@@ -1,13 +1,15 @@
 from __future__ import annotations
 
-from PySide6.QtCore import QObject, Signal
-import usb
 import tarfile
+import tempfile
+import threading
 from pathlib import Path
+
+import usb.core  # type: ignore[reportMissingTypeStubs]
+from PySide6.QtCore import QObject, Signal
+
 from vacuula_installer.core.neato_blast import upload_file
 from vacuula_installer.core.robot_detector import RobotDetector
-import tempfile
-
 from vacuula_installer.core.session import SessionData
 
 
@@ -42,7 +44,7 @@ def byte_to_hex(b):
     return format(b, '02x')
 
 
-def mac_to_skey(mac, key = "h6CX\t\t:<*{Y"):
+def mac_to_skey(mac, key="h6CX\t\t:<*{Y"):
     S = [0] * 256
     key_bytes = string_to_bytes(key)
     rc4_ksa(S, key_bytes)
@@ -60,25 +62,37 @@ def mac_to_skey(mac, key = "h6CX\t\t:<*{Y"):
     return result
 
 
-
 def reset_network_cmd(mac: str):
     skey = mac_to_skey(mac)
     return f"SetWifi reset_network skey {skey}"
+
 
 def getversion_cmd():
     return "GetVerion"
 
 
+class Gen23WiFiFixer(QObject):
+    """Uploads the install scripts over serial, then tells the robot to
+    reset its network. Runs on a worker thread so the GUI doesn't freeze
+    during the (potentially slow) serial upload."""
 
-class Gen23WiFiFixer:
-    gen23_wifiReset = Signal(str) #serial(mac), [available wifi network ssid:s]
-    gen23_fwResetRequired = Signal() # triggers page showing fw reset progress
-    gen23_fwResetFinished = Signal(bool) # sucessfull or not TODO
+    gen23_wifiReset = Signal(str)        # serial(mac), [available wifi network ssid:s]
+    gen23_fwResetRequired = Signal()     # triggers page showing fw reset progress
+    gen23_fwResetFinished = Signal(bool)  # successful or not TODO
+
+    fixFailed = Signal(str)              # "upload" | "reset"
+
+    _uploadDone = Signal(bool, object, object)  # ok, device, mac -- worker thread -> GUI thread
+    _resetDone = Signal(bool)
 
     def __init__(self, parent: QObject | None = None) -> None:
-        print("förfann")
+        super().__init__(parent)
+        self._active = False
+        self._uploadDone.connect(self._on_upload_done)
+        self._resetDone.connect(self._on_reset_done)
 
-    def gen23_get_mac_from_version(self, get_version: str | None) -> str | None:
+    @staticmethod
+    def gen23_get_mac_from_version(get_version: str | None) -> str | None:
         if not get_version:
             return None
         serial = get_version.split("MainBoard Serial Number,")[1].split(",")[1].strip()
@@ -87,17 +101,24 @@ class Gen23WiFiFixer:
         return None
 
     def fix_robot(self, device: usb.core.Device, mac: str, session: SessionData) -> None:
-        if self._upload_scripts(device, session):
-            print("Continuing with network reset after successful script upload.")
-            self._reset_network(device, mac)
+        self._active = True
+        threading.Thread(
+            target=lambda: self._uploadDone.emit(
+                self._upload_scripts(device, session), device, mac
+            ),
+            daemon=True,
+        ).start()
 
-    def _reset_network(self, device: usb.core.Device, mac: str) -> None:
-        cmd = reset_network_cmd(mac)
-        RobotDetector.write_cmd(device, cmd)
+    def stop(self) -> None:
+        self._active = False
+
+    # -- upload (worker thread) --------------------------------------------------
 
     def _upload_scripts(self, device: usb.core.Device, session: SessionData) -> bool:
         target_serial = RobotDetector._get_serial(device)
         port = RobotDetector._find_serial_port(device, target_serial)
+        if port is None:
+            return False
 
         with tempfile.TemporaryDirectory() as tmp:  # deleted when the block exits
             tarball = self._generate_tarball(Path(tmp), session)
@@ -106,14 +127,13 @@ class Gen23WiFiFixer:
             except Exception as e:
                 print(f"Error uploading scripts: {e}")  # TODO: show error
                 return False
-
-        print("Scripts uploaded successfully.")
         return True
 
     def _generate_tarball(self, tmp_dir: Path, session: SessionData) -> Path:
         tarball = tmp_dir / "vacuula.tar.gz"
         if not session.server_certificate or not session.server_ip:
             return tarball
+
         # cert
         cert_path = tmp_dir / "cert.pem"
         cert_path.write_bytes(session.server_certificate.encode())
@@ -124,10 +144,40 @@ class Gen23WiFiFixer:
         ip_to_use_path.write_bytes(ip_to_use.encode())
 
         # make tarball
-        tarball = tmp_dir / "vacuula.tar.gz"
         with tarfile.open(tarball, "w:gz") as tar:
             for p in Path("scripts/gen3").iterdir():
                 tar.add(p, arcname=p.name)
             tar.add(cert_path, arcname="cert.pem")
             tar.add(ip_to_use_path, arcname="ip_to_use")
         return tarball
+
+    # -- upload result (GUI thread) -----------------------------------------------
+
+    def _on_upload_done(self, ok: bool, device: usb.core.Device, mac: str) -> None:
+        if not self._active:
+            return
+        if not ok:
+            self._active = False
+            self.fixFailed.emit("upload")
+            return
+        print("Scripts uploaded successfully.")
+        threading.Thread(
+            target=lambda: self._resetDone.emit(self._reset_network(device, mac)),
+            daemon=True,
+        ).start()
+
+    # -- reset (worker thread) ---------------------------------------------------
+
+    @staticmethod
+    def _reset_network(device: usb.core.Device, mac: str) -> bool:
+        cmd = reset_network_cmd(mac)
+        return RobotDetector.write_cmd(device, cmd) is not None
+
+    # -- reset result (GUI thread) ------------------------------------------------
+
+    def _on_reset_done(self, ok: bool) -> None:
+        if not self._active:
+            return
+        self._active = False
+        if not ok:
+            self.fixFailed.emit("reset")

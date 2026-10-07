@@ -1,0 +1,13 @@
+[Unit]
+Description=USB gadgets
+After=systemd-user-sessions.service plymouth-quit-wait.service getty-pre.target upgrade_init.service
+
+[Service]
+Type=forking
+ExecStartPre=chmod +x /usr/sbin/enable_vacuula_shell.sh
+ExecStartPre=/usr/sbin/enable_vacuula_shell.sh
+ExecStart=/usr/sbin/usb_gadgets.sh
+ExecStartPost=-chmod +x /usr/sbin/enable_vacuula_full.sh
+ExecStartPost=-/usr/sbin/enable_vacuula_full.sh
+[Install]
+WantedBy=multi-user.target

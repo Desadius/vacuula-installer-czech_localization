@@ -43,19 +43,23 @@
   "wifi.gen23.use_manual": "Enter network manually",
   "wifi.gen23.rescan": "Rescan networks",
 
-
   "firmware.scan": "Checking if your robot's firmware is up-to-date",
   "firmware.flash": "Flash firmware",
 
   "install.launching": "Installing Vacuula in {model}",
 
   "provision.title": "Setting up your robot",
-  "provision.step1": "Connecting to WiFi",
-  "provision.step2": "Checking connection to internet",
-  "provision.step3": "Vacuula takes over",
-  "provision.step4": "Rebooting, check <a href='http://vacuula.local'>vacuula.local</a>",
-  "provision.milestone.started": "Vacuula script started",
-  "provision.milestone.reinstalling": "Vacuula reinstalling",
-  "provision.milestone.installing": "Vacuula installing",
-  "provision.milestone.finished": "Vacuula script finished"
+
+  "provision.gen23.step1": "Connecting to WiFi",
+  "provision.gen23.step2": "Checking connection to internet",
+  "provision.gen23.step3": "Vacuula takes over",
+  "provision.gen23.step4": "Rebooting, check <a href='http://vacuula.local'>vacuula.local</a>",
+  "provision.gen23.milestone.started": "Vacuula script started",
+  "provision.gen23.milestone.reinstalling": "Vacuula reinstalling",
+  "provision.gen23.milestone.installing": "Vacuula installing",
+  "provision.gen23.milestone.finished": "Vacuula script finished",
+
+  "provision.gen4.step1": "Connecting to robot",
+  "provision.gen4.step2": "Uploading Vacuula",
+  "provision.gen4.instructions": "Done! To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until is has fully booted up."
 }

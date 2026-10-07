@@ -15,10 +15,10 @@ from PySide6.QtWidgets import (
 from vacuula_installer.i18n import Translator
 from vacuula_installer.widgets.spinner import SpinnerWidget
 
-STEP_KEYS = ("provision.step1", "provision.step2", "provision.step3", "provision.step4")
+STEP_KEYS = ("provision.gen23.step1", "provision.gen23.step2", "provision.gen23.step3", "provision.gen23.step4")
 
 
-class ProvisionScreen(QWidget):
+class Gen23ProvisionScreen(QWidget):
     def __init__(self, translator: Translator, parent: QWidget | None = None) -> None:
         super().__init__(parent)
         self._translator = translator
@@ -139,7 +139,7 @@ class ProvisionScreen(QWidget):
         self._update_log_toggle_text()
 
     def _update_log_toggle_text(self) -> None:
-        tip_key = "provision.log.hide" if self._log_open else "provision.log.show"
+        tip_key = "provision.gen23.log.hide" if self._log_open else "provision.gen23.log.show"
         self._log_toggle.setToolTip(self._translator.tr(tip_key))
 
     # reset() should also clear these:
@@ -172,7 +172,7 @@ class ProvisionScreen(QWidget):
         self._failed = True
         # stop the spinner, the step it was on goes back to an empty circle
         self._render(done_up_to=max(self._step - 1, 0))
-        self._error.setText(self._translator.tr("provision.failed"))
+        self._error.setText(self._translator.tr("provision.gen23.failed"))
         self._error.show()
 
     def _render(self, done_up_to: int, spinning: int | None = None) -> None:
@@ -190,5 +190,5 @@ class ProvisionScreen(QWidget):
         for text, key in zip(self._texts, STEP_KEYS):
             text.setText(self._translator.tr(key))
         if self._error.isVisible():
-            self._error.setText(self._translator.tr("provision.failed"))
+            self._error.setText(self._translator.tr("provision.gen23.failed"))
         self._update_log_toggle_text()

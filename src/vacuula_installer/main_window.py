@@ -44,6 +44,7 @@ from vacuula_installer.core.firmware_detector import FirmwareDetector
 from vacuula_installer.core.gen23_ap_poller import Gen23ApPoller
 from vacuula_installer.core.gen23_prewifi_fix import Gen23WiFiFixer
 from vacuula_installer.core.gen23_provisioner import Gen23Provisioner
+from vacuula_installer.core.gen4_provisioner import Gen4Provisioner
 from vacuula_installer.core.installer import InstallerLauncher
 from vacuula_installer.core.robot_detector import RobotDetector
 from vacuula_installer.core.server_detector import ServerDetector
@@ -52,7 +53,8 @@ from vacuula_installer.i18n import Translator
 from vacuula_installer.screens.connect_robot import ConnectRobotScreen
 from vacuula_installer.screens.find_server import FindServerScreen
 from vacuula_installer.screens.firmware import FirmwareScreen
-from vacuula_installer.screens.provision import ProvisionScreen
+from vacuula_installer.screens.gen4_provision import Gen4ProvisionScreen
+from vacuula_installer.screens.gen23_provision import Gen23ProvisionScreen
 from vacuula_installer.screens.welcome import WelcomeScreen
 from vacuula_installer.screens.wifi import WifiScreen
 from vacuula_installer.widgets.back_button import BackButton
@@ -120,8 +122,11 @@ class MainWindow(QMainWindow):
         self._connect_to_wifi_screen = WifiScreen(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._connect_to_wifi_screen)
 
-        self._provision_screen = ProvisionScreen(self._translator, self._right_panel)
-        self._screen_stack.addWidget(self._provision_screen)
+        self._provision_screen_gen23 = Gen23ProvisionScreen(self._translator, self._right_panel)
+        self._screen_stack.addWidget(self._provision_screen_gen23)
+
+        self._gen4_provision_screen = Gen4ProvisionScreen(self._translator, self._right_panel)
+        self._screen_stack.addWidget(self._gen4_provision_screen)
 
         # Logo starts centered on the whole window, on top of everything,
         # then animates into its resting spot in the left panel.
@@ -136,6 +141,7 @@ class MainWindow(QMainWindow):
         self._gen23_wifi_fixer = Gen23WiFiFixer(self)
         self._ap_poller = Gen23ApPoller(self)
         self._provisioner = Gen23Provisioner(self)
+        self._gen4_provisioner: Gen4Provisioner | None = None
 
         self._connect_signals()
         self._retranslate()
@@ -268,13 +274,13 @@ class MainWindow(QMainWindow):
         self._ap_poller.networksFailed.connect(self._connect_to_wifi_screen.set_gen23_wifi_failed)
 
         self._connect_to_wifi_screen.wifiAdded.connect(self._start_provisioning)
-        self._provisioner.progressChanged.connect(self._provision_screen.set_step)
+        self._provisioner.progressChanged.connect(self._provision_screen_gen23.set_step)
         self._provisioner.provisioningFailed.connect(self._on_provision_failed)
         self._provisioner.provisioningFinished.connect(self._on_provision_finished)
         self._connect_to_wifi_screen.rescanRequested.connect(self._rescan_networks)
 
-        self._provisioner.milestoneReached.connect(self._provision_screen.add_milestone_done)
-        self._provisioner.scriptLogLine.connect(self._provision_screen.append_log)
+        self._provisioner.milestoneReached.connect(self._provision_screen_gen23.add_milestone_done)
+        self._provisioner.scriptLogLine.connect(self._provision_screen_gen23.append_log)
 
 
 
@@ -301,18 +307,57 @@ class MainWindow(QMainWindow):
     def _start_provisioning(self, ssid: str, password: str) -> None:
         self._session.wifi_ssid = ssid
         self._session.wifi_pass = password
-        self._provision_screen.reset()
-        self._crossfade_to(self._provision_screen)
+
+        # TODO: clean up this to select generation
+        match self._session.robot_model_display_name:
+            case "Neato D10" | "Neato D9" | "Neato D8" | "Neato D800":
+                # gen4
+                self._start_gen4_provisioning()
+            case (
+                "Neato Botvac D7"
+                | "Neato Botvac D6"
+                | "Neato Botvac D5"
+                | "Neato Botvac D4"
+                | "Neato Botvac D3"
+                | "Neato Botvac Connected"
+            ):
+                # gen23
+                self._provision_screen_gen23.reset()
+                self._crossfade_to(self._provision_screen_gen23)
+                self._set_back_action(None)
+                self._provisioner.start(self._session.robot_usb_device, ssid, password)
+            case _:
+                print("How the hell did you get here?") # TODO: error to user
+
+    def _start_gen4_provisioning(self) -> None:
+        self._gen4_provision_screen.reset()
+        self._crossfade_to(self._gen4_provision_screen)
         self._set_back_action(None)
-        self._provisioner.start(self._session.robot_usb_device, ssid, password)
+
+        self._gen4_provisioner = Gen4Provisioner(
+            vacuula_server="vacuula.local",
+            vacuula_cert=self._session.server_certificate or "",
+            wifi_ssid=self._session.wifi_ssid,
+            wifi_psk=self._session.wifi_pass,
+            parent=self,
+        )
+        self._gen4_provisioner.stepChanged.connect(self._gen4_provision_screen.set_step)
+        self._gen4_provisioner.provisioningFailed.connect(self._on_gen4_failed)
+        self._gen4_provisioner.provisioningFinished.connect(self._gen4_provision_screen.set_finished)
+        self._gen4_provisioner.start(self._session.robot_usb_device)
+
+    def _on_gen4_failed(self, stage: str) -> None:
+        print(f"Gen4 provisioning failed at: {stage}")
+        self._gen4_provision_screen.set_failed()
+        self._set_back_action(self._back_to_wifi)
 
     def _on_provision_failed(self, stage: str) -> None:
         print(f"Provisioning failed at: {stage}")
-        self._provision_screen.set_failed()
+        self._provision_screen_gen23.set_failed()
         self._set_back_action(self._back_to_wifi)
 
     def _on_provision_finished(self) -> None:
-        self._provision_screen.set_all_done()
+        self._provision_screen_gen23.set_all_done()
         # TODO: continue to the install flow (_goto_install_screen replacement)
 
     def _on_firmware(self, valid: bool, msg: str) -> None:

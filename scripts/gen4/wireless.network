@@ -1,0 +1,11 @@
+[Match]
+Name=wlan0
+
+[Network]
+DHCP=yes
+MulticastDNS=true
+
+[DHCP]
+ClientIdentifier=mac
+SendHostname=True
+Hostname=Vacuula

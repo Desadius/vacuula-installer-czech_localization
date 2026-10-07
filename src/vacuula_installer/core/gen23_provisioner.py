@@ -31,10 +31,10 @@ class Milestone:
 
 # Add new milestones here as the install script grows more checkpoints.
 MILESTONES: tuple[Milestone, ...] = (
-    Milestone("[[vacuula-installer-started]]", "provision.milestone.started", step=3),
-    Milestone("[[vacuula-installer-reinstalling]]", "provision.milestone.reinstalling", step=3),
-    Milestone("[[vacuula-installer-installing]]", "provision.milestone.installing", step=3),
-    Milestone("[[vacuula-installer-finished]]", "provision.milestone.finished", step=4, final=True),
+    Milestone("[[vacuula-installer-started]]", "provision.gen23.milestone.started", step=3),
+    Milestone("[[vacuula-installer-reinstalling]]", "provision.gen23.milestone.reinstalling", step=3),
+    Milestone("[[vacuula-installer-installing]]", "provision.gen23.milestone.installing", step=3),
+    Milestone("[[vacuula-installer-finished]]", "provision.gen23.milestone.finished", step=4, final=True),
 )
 
 
