@@ -38,12 +38,12 @@ class _ServiceListener(ServiceListener):
 
     def add_service(
         self,
-        zeroconf: Zeroconf,
-        service_type: str,
+        zc: Zeroconf,
+        type_: str,
         name: str,
     ) -> None:
-        info = zeroconf.get_service_info(
-            service_type,
+        info = zc.get_service_info(
+            type_,
             name,
             timeout=1000,
         )
@@ -54,13 +54,13 @@ class _ServiceListener(ServiceListener):
 
     def update_service(
         self,
-        zeroconf: Zeroconf,
-        service_type: str,
+        zc: Zeroconf,
+        type_: str,
         name: str,
     ) -> None:
         # A service can be updated after initially appearing.
-        info = zeroconf.get_service_info(
-            service_type,
+        info = zc.get_service_info(
+            type_,
             name,
             timeout=1000,
         )
@@ -71,8 +71,8 @@ class _ServiceListener(ServiceListener):
 
     def remove_service(
         self,
-        zeroconf: Zeroconf,
-        service_type: str,
+        zc: Zeroconf,
+        type_: str,
         name: str,
     ) -> None:
         pass
@@ -110,7 +110,7 @@ class _DetectionWorker(QRunnable):
         # DNS-SD TXT records are bytes -> bytes.
         properties = {
             self._decode_property(key): self._decode_property(value)
-            for key, value in info.properties.items()
+            for key, value in info.properties.items() if value is not None
         }
 
         cert_path = properties.get("cert-path")
@@ -140,12 +140,8 @@ class _DetectionWorker(QRunnable):
         except requests.RequestException:
             logger.warning(
                 "Resolved host but failed to fetch cert", exc_info=False
-            )  # exc_info is incredibly verbose
-            # self.signals.not_found.emit()
-
-            # TODO: temp detection:
-            self.signals.found.emit(ip, "Bananer är goda 1 2 3")
-
+            )
+            self.signals.not_found.emit()
             return
 
         self.signals.found.emit(ip, response.text)

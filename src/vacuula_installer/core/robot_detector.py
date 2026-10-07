@@ -43,7 +43,7 @@ ROBOT_IDS: tuple[RobotUsbId, ...] = (
     RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D10", usb_iSerial_part="N2", usb_iSerial_part_pos=4),
     RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D9", usb_iSerial_part="N1", usb_iSerial_part_pos=4),
     RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D8", usb_iSerial_part="N3", usb_iSerial_part_pos=4),
-    RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D800", usb_iSerial_part="N5", usb_iSerial_part_pos=4), # presumed, source is: jk, image on the internet
+    RobotUsbId(usb_idVendor=GEN4_USB[0], usb_idProduct=GEN4_USB[1], display_name="Neato D800", usb_iSerial_part="N5", usb_iSerial_part_pos=4),
     RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D7", usb_iManufacturer="Acme Corporation", usb_iProduct="CDC Serial Peripheral", serial_model="BotVacD7Connected"),
     RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D6", usb_iManufacturer="Acme Corporation", usb_iProduct="CDC Serial Peripheral", serial_model="BotVacD6Connected"),
     RobotUsbId(usb_idVendor=GEN23_USB[0], usb_idProduct=GEN23_USB[1], display_name="Neato Botvac D5", usb_iManufacturer="Acme Corporation", usb_iProduct="CDC Serial Peripheral", serial_model="BotVacD5Connected"),
@@ -70,6 +70,8 @@ class RobotDetector(QObject):
 
     robotDisconnected = Signal()
     robotDetected = Signal(str, usb.core.Device)  # display_name, serial_device TODO, usb_device
+    robotDetected = Signal(str, usb.core.Device)
+    gen23VersionText = Signal(str) # temp solution, should be looked over how exactly this should be fetched and saved
 
     # Probably never happens but needs to be handled:
     multipleRobotsDetected = Signal()
@@ -103,24 +105,11 @@ class RobotDetector(QObject):
             ids_by_usb_id.setdefault(key, []).append(robot_id)
 
         resolved: list[tuple[usb.core.Device, RobotUsbId]] = []
-        #for (vendor, product), candidates in ids_by_usb_id.items():
-        #    for dev in usb.core.find(find_all=True, idVendor=vendor, idProduct=product):
-        #        print("hittade en")
-        #        descriptor_matches = [c for c in candidates if self._descriptor_matches(dev, c)]
-        #        print(descriptor_matches)
-        #        if not descriptor_matches:
-        #            print("passade visst inte")
-        #            continue
-        #        robot_id = self._resolve_robot(dev, descriptor_matches)
-        #        if robot_id is not None:
-        #            resolved.append((dev, robot_id))
-                
 
         for dev in usb.core.find(find_all=True, idVendor=GEN4_USB[0], idProduct=GEN4_USB[1]):
             print("Gen4")
             descriptor_matches = [c for c in ids_by_usb_id[(0x1D6B, 0x0100)] if self._descriptor_matches(dev, c)]
             if not descriptor_matches:
-                print("passade visst inte")
                 continue
             robot_id = self._resolve_robot(dev, descriptor_matches)
             if robot_id is not None:
@@ -200,6 +189,7 @@ class RobotDetector(QObject):
         if cached in candidates:
             return cached
         version_output = self._query_get_version(dev)
+        self.gen23VersionText.emit(version_output or "")
         if version_output is None:
             return None
         for candidate in candidates:
@@ -232,7 +222,7 @@ class RobotDetector(QObject):
         return None
 
     @staticmethod
-    def _query_get_version(dev: usb.core.Device) -> str | None:
+    def write_cmd(dev: usb.core.Device, cmd: str) -> str | None:
         target_serial = RobotDetector._get_serial(dev)
         port_name = RobotDetector._find_serial_port(dev, target_serial)
         if port_name is None:
@@ -240,12 +230,16 @@ class RobotDetector(QObject):
         try:
             with serial.Serial(port_name, baudrate=SERIAL_BAUDRATE, timeout=SERIAL_TIMEOUT_S) as ser:
                 ser.reset_input_buffer()
-                ser.write(GET_VERSION_CMD)
+                ser.write(cmd.encode("ascii") + b"\n")
                 ser.flush()
                 raw = ser.read(4096)
         except (serial.SerialException, OSError):
             return None
         return raw.decode("ascii", errors="ignore")
+
+    @staticmethod
+    def _query_get_version(dev: usb.core.Device) -> str | None:
+        return RobotDetector.write_cmd(dev, "GetVersion")
 
     @staticmethod
     def _get_serial(dev: usb.core.Device) -> str:

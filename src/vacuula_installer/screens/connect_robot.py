@@ -122,15 +122,13 @@ class ConnectRobotScreen(QWidget):
         self._spinner.start()
 
     def show_robot_detected(self, display_name: str) -> None:
-        """Swap in the golden install button for the given detected robot."""
+        """Show detected robot model."""
 
         self._model_display_name = display_name
-        self._start_install_button.setText(self._translator.tr("connect.start_install"))
         self._status_label.setText(
             self._translator.tr("connect.status.detected", model=display_name)
         )
         self._spinner.stop()
-        self._central_stack.setCurrentWidget(self._detected_page)
 
     # -- internal ------------------------------------------------------------
 

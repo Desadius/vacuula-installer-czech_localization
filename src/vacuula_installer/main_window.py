@@ -40,6 +40,10 @@ from vacuula_installer.constants import (
     USB_POLLING_DELAY_MS,
     WINDOW_SIZE,
 )
+from vacuula_installer.core.firmware_detector import FirmwareDetector
+from vacuula_installer.core.gen23_ap_poller import Gen23ApPoller
+from vacuula_installer.core.gen23_prewifi_fix import Gen23WiFiFixer
+from vacuula_installer.core.gen23_provisioner import Gen23Provisioner
 from vacuula_installer.core.installer import InstallerLauncher
 from vacuula_installer.core.robot_detector import RobotDetector
 from vacuula_installer.core.server_detector import ServerDetector
@@ -48,6 +52,7 @@ from vacuula_installer.i18n import Translator
 from vacuula_installer.screens.connect_robot import ConnectRobotScreen
 from vacuula_installer.screens.find_server import FindServerScreen
 from vacuula_installer.screens.firmware import FirmwareScreen
+from vacuula_installer.screens.provision import ProvisionScreen
 from vacuula_installer.screens.welcome import WelcomeScreen
 from vacuula_installer.screens.wifi import WifiScreen
 from vacuula_installer.widgets.back_button import BackButton
@@ -115,6 +120,9 @@ class MainWindow(QMainWindow):
         self._connect_to_wifi_screen = WifiScreen(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._connect_to_wifi_screen)
 
+        self._provision_screen = ProvisionScreen(self._translator, self._right_panel)
+        self._screen_stack.addWidget(self._provision_screen)
+
         # Logo starts centered on the whole window, on top of everything,
         # then animates into its resting spot in the left panel.
         self._logo = LogoWidget(central)
@@ -124,6 +132,10 @@ class MainWindow(QMainWindow):
         self._robot_detector = RobotDetector(self)
         self._installer = InstallerLauncher(self)
         self._server_detector = ServerDetector(self)
+        self._firmware_detector = FirmwareDetector(self)
+        self._gen23_wifi_fixer = Gen23WiFiFixer(self)
+        self._ap_poller = Gen23ApPoller(self)
+        self._provisioner = Gen23Provisioner(self)
 
         self._connect_signals()
         self._retranslate()
@@ -236,21 +248,88 @@ class MainWindow(QMainWindow):
 
         self._server_detector.serverDetected.connect(self._goto_connect_robot_screen)
 
-        self._robot_detector.robotDetected.connect(self._goto_firmware_screen)
+        self._robot_detector.gen23VersionText.connect((lambda text: setattr(self._session, "firmware_version", text)))
+        self._robot_detector.robotDetected.connect(self._start_firmware_detect)
         self._robot_detector.multipleRobotsDetected.connect(
             self._handle_multiple_robots
         )
         # TODO robot disconnected, just pass to handler inside connect_robot_screen
 
-        self._connect_screen.startInstallRequested.connect(
-            self._goto_wifi_screen
-        )  # TODO wrong name signal and order
-        self._connect_to_wifi_screen.wifiAdded.connect(self._goto_install_screen)
+        self._firmware_detector.firmwareDetected.connect(self._on_firmware)
+
+        self._ap_poller.infoReceived.connect(self._on_robot_ap_reached)
+        self._ap_poller.requestFailed.connect(
+            lambda: self._connect_to_wifi_screen.set_prewifi_checking(False)
+        )
+        self._connect_to_wifi_screen.prewifiConnectedClicked.connect(self._on_prewifi_connected_clicked)
+
+
+        self._ap_poller.networksReceived.connect(self._connect_to_wifi_screen.set_gen23_wifi_options)
+        self._ap_poller.networksFailed.connect(self._connect_to_wifi_screen.set_gen23_wifi_failed)
+
+        self._connect_to_wifi_screen.wifiAdded.connect(self._start_provisioning)
+        self._provisioner.progressChanged.connect(self._provision_screen.set_step)
+        self._provisioner.provisioningFailed.connect(self._on_provision_failed)
+        self._provisioner.provisioningFinished.connect(self._on_provision_finished)
+        self._connect_to_wifi_screen.rescanRequested.connect(self._rescan_networks)
+
+        self._provisioner.milestoneReached.connect(self._provision_screen.add_milestone_done)
+        self._provisioner.scriptLogLine.connect(self._provision_screen.append_log)
+
+
+
+        # self._connect_screen.startInstallRequested.connect(
+        #     self._goto_wifi_screen
+        # )  # TODO wrong name signal and order
+        # self._connect_to_wifi_screen.wifiAdded.connect(self._goto_install_screen)
+
+    def _rescan_networks(self) -> None:
+        self._connect_to_wifi_screen.set_gen23_wifi_loading(True)
+        self._ap_poller.fetch_networks()
+
+    def _on_prewifi_connected_clicked(self) -> None:
+        self._connect_to_wifi_screen.set_prewifi_checking(True)
+        self._ap_poller.check_now()
+
+    def _on_robot_ap_reached(self, info: dict) -> None:
+        print(f"Robot AP reachable: {info}")
+        self._connect_to_wifi_screen.set_prewifi_checking(False)
+        self._connect_to_wifi_screen.set_gen23_page()
+        self._connect_to_wifi_screen.set_gen23_wifi_loading(True)
+        self._ap_poller.fetch_networks()
+
+    def _start_provisioning(self, ssid: str, password: str) -> None:
+        self._session.wifi_ssid = ssid
+        self._session.wifi_pass = password
+        self._provision_screen.reset()
+        self._crossfade_to(self._provision_screen)
+        self._set_back_action(None)
+        self._provisioner.start(self._session.robot_usb_device, ssid, password)
+
+    def _on_provision_failed(self, stage: str) -> None:
+        print(f"Provisioning failed at: {stage}")
+        self._provision_screen.set_failed()
+        self._set_back_action(self._back_to_wifi)
+
+    def _on_provision_finished(self) -> None:
+        self._provision_screen.set_all_done()
+        # TODO: continue to the install flow (_goto_install_screen replacement)
+
+    def _on_firmware(self, valid: bool, msg: str) -> None:
+        if valid:
+            print("Firmware detection succeeded", valid, msg)
+            self._goto_wifi_screen()
+        else:
+            print(f"Firmware detection failed: {msg}")  # TODO: show error to user
 
     def _select_dev_or_server_screen(self) -> None:
         if not getattr(sys, "frozen", False):
-            self._goto_dev_only_screen()  # Not implemented yet
-            # self._goto_server_search_screen() # Temporary
+            self._goto_server_search_screen() # Temporary
+            # self._goto_connect_robot_screen('', '')  # Not implemented yet
+            # self._goto_connect_robot_screen('', '')  # Not implemented yet
+            # self._crossfade_to(self._connect_to_wifi_screen)
+            # self._connect_to_wifi_screen.set_gen23_prewifi_page()
+            # self._on_robot_ap_reached({})
         else:
             self._goto_server_search_screen()
 
@@ -259,8 +338,6 @@ class MainWindow(QMainWindow):
         # Shortcut place!
         self._crossfade_to(self._firmware_screen)
         self._connect_screen.reset_searching()
-        # self._connect_to_wifi_screen.set_gen23_page()
-        # self._connect_to_wifi_screen.set_gen23_wifi_options(["Antons hemliga wifi ", "  tillåtet wifi  "])
 
     def _goto_server_search_screen(self) -> None:
         self._crossfade_to(self._server_search_screen)
@@ -287,12 +364,13 @@ class MainWindow(QMainWindow):
         self._connect_screen.reset_searching()
         self._set_back_action(self._back_to_welcome)
 
-    def _goto_firmware_screen(self, display_name: str, device: usb.core.Device) -> None:
+    def _start_firmware_detect(self, display_name: str, device: usb.core.Device) -> None:
         self._session.robot_model_display_name = display_name
         self._session.robot_usb_device = device
+
         self._connect_screen.show_robot_detected(display_name)
         self._robot_detector.stop()  # maybe keep running for disconnect notices? TODO
-        self._crossfade_to(self._firmware_screen)
+        self._firmware_detector.detect(device, self._session.firmware_version) # TODO: clean this up, pass because of the gen23 variants
 
     def _handle_multiple_robots(self) -> None:
         # TODO: Inform user about one at a time limit
@@ -304,7 +382,7 @@ class MainWindow(QMainWindow):
 
     def _goto_wifi_screen(self) -> None:
         match self._session.robot_model_display_name:
-            case "Neato D10" | "Neato D9" | "Neato D8":
+            case "Neato D10" | "Neato D9" | "Neato D8" | "Neato D800":
                 self._crossfade_to(self._connect_to_wifi_screen)
             case (
                 "Neato Botvac D7"
@@ -314,12 +392,21 @@ class MainWindow(QMainWindow):
                 | "Neato Botvac D3"
                 | "Neato Botvac Connected"
             ):
+                mac = self._gen23_wifi_fixer.gen23_get_mac_from_version(self._session.firmware_version)
+                if mac is None:
+                    # TODO: show error to user, maybe go back to connect robot screen
+                    print("Could not extract MAC address from firmware version string")
+                    return
+
                 self._crossfade_to(self._connect_to_wifi_screen)
-                self._connect_to_wifi_screen.set_gen23_page()
-            case "Neato D800":
-                print("I don't think this one is supported")  # temp TODO
+                self._connect_to_wifi_screen.set_gen23_prewifi_page(mac)
+                if not self._session.robot_usb_device or not self._session.server_certificate:
+                    print("No robot USB device found, cannot reset network") # TODO: error to the user??
+                    return
+                self._gen23_wifi_fixer.fix_robot(self._session.robot_usb_device, mac, self._session)
+                self._ap_poller.start()
             case _:
-                print("How the hell did you get here?")
+                print("How the hell did you get here?") # TODO: error to user
 
     def _goto_install_screen(self, ssid: str, password: str) -> None:
         self._session.wifi_ssid = ssid
