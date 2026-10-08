@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from enum import IntEnum, auto
 
 import sys
-
+import usb.backend.libusb1
 import serial  # type: ignore[reportMissingTypeStubs]
 import serial.tools.list_ports  # type: ignore[reportMissingTypeStubs]
 import usb.core  # type: ignore[reportMissingTypeStubs]
