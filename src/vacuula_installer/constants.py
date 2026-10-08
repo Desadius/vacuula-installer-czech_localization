@@ -25,6 +25,10 @@ DISCORD_SVG: Path = ASSETS_DIR / "discord.svg"
 KOFI_SVG: Path = ASSETS_DIR / "kofi.svg"
 BUYMEACOFFEE_SVG: Path = ASSETS_DIR / "buymeacoffee.svg"
 
+# DLL
+DLL_DIR: Path = ASSETS_DIR / "dll"
+LIBUSB_DLL: Path = DLL_DIR / "libusb-1.0.dll"
+
 # --------------------------------------------------------------------------
 # Window & layout geometry
 # --------------------------------------------------------------------------
