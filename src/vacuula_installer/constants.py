@@ -10,6 +10,7 @@ from typing import NamedTuple
 # --------------------------------------------------------------------------
 APP_ROOT: Path = Path(__file__).resolve().parent.parent
 ASSETS_DIR: Path = APP_ROOT / "assets"
+SCRIPTS_DIR: Path = ASSETS_DIR / "scripts"
 LOCALES_DIR: Path = APP_ROOT / "locales"
 
 LOGO_SVG: Path = ASSETS_DIR / "logo.svg"
@@ -17,6 +18,12 @@ CONNECT_SVG: Path = ASSETS_DIR / "connect_instr.svg"
 
 COMPUTER_SVG: Path = ASSETS_DIR / "computer.svg"
 SERVER_SVG: Path = ASSETS_DIR / "server.svg"
+
+# Icons
+GITHUB_SVG: Path = ASSETS_DIR / "github.svg"
+DISCORD_SVG: Path = ASSETS_DIR / "discord.svg"
+KOFI_SVG: Path = ASSETS_DIR / "kofi.svg"
+BUYMEACOFFEE_SVG: Path = ASSETS_DIR / "buymeacoffee.svg"
 
 # --------------------------------------------------------------------------
 # Window & layout geometry

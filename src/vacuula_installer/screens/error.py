@@ -1,22 +1,3 @@
-"""Generic error screen.
-
-Any part of the app can route here when something unrecoverable happens
-(a core worker failing, a device disappearing mid-flow, etc). There's no
-per-error "retry this one step" logic -- the only way out is restarting
-the whole wizard from the welcome screen, since by the time something
-has gone wrong we can't trust assumptions the later screens made about
-device/session state.
-
-Usage from MainWindow:
-    self._error_screen.show_error("some.translation.key")          # translated
-    self._error_screen.show_error("Raw message", translate=False)  # shown as-is
-
-    # with a detailed row, translated as "some.translation.key.detailed"
-    self._error_screen.show_error("some.translation.key", detailed=True)
-
-    self._error_screen.restartRequested.connect(self._handle_restart)
-"""
-
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal
@@ -48,11 +29,6 @@ class ErrorScreen(QWidget):
         )
         self._icon_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
-        # self._title_label = QLabel(self)
-        # self._title_label.setObjectName("serversearchTitleLabel")
-        # self._title_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        # self._title_label.setWordWrap(True)
-
         self._detail_label = QLabel(self)
         self._detail_label.setObjectName("serversearchBodyLabel")
         self._detail_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
@@ -71,7 +47,6 @@ class ErrorScreen(QWidget):
         self._restart_button.clicked.connect(self.restartRequested)
 
         outer.addWidget(self._icon_label)
-        # outer.addWidget(self._title_label)
         outer.addWidget(self._detail_label)
         outer.addWidget(self._detailed_label)
         outer.addSpacing(14)
@@ -106,7 +81,6 @@ class ErrorScreen(QWidget):
             self._detailed_label.hide()
 
     def _retranslate(self) -> None:
-        # self._title_label.setText(self._translator.tr("error.title"))
         self._restart_button.setText(self._translator.tr("error.restart"))
         if self._message_key is not None:
             self._message_text = self._translator.tr(self._message_key)

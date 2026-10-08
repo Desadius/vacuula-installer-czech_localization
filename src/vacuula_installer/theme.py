@@ -225,4 +225,14 @@ QLabel#wifiExplanationLabel {{
     font-size: 18px;
 }}
 
+QPushButton#circleLinkButton {{
+    border: 1px solid {PALETTE.accent_blue};
+    border-radius: 24px;  /* half of CIRCLE_BUTTON_DIAMETER */
+    background: transparent;
+}}
+
+QPushButton#circleLinkButton:hover {{
+    border-color: {PALETTE.accent_blue_hover};
+}}
+
 """

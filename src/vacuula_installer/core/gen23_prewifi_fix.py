@@ -8,6 +8,7 @@ from pathlib import Path
 import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, Signal
 
+from vacuula_installer.constants import SCRIPTS_DIR
 from vacuula_installer.core.neato_blast import upload_file
 from vacuula_installer.core.robot_detector import RobotDetector
 from vacuula_installer.core.session import SessionData
@@ -124,7 +125,7 @@ class Gen23WiFiFixer(QObject):
             tarball = self._generate_tarball(Path(tmp), session)
             try:
                 upload_file(port, str(tarball), "Tarball", noburn=True)
-            except Exception:
+            except Exception:  # noqa: BLE001
                 return False
         return True
 
@@ -144,7 +145,7 @@ class Gen23WiFiFixer(QObject):
 
         # make tarball
         with tarfile.open(tarball, "w:gz") as tar:
-            for p in Path("scripts/gen3").iterdir():
+            for p in (SCRIPTS_DIR / "gen3").iterdir():
                 tar.add(p, arcname=p.name)
             tar.add(cert_path, arcname="cert.pem")
             tar.add(ip_to_use_path, arcname="ip_to_use")

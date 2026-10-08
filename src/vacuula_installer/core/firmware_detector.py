@@ -1,10 +1,11 @@
 from __future__ import annotations
 
 import threading
+
 import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, Signal
-from vacuula_installer.core.mtp import MtpDevice
 
+from vacuula_installer.core.mtp import MtpDevice
 
 VALID_GEN3_VERSIONS = [
     ("4.5.3", "Software,4,5,3,189,0"),
@@ -58,7 +59,7 @@ class FirmwareDetector(QObject):
             mtp.open_session(1)
             storage_id = mtp.get_storage_ids()[0]
             raw_version_data = mtp.read_file(storage_id, ["version.txt"])
-        except Exception:
+        except Exception:  # noqa: BLE001
             return False, "error.generic.connect"
 
         if raw_version_data is None:

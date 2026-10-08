@@ -35,11 +35,8 @@ class RobotSerialMonitor(QObject):
 
     def _run(self, port: str, baudrate: int) -> None:
         try:
-            print(f"[robot serial] opening {port} at {baudrate} baud")
             with serial.Serial(port, baudrate=baudrate, timeout=READ_TIMEOUT_S) as ser:
-                print(f"[robot serial] opened {port} at {baudrate} baud")
                 while not self._stop_event.is_set():
-                    print(f"[robot serial] reading line from {port}...")
                     try:
                         raw = ser.readline()
                     except (serial.SerialException, OSError) as e:
@@ -49,7 +46,6 @@ class RobotSerialMonitor(QObject):
                         continue  # just a read timeout, loop and check stop again
                     line = raw.decode("ascii", errors="ignore").rstrip("\r\n")
                     if line:
-                        print(f"[robot serial] {line}")
                         self.lineReceived.emit(line)
         except (serial.SerialException, OSError) as e:
             self.monitorFailed.emit(str(e))

@@ -22,6 +22,8 @@ class SessionData:
     wifi_ssid: str | None = None
     wifi_pass: str | None = None
 
+    install_done: bool = False
+
     # Some dev only goodies, for dev only screen (TODO)
     enable_ssh: bool = False #also means install dropbear
     ssh_pubkey: str | None = None

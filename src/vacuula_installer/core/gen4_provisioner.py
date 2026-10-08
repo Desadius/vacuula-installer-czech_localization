@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import threading
-from pathlib import Path
 from textwrap import dedent
 
 import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, Signal
 
+from vacuula_installer.constants import SCRIPTS_DIR
 from vacuula_installer.core.mtp import MtpDevice
 
 VENDOR_ID = 0x1D6B
@@ -72,7 +72,7 @@ class Gen4Provisioner(QObject):
             storage_id = mtp.get_storage_ids()[0]
             data = mtp.read_file(storage_id, ["version.txt"])
             print(f"data: {data}", mtp.get_storage_ids())
-        except Exception:
+        except Exception:  # noqa: BLE001
             self._done.emit("error.generic.connect")
             return
 
@@ -81,7 +81,7 @@ class Gen4Provisioner(QObject):
             self._install_static_files(mtp, storage_id)
             self._set_vacuula_server(mtp, storage_id)
             self._set_wifi(mtp, storage_id)
-        except Exception:
+        except Exception:  # noqa: BLE001
             self._done.emit("error.generic.upload")
             return
         self._done.emit(None)
@@ -89,7 +89,7 @@ class Gen4Provisioner(QObject):
     def _install_static_files(self, mtp: MtpDevice, storage_id: int) -> None:
         # install static files
         for install_path, local_path in FILES.items():
-            with open(Path("scripts/gen4") / local_path, 'rb') as f:
+            with open(SCRIPTS_DIR / "gen4" / local_path, 'rb') as f:
                 mtp.send_file(install_path, storage_id, f.read())
 
     def _set_vacuula_server(self, mtp: MtpDevice, storage_id: int) -> None:

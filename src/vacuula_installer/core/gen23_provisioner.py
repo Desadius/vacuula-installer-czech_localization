@@ -7,7 +7,7 @@ import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, QTimer, Signal
 
 from vacuula_installer.core.gen23_ap_poller import _request
-from vacuula_installer.core.robot_detector import RobotDetector, SERIAL_BAUDRATE
+from vacuula_installer.core.robot_detector import SERIAL_BAUDRATE, RobotDetector
 from vacuula_installer.core.robot_serial_monitor import RobotSerialMonitor
 
 PROGRESS_INTERVAL_MS = 3000

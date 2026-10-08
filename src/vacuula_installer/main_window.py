@@ -52,6 +52,7 @@ from vacuula_installer.i18n import Translator
 from vacuula_installer.screens.connect_robot import ConnectRobotScreen
 from vacuula_installer.screens.error import ErrorScreen
 from vacuula_installer.screens.find_server import FindServerScreen
+from vacuula_installer.screens.finished import FinishedScreen
 from vacuula_installer.screens.firmware import FirmwareScreen
 from vacuula_installer.screens.gen4_provision import Gen4ProvisionScreen
 from vacuula_installer.screens.gen23_provision import Gen23ProvisionScreen
@@ -130,6 +131,9 @@ class MainWindow(QMainWindow):
 
         self._gen4_provision_screen = Gen4ProvisionScreen(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._gen4_provision_screen)
+
+        self._finished_screen = FinishedScreen(self._translator, self._right_panel)
+        self._screen_stack.addWidget(self._finished_screen)
 
         # Logo starts centered on the whole window, on top of everything,
         # then animates into its resting spot in the left panel.
@@ -259,7 +263,7 @@ class MainWindow(QMainWindow):
 
         self._error_screen.restartRequested.connect(self._restart_wizard)
 
-        self._robot_detector.gen23VersionText.connect((lambda text: setattr(self._session, "firmware_version", text)))
+        self._robot_detector.gen23VersionText.connect(lambda text: setattr(self._session, "firmware_version", text))
         self._robot_detector.robotDetected.connect(self._start_firmware_detect)
         self._robot_detector.multipleRobotsDetected.connect(
             self._handle_multiple_robots
@@ -283,7 +287,7 @@ class MainWindow(QMainWindow):
         self._connect_to_wifi_screen.wifiAdded.connect(self._start_provisioning)
         self._provisioner.progressChanged.connect(self._provision_screen_gen23.set_step)
         self._provisioner.provisioningFailed.connect(self._on_provision_failed)
-        self._provisioner.provisioningFinished.connect(self._on_provision_finished)
+        self._provisioner.provisioningFinished.connect(lambda: setattr(self._session, "install_done", True))
         self._connect_to_wifi_screen.rescanRequested.connect(self._rescan_networks)
 
         self._provisioner.milestoneReached.connect(self._provision_screen_gen23.add_milestone_done)
@@ -372,17 +376,21 @@ class MainWindow(QMainWindow):
         )
         self._gen4_provisioner.stepChanged.connect(self._gen4_provision_screen.set_step)
         self._gen4_provisioner.provisioningFailed.connect(lambda err: self._show_error(err, detailed=f"error.generic.help"))
-        self._gen4_provisioner.provisioningFinished.connect(self._gen4_provision_screen.set_finished)
+        self._gen4_provisioner.provisioningFinished.connect(self._gen4_set_provision_finished)
         self._gen4_provisioner.start(self._session.robot_usb_device)
+
+    def _gen4_set_provision_finished(self) -> None:
+        self._session.install_done = True
+        self._gen4_provision_screen.set_finished()
 
     def _on_provision_failed(self, stage: str) -> None:
         print(f"Provisioning failed at: {stage}")
         self._provision_screen_gen23.set_failed()
         self._set_back_action(self._back_to_wifi)
 
-    def _on_provision_finished(self) -> None:
-        self._provision_screen_gen23.set_all_done()
-        # TODO: continue to the install flow (_goto_install_screen replacement)
+    def _goto_finished_screen(self) -> None:
+        self._robot_detector.stop()
+        self._crossfade_to(self._finished_screen)
 
     def _on_firmware(self, valid: bool, msg: str) -> None:
         if valid:
@@ -392,12 +400,8 @@ class MainWindow(QMainWindow):
 
     def _select_dev_or_server_screen(self) -> None:
         if not getattr(sys, "frozen", False):
-            self._goto_server_search_screen() # Temporary
-            # self._goto_connect_robot_screen('', '')  # Not implemented yet
-            # self._goto_connect_robot_screen('', '')  # Not implemented yet
-            # self._crossfade_to(self._connect_to_wifi_screen)
-            # self._connect_to_wifi_screen.set_gen23_prewifi_page()
-            # self._on_robot_ap_reached({})
+            self._goto_server_search_screen()
+            # self._goto_server_search_screen() # Temporary
         else:
             self._goto_server_search_screen()
 
@@ -443,7 +447,10 @@ class MainWindow(QMainWindow):
         self._show_error("error.multiple_robots", detailed=True)
 
     def _handle_robot_disconnected(self) -> None:
-        self._show_error("error.robot_disconnected", detailed=True)
+        if self._session.install_done:
+            self._goto_finished_screen()
+        else:
+            self._show_error("error.robot_disconnected", detailed=True)
 
     def _goto_wifi_screen(self) -> None:
         match self._session.robot_model_display_name:

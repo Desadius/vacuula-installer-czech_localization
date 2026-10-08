@@ -80,5 +80,8 @@
 
   "provision.gen4.step1": "Connecting to robot",
   "provision.gen4.step2": "Uploading Vacuula",
-  "provision.gen4.instructions": "Done! To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until is has fully booted up."
+  "provision.gen4.instructions": "Done! To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until is has fully booted up.",
+
+  "finished.title": "Robot bitten by Vacuula",
+  "finished.subtitle": "You may now disconnect the robot from your computer and start the robot back up. The please wait for the robot to show up in your <a href='http://vacuula.local'>Vacuula server</a>"
 }
