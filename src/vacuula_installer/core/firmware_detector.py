@@ -15,6 +15,8 @@ VALID_GEN4_VERSIONS = [
     ("1.7.0", "Firmware version: 1.7.0-2933"),
 ]
 
+#TODO Nonblocking thread, see server detector
+
 class FirmwareDetector(QObject):
     _done = Signal(bool, str)  # worker thread -> GUI thread
     firmwareDetected = Signal(bool, str)  # true if valid firmware detected, false if not | str is either the version string or an error message

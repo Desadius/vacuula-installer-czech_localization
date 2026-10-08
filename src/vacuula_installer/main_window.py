@@ -56,6 +56,7 @@ from vacuula_installer.screens.firmware import FirmwareScreen
 from vacuula_installer.screens.gen4_provision import Gen4ProvisionScreen
 from vacuula_installer.screens.gen23_provision import Gen23ProvisionScreen
 from vacuula_installer.screens.welcome import WelcomeScreen
+from vacuula_installer.screens.disclaimer import DisclaimerScreen
 from vacuula_installer.screens.wifi import WifiScreen
 from vacuula_installer.widgets.back_button import BackButton
 from vacuula_installer.widgets.logo import LogoWidget
@@ -107,9 +108,11 @@ class MainWindow(QMainWindow):
         right_layout.addLayout(self._screen_stack)
 
         self._welcome_screen = WelcomeScreen(self._translator, self._right_panel)
+        self._disclaimer_screen = DisclaimerScreen(self._translator, self._right_panel)
         self._connect_screen = ConnectRobotScreen(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._welcome_screen)
         self._screen_stack.addWidget(self._connect_screen)
+        self._screen_stack.addWidget(self._disclaimer_screen)
 
         self._error_screen = ErrorScreen(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._error_screen)
@@ -254,12 +257,13 @@ class MainWindow(QMainWindow):
         self._welcome_screen.continueRequested.connect(
             self._select_dev_or_server_screen
         )
+        self._disclaimer_screen.understandRequested.connect(self._goto_server_search_screen)
 
         self._server_detector.serverDetected.connect(self._goto_connect_robot_screen)
 
         self._error_screen.restartRequested.connect(self._restart_wizard)
 
-        self._robot_detector.gen23VersionText.connect((lambda text: setattr(self._session, "firmware_version", text)))
+        self._robot_detector.gen23VersionText.connect(lambda text: setattr(self._session, "firmware_version", text))
         self._robot_detector.robotDetected.connect(self._start_firmware_detect)
         self._robot_detector.multipleRobotsDetected.connect(
             self._handle_multiple_robots
@@ -392,14 +396,29 @@ class MainWindow(QMainWindow):
 
     def _select_dev_or_server_screen(self) -> None:
         if not getattr(sys, "frozen", False):
-            self._goto_server_search_screen() # Temporary
+            
+            self._goto_notice_screen()
+            #self._goto_dev_only_screen() # Temporary
+            
             # self._goto_connect_robot_screen('', '')  # Not implemented yet
             # self._goto_connect_robot_screen('', '')  # Not implemented yet
             # self._crossfade_to(self._connect_to_wifi_screen)
             # self._connect_to_wifi_screen.set_gen23_prewifi_page()
             # self._on_robot_ap_reached({})
         else:
-            self._goto_server_search_screen()
+            self._goto_notice_screen()
+
+    def _goto_notice_screen(self) -> None:
+        #TODO:
+        #- rebooted robot
+        #- if your robot is rainbowing, get in touch in the discord
+        #- you will need an usb cable
+        #- vaccula modifies your robot software, blablabla, is removableish (kinda not gen 3)
+        #- Vacuula is not affilated with neato
+        #- You proceed on your own risk
+        # I understand
+
+        self._crossfade_to(self._disclaimer_screen)
 
     def _goto_dev_only_screen(self) -> None:
         print("Not implemented yet")  # TODO
