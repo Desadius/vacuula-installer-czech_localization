@@ -9,10 +9,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import IntEnum, auto
 
+import sys
+
 import serial  # type: ignore[reportMissingTypeStubs]
 import serial.tools.list_ports  # type: ignore[reportMissingTypeStubs]
 import usb.core  # type: ignore[reportMissingTypeStubs]
 import usb.util  # type: ignore[reportMissingTypeStubs]
+from vacuula_installer.constants import LIBUSB_DLL
 from PySide6.QtCore import QObject, QTimer, Signal
 
 # idVendor, idProduct
@@ -22,6 +25,18 @@ GEN23_USB = [0x2108, 0x780c]
 SERIAL_BAUDRATE = 115200
 SERIAL_TIMEOUT_S = 1.0
 GET_VERSION_CMD = b"GetVersion\n"
+
+if sys.platform == "win32":
+    USB_BACKEND = usb.backend.libusb1.get_backend(
+        find_library=lambda _: str(LIBUSB_DLL)
+    )
+
+    if USB_BACKEND is None:
+        raise RuntimeError(
+            f"Could not load libusb backend from {LIBUSB_DLL}"
+        )
+else:
+    USB_BACKEND = None
 
 
 @dataclass(frozen=True)
@@ -107,7 +122,7 @@ class RobotDetector(QObject):
 
         resolved: list[tuple[usb.core.Device, RobotUsbId]] = []
 
-        for dev in usb.core.find(find_all=True, idVendor=GEN4_USB[0], idProduct=GEN4_USB[1]):
+        for dev in usb.core.find(find_all=True, idVendor=GEN4_USB[0], idProduct=GEN4_USB[1], backend=USB_BACKEND):
             print("Gen4")
             descriptor_matches = [c for c in ids_by_usb_id[(0x1D6B, 0x0100)] if self._descriptor_matches(dev, c)]
             if not descriptor_matches:
@@ -117,7 +132,7 @@ class RobotDetector(QObject):
                 resolved.append((dev, robot_id))
            
 
-        for dev in usb.core.find(find_all=True, idVendor=GEN23_USB[0], idProduct=GEN23_USB[1]):
+        for dev in usb.core.find(find_all=True, idVendor=GEN23_USB[0], idProduct=GEN23_USB[1], backend=USB_BACKEND):
             print("Gen23")
             descriptor_matches = [c for c in ids_by_usb_id[(0x2108, 0x780c)]]
             robot_id = self._resolve_robot(dev, descriptor_matches)
