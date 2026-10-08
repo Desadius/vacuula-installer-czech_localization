@@ -12,7 +12,8 @@ from vacuula_installer.core.mtp import MtpDevice
 VENDOR_ID = 0x1D6B
 PRODUCT_ID = 0x0100
 
-FILES = {  # install path -> local filename, inside scripts/gen4
+# install path -> local filename, inside scripts/gen4
+FILES = {
     '/usr/sbin/enable_vacuula_shell.sh': 'enable_vacuula_shell.sh',
     '/usr/sbin/enable_vacuula_full.sh': 'enable_vacuula_full.sh',
     '/lib/systemd/system/usb-gadgets.service': 'usb-gadgets.service',
@@ -32,8 +33,8 @@ class Gen4Provisioner(QObject):
     """Pushes the vacuula install files to a Gen4 robot over MTP.
     Runs on a worker thread so the GUI doesn't freeze during the transfer."""
 
-    stepChanged = Signal(int)            # 1 connecting, 2 uploading
-    provisioningFailed = Signal(str)     # "connect" | "static_files" | "server" | "wifi"
+    stepChanged = Signal(int) # 1 connect, 2 upload
+    provisioningFailed = Signal(str)
     provisioningFinished = Signal()
 
     _step = Signal(int)      # worker thread -> GUI thread
@@ -63,8 +64,6 @@ class Gen4Provisioner(QObject):
     def stop(self) -> None:
         self._active = False
 
-    # -- worker thread --------------------------------------------------------------
-
     def _run(self, dev: usb.core.Device) -> None:
         self._step.emit(1)  # connecting
         try:
@@ -73,9 +72,8 @@ class Gen4Provisioner(QObject):
             storage_id = mtp.get_storage_ids()[0]
             data = mtp.read_file(storage_id, ["version.txt"])
             print(f"data: {data}", mtp.get_storage_ids())
-        except Exception as e:  # noqa: BLE001 -- report, don't crash the thread
-            print(f"Error connecting to gen4 robot: {e}")  # TODO: show error
-            self._done.emit("connect")
+        except Exception:
+            self._done.emit("error.generic.connect")
             return
 
         self._step.emit(2)  # uploading
@@ -83,9 +81,8 @@ class Gen4Provisioner(QObject):
             self._install_static_files(mtp, storage_id)
             self._set_vacuula_server(mtp, storage_id)
             self._set_wifi(mtp, storage_id)
-        except Exception as e:  # noqa: BLE001
-            print(f"Error provisioning gen4 robot: {e}")  # TODO: show error
-            self._done.emit("static_files")
+        except Exception:
+            self._done.emit("error.generic.upload")
             return
         self._done.emit(None)
 
@@ -127,8 +124,6 @@ class Gen4Provisioner(QObject):
 }}
             """).encode('utf-8')
         mtp.send_file('/etc/wpa_supplicant/wpa_supplicant-wlan0.conf', storage_id, wifi_config)
-
-    # -- back on the GUI thread -------------------------------------------------------
 
     def _on_step(self, step: int) -> None:
         if self._active:

@@ -70,7 +70,6 @@ class RobotDetector(QObject):
 
     robotDisconnected = Signal()
     robotDetected = Signal(str, usb.core.Device)  # display_name, serial_device TODO, usb_device
-    robotDetected = Signal(str, usb.core.Device)
     gen23VersionText = Signal(str) # temp solution, should be looked over how exactly this should be fetched and saved
 
     # Probably never happens but needs to be handled:
@@ -94,6 +93,8 @@ class RobotDetector(QObject):
     def stop(self) -> None:
         """Cancel a pending detection, e.g. if the user navigates away."""
         self._timer.stop()
+        self._last_state = State.NONE
+        self._resolved_cache.clear()
 
     def _update_robots(self) -> None:
         # GEN4_USB and GEN23_USB entries share one (idVendor, idProduct)
@@ -137,9 +138,10 @@ class RobotDetector(QObject):
             self._last_state = State.ONE
 
         else:
-            if self._last_state != State.MULTIPLE:
-                self.multipleRobotsDetected.emit()
+            was_multiple = self._last_state == State.MULTIPLE
             self._last_state = State.MULTIPLE
+            if not was_multiple:
+                self.multipleRobotsDetected.emit()
 
     @staticmethod
     def _descriptor_matches(dev: usb.core.Device, robot_id: RobotUsbId) -> bool:

@@ -44,6 +44,14 @@ case "${NEATO_VERSION}" in
         # Replace cloudmock path (446520 == 0x6D038)
         CLOUDMOCK_OFFSET=446520
         ;;
+    4.6.0-72)
+        # Replace nucleo path (446440 == 0x6CFE8)
+        NUCLEO_OFFSET=446440
+        # Replace beehive path (446476 == 0x6D00C)
+        BEEHIVE_OFFSET=446476
+        # Replace cloudmock path (446512 == 0x6D030)
+        CLOUDMOCK_OFFSET=446512
+        ;;
     *)
         log "Neato version ${NEATO_VERSION} is not supported, exiting"
         exit 1

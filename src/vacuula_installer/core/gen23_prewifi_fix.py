@@ -124,8 +124,7 @@ class Gen23WiFiFixer(QObject):
             tarball = self._generate_tarball(Path(tmp), session)
             try:
                 upload_file(port, str(tarball), "Tarball", noburn=True)
-            except Exception as e:
-                print(f"Error uploading scripts: {e}")  # TODO: show error
+            except Exception:
                 return False
         return True
 
@@ -158,9 +157,8 @@ class Gen23WiFiFixer(QObject):
             return
         if not ok:
             self._active = False
-            self.fixFailed.emit("upload")
+            self.fixFailed.emit("error.generic.upload")
             return
-        print("Scripts uploaded successfully.")
         threading.Thread(
             target=lambda: self._resetDone.emit(self._reset_network(device, mac)),
             daemon=True,
@@ -180,4 +178,4 @@ class Gen23WiFiFixer(QObject):
             return
         self._active = False
         if not ok:
-            self.fixFailed.emit("reset")
+            self.fixFailed.emit("error.gen23.reset")

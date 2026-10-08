@@ -45,12 +45,12 @@ from vacuula_installer.core.gen23_ap_poller import Gen23ApPoller
 from vacuula_installer.core.gen23_prewifi_fix import Gen23WiFiFixer
 from vacuula_installer.core.gen23_provisioner import Gen23Provisioner
 from vacuula_installer.core.gen4_provisioner import Gen4Provisioner
-from vacuula_installer.core.installer import InstallerLauncher
 from vacuula_installer.core.robot_detector import RobotDetector
 from vacuula_installer.core.server_detector import ServerDetector
 from vacuula_installer.core.session import SessionData
 from vacuula_installer.i18n import Translator
 from vacuula_installer.screens.connect_robot import ConnectRobotScreen
+from vacuula_installer.screens.error import ErrorScreen
 from vacuula_installer.screens.find_server import FindServerScreen
 from vacuula_installer.screens.firmware import FirmwareScreen
 from vacuula_installer.screens.gen4_provision import Gen4ProvisionScreen
@@ -111,6 +111,9 @@ class MainWindow(QMainWindow):
         self._screen_stack.addWidget(self._welcome_screen)
         self._screen_stack.addWidget(self._connect_screen)
 
+        self._error_screen = ErrorScreen(self._translator, self._right_panel)
+        self._screen_stack.addWidget(self._error_screen)
+
         self._firmware_screen = FirmwareScreen(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._firmware_screen)
 
@@ -135,7 +138,6 @@ class MainWindow(QMainWindow):
         self._logo.raise_()
 
         self._robot_detector = RobotDetector(self)
-        self._installer = InstallerLauncher(self)
         self._server_detector = ServerDetector(self)
         self._firmware_detector = FirmwareDetector(self)
         self._gen23_wifi_fixer = Gen23WiFiFixer(self)
@@ -236,8 +238,9 @@ class MainWindow(QMainWindow):
 
     def _set_back_action(self, action: Callable[[], None] | None) -> None:
         """Set what clicking "back" does right now (or hide the button)."""
+        # TODO: initial release we disable back button, will make it work later
         self._back_action = action
-        self._back_button.setVisible(action is not None)
+        # self._back_button.setVisible(action is not None)
 
     def _go_back(self) -> None:
         if self._back_action is not None:
@@ -254,12 +257,16 @@ class MainWindow(QMainWindow):
 
         self._server_detector.serverDetected.connect(self._goto_connect_robot_screen)
 
+        self._error_screen.restartRequested.connect(self._restart_wizard)
+
         self._robot_detector.gen23VersionText.connect((lambda text: setattr(self._session, "firmware_version", text)))
         self._robot_detector.robotDetected.connect(self._start_firmware_detect)
         self._robot_detector.multipleRobotsDetected.connect(
             self._handle_multiple_robots
         )
-        # TODO robot disconnected, just pass to handler inside connect_robot_screen
+        self._robot_detector.robotDisconnected.connect(
+            self._handle_robot_disconnected
+        )
 
         self._firmware_detector.firmwareDetected.connect(self._on_firmware)
 
@@ -282,12 +289,34 @@ class MainWindow(QMainWindow):
         self._provisioner.milestoneReached.connect(self._provision_screen_gen23.add_milestone_done)
         self._provisioner.scriptLogLine.connect(self._provision_screen_gen23.append_log)
 
-
+        self._gen23_wifi_fixer.fixFailed.connect(lambda msg: self._show_error(msg, detailed=f"error.generic.help"))
 
         # self._connect_screen.startInstallRequested.connect(
         #     self._goto_wifi_screen
         # )  # TODO wrong name signal and order
         # self._connect_to_wifi_screen.wifiAdded.connect(self._goto_install_screen)
+
+    def _show_error(self, message: str, *, detailed: bool | str = False) -> None:
+        print(f"Error: {message}")
+        self._robot_detector.stop()
+        self._server_detector.stop()
+        self._ap_poller.stop()
+        self._provisioner.stop()
+        self._gen23_wifi_fixer.stop()
+        self._firmware_detector.stop()
+        # ...any other core worker you add later goes here too
+
+        self._error_screen.show_error(message, detailed=detailed)
+        self._crossfade_to(self._error_screen)
+        self._set_back_action(None)
+
+    def _restart_wizard(self) -> None:
+        self._session = SessionData()  # drop everything learned so far
+        self._connect_screen.reset_searching()
+        self._server_search_screen.reset_searching()
+        self._gen23_wifi_fixer_screen = None  # if you keep any per-run objects like this
+        self._crossfade_to(self._welcome_screen)
+        self._set_back_action(None)
 
     def _rescan_networks(self) -> None:
         self._connect_to_wifi_screen.set_gen23_wifi_loading(True)
@@ -327,7 +356,7 @@ class MainWindow(QMainWindow):
                 self._set_back_action(None)
                 self._provisioner.start(self._session.robot_usb_device, ssid, password)
             case _:
-                print("How the hell did you get here?") # TODO: error to user
+                self._show_error("error.generic.unexpected", detailed="error.generic.help")
 
     def _start_gen4_provisioning(self) -> None:
         self._gen4_provision_screen.reset()
@@ -342,14 +371,9 @@ class MainWindow(QMainWindow):
             parent=self,
         )
         self._gen4_provisioner.stepChanged.connect(self._gen4_provision_screen.set_step)
-        self._gen4_provisioner.provisioningFailed.connect(self._on_gen4_failed)
+        self._gen4_provisioner.provisioningFailed.connect(lambda err: self._show_error(err, detailed=f"error.generic.help"))
         self._gen4_provisioner.provisioningFinished.connect(self._gen4_provision_screen.set_finished)
         self._gen4_provisioner.start(self._session.robot_usb_device)
-
-    def _on_gen4_failed(self, stage: str) -> None:
-        print(f"Gen4 provisioning failed at: {stage}")
-        self._gen4_provision_screen.set_failed()
-        self._set_back_action(self._back_to_wifi)
 
     def _on_provision_failed(self, stage: str) -> None:
         print(f"Provisioning failed at: {stage}")
@@ -362,10 +386,9 @@ class MainWindow(QMainWindow):
 
     def _on_firmware(self, valid: bool, msg: str) -> None:
         if valid:
-            print("Firmware detection succeeded", valid, msg)
             self._goto_wifi_screen()
         else:
-            print(f"Firmware detection failed: {msg}")  # TODO: show error to user
+            self._show_error(msg, detailed="error.firmware.help" if msg == "error.firmware.invalid" else "error.generic.help")
 
     def _select_dev_or_server_screen(self) -> None:
         if not getattr(sys, "frozen", False):
@@ -412,18 +435,15 @@ class MainWindow(QMainWindow):
     def _start_firmware_detect(self, display_name: str, device: usb.core.Device) -> None:
         self._session.robot_model_display_name = display_name
         self._session.robot_usb_device = device
-
         self._connect_screen.show_robot_detected(display_name)
-        self._robot_detector.stop()  # maybe keep running for disconnect notices? TODO
+        # self._robot_detector.stop()  # keep this running to detect disconnects!
         self._firmware_detector.detect(device, self._session.firmware_version) # TODO: clean this up, pass because of the gen23 variants
 
     def _handle_multiple_robots(self) -> None:
-        # TODO: Inform user about one at a time limit
-        return None  # Tmp python bsittery
+        self._show_error("error.multiple_robots", detailed=True)
 
     def _handle_robot_disconnected(self) -> None:
-        # TODO: For detecting reboot or unintentional disconnections
-        return None
+        self._show_error("error.robot_disconnected", detailed=True)
 
     def _goto_wifi_screen(self) -> None:
         match self._session.robot_model_display_name:
@@ -439,19 +459,19 @@ class MainWindow(QMainWindow):
             ):
                 mac = self._gen23_wifi_fixer.gen23_get_mac_from_version(self._session.firmware_version)
                 if mac is None:
-                    # TODO: show error to user, maybe go back to connect robot screen
-                    print("Could not extract MAC address from firmware version string")
+                    self._show_error("error.gen23.firmware", detailed="error.gen23.generic.detailed")
                     return
 
                 self._crossfade_to(self._connect_to_wifi_screen)
                 self._connect_to_wifi_screen.set_gen23_prewifi_page(mac)
                 if not self._session.robot_usb_device or not self._session.server_certificate:
-                    print("No robot USB device found, cannot reset network") # TODO: error to the user??
+                    self._show_error("error.generic.unexpected", detailed="error.generic.help")
                     return
                 self._gen23_wifi_fixer.fix_robot(self._session.robot_usb_device, mac, self._session)
                 self._ap_poller.start()
             case _:
-                print("How the hell did you get here?") # TODO: error to user
+                # this could never happen normally
+                self._show_error("error.generic.unexpected", detailed="error.generic.help")
 
     def _goto_install_screen(self, ssid: str, password: str) -> None:
         self._session.wifi_ssid = ssid

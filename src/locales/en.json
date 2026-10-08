@@ -5,13 +5,32 @@
   "welcome.tagline": "Let's get your robot vacuum new <i>life</i>",
   "welcome.continue": "Continue",
   "welcome.language_tooltip": "Change language",
-  "welcome.find_help": "?¿ If you encounter any issues during installation, don't hesitate to get in touch on <a href='https://github.com/vacuula/vacuula-installer'>GitHub</a>, <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> or your closest technical friend!",
+  "welcome.find_help": "?¿ If you encounter any issues during installation, don't hesitate to get in touch on <a href='https://github.com/vacuula/installer'>GitHub</a>, <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> or your closest technical friend!",
 
   "serversearch.title": "Vacuula needs a server",
   "serversearch.body": "Before <i>biting</i> your robot a server needs to be setup. Follow instructions <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'>here</a> if not done already",
   "serversearch.detailinfo": "🛈 <i>The server needs to be accessible on both the network the robot will be connected to and on the network controlling devices will be - if separate</i>",
   "serversearch.status.searching": "Searching for a server",
   "serversearch.status.found": "Server found at {ip}!",
+
+
+  "error.title": "An error occurred",
+  "error.restart": "Try installing again",
+
+  "error.multiple_robots": "Multiple robots detected, please connect only one at a time",
+  "error.multiple_robots.detailed": "Currently the installer only supports one robot at a time, future versions will support a selector.",
+
+  "error.firmware.invalid": "Invalid firmware detected",
+  "error.generic.connect": "Failed to connect to the robot",
+  "error.generic.upload": "Failed to upload vacuula to robot",
+  "error.gen4.unreadable": "Unable to read firmware version",
+  "error.gen23.reset": "Network reset failed",
+  "error.generic.unexpected": "An unexpected error occurred",
+  "error.generic.help": "🛈 <i> Make sure the robot is powered on and connected to your computer via USB. If the problem persists, try restarting the installer or the robot. If it refuses to work, ask for help in the discord </i>",
+  "error.firmware.help": "🛈 <i> Follow the guide on <a href=''>github</a> on how to update your robot to an supported firmware version or ask for help on the discord. </i>",
+
+
+
 
   "connect.title": "Connect a robot to your computer with a USB cable",
   "connect.howto": "🛈 <i>There is a USB contact under the dustbin, the green &quot;cable&quot; in the illustration ends at its approximate location</i>",
