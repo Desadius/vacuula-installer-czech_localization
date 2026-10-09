@@ -1,0 +1,66 @@
+"""Fake server if you don't have a real one running or whatever"""
+import secrets
+import socket
+from http.server import BaseHTTPRequestHandler, HTTPServer
+
+from zeroconf import ServiceInfo, Zeroconf
+
+HOSTNAME = "vacuula.local."
+PORT = 80
+
+s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+try:
+    s.connect(("192.0.2.1", 80))
+    ip = s.getsockname()[0]
+finally:
+    s.close()
+
+class Handler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        if self.path != "/api/cert":
+            self.send_error(404)
+            return
+
+        data = f"{secrets.token_hex(32)}\n".encode()
+        self.send_response(200)
+        self.send_header("Content-Type", "text/plain; charset=utf-8")
+        self.send_header(
+            "Content-Disposition",
+            'attachment; filename="cert.txt"',
+        )
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+
+httpd = HTTPServer(("0.0.0.0", PORT), Handler)
+zc = Zeroconf()
+SERVICE_TYPE = "_vacuula._tcp.local."
+SERVICE_NAME = "Vacuula Server._vacuula._tcp.local."
+MDNS_HOSTNAME = "vacuula.local."
+PORT = 80
+info = ServiceInfo(
+    SERVICE_TYPE,
+    SERVICE_NAME,
+    addresses=[socket.inet_aton(ip)],
+    server=MDNS_HOSTNAME,
+    port=PORT,
+    properties={
+        "version": "1",
+        "cert-path": "/api/cert",
+        "protocol": "http",
+        "url": "http://vacuula.local",
+    },
+)
+zc.register_service(info)
+
+print(f"Advertising {HOSTNAME} -> {ip}")
+print(f"Download: http://vacuula.local:{PORT}/api/cert")
+
+try:
+    httpd.serve_forever()
+except KeyboardInterrupt:
+    pass
+finally:
+    httpd.server_close()
+    zc.unregister_service(info)
+    zc.close()
