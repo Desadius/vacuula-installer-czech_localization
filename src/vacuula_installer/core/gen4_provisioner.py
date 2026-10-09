@@ -9,7 +9,6 @@ from PySide6.QtCore import QObject, Signal
 
 from vacuula_installer.constants import SCRIPTS_DIR
 from vacuula_installer.core.mtp import MtpDevice
-from vacuula_installer.core.mtp.windows import WindowsMtpDevice
 from vacuula_installer.core.robot_detector import RobotDetector
 
 VENDOR_ID = 0x1D6B
@@ -71,6 +70,7 @@ class Gen4Provisioner(QObject):
     def _run(self, dev: usb.core.Device) -> None:
         self._step.emit(1)  # connecting
         if sys.platform == "win32":
+            from vacuula_installer.core.mtp.windows import WindowsMtpDevice
             serial_number = RobotDetector._get_serial(dev)
             mtp = WindowsMtpDevice(serial_number)
             mtp.open_session(1)

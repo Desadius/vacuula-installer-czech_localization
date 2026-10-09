@@ -1,4 +1,8 @@
 from __future__ import annotations
+import sys
+
+if sys.platform != "win32":
+    raise ImportError("This module is only supported on Windows")
 
 import ctypes
 import functools

@@ -31,6 +31,8 @@
 
   "error.multiple_robots": "Multiple robots detected, please connect only one at a time",
   "error.multiple_robots.detailed": "Currently the installer only supports one robot at a time, future versions will support a selector.",
+  "error.robot_disconnected": "Robot disconnected",
+  "error.robot_disconnected.detailed": "The robot was disconnected during the installation process, please reconnect and try again",
 
   "error.firmware.invalid": "Invalid firmware detected",
   "error.generic.connect": "Failed to connect to the robot",
