@@ -416,7 +416,8 @@ class WifiScreen(QWidget):
         # add items
         for ssid, strength in sorted(best.items(), key=lambda kv: -kv[1]):
             # visible text has the signal bars, userData keeps the raw SSID
-            self._wifi_combo_boxGen23.addItem(f"{ssid}   {self._BARS.get(strength, '')}", ssid)
+            # Dont display bars for now, not in initial release, maybe back later
+            self._wifi_combo_boxGen23.addItem(f"{ssid}", ssid)
 
         # no networks, force manual mode and disable the toggle until rescan
         if self._wifi_combo_boxGen23.count() == 0:
