@@ -12,6 +12,7 @@ APP_ROOT: Path = Path(__file__).resolve().parent.parent
 ASSETS_DIR: Path = APP_ROOT / "assets"
 SCRIPTS_DIR: Path = ASSETS_DIR / "scripts"
 LOCALES_DIR: Path = APP_ROOT / "locales"
+FLAGS_DIR: Path = ASSETS_DIR / "flags"
 
 LOGO_SVG: Path = ASSETS_DIR / "logo.svg"
 CONNECT_SVG: Path = ASSETS_DIR / "connect_instr.svg"
@@ -60,7 +61,7 @@ M_DNS_SERVICE_TYPE: str = "_vacuula._tcp.local."
 
 class LanguageMeta(NamedTuple):
     # Native name is used for flag hover in picker
-    flag: str
+    flag_svg: Path
     native_name: str
 
 
@@ -68,8 +69,8 @@ class LanguageMeta(NamedTuple):
 # ``locales/<code>.json`` catalog. 
 # Sorted by language code by program
 LANGUAGES: dict[str, LanguageMeta] = {
-    "sv": LanguageMeta(flag="🇸🇪", native_name="Svenska"),
-    "en": LanguageMeta(flag="🇬🇧", native_name="English"),
+    "sv": LanguageMeta(flag_svg=FLAGS_DIR / "se.svg", native_name="Svenska"),
+    "en": LanguageMeta(flag_svg=FLAGS_DIR / "gb.svg", native_name="English"),
 }
 DEFAULT_LANGUAGE = "en" #might be replaced with system locale? I dunno how to fetch safely crossplatform
 

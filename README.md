@@ -84,9 +84,10 @@ You can also use that if the server mDNS does not reach the robot network (but t
 ## Adding a language
 
 1. Copy `src/locales/en.json` to `src/locales/<code>.json` and translate the values.
+2. Get svg for flag you want to use from `https://github.com/lipis/flag-icons` and put into `/src/assets/flags`. Use the 3x4 flags!
 2. Add one line to `LANGUAGES` in `src/vacuula_installer/constants.py`:
    ```python
-   "fr": LanguageMeta(flag="🇫🇷", native_name="Français"),
+   "fr": LanguageMeta(flag_svg=FLAGS_DIR / "fr.svg", native_name="Français"),
    ```
 NOTE! If you add or update strings increment strings version in the updated file(s)!!
 

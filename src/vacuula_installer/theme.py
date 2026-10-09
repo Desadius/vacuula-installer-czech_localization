@@ -149,6 +149,7 @@ QPushButton {{
     color: white;
     border: none;
     border-radius: 22px;
+    min-height: 22px; /* 22 + 2*12 padding = 46 >= 2*22 radius. needed because otherwise rendered as square, not fully sure why but some qt rule and windows renders diffrently */
     padding: 12px 42px;
     font-size: 14px;
     font-weight: 600;

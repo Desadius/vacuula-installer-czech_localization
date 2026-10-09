@@ -2,13 +2,15 @@
 
 from __future__ import annotations
 
-from PySide6.QtCore import QPoint, Qt
+from PySide6.QtCore import QPoint, QSize, Qt
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QGridLayout, QMenu, QToolButton, QWidget, QWidgetAction
 
 from vacuula_installer.constants import LANGUAGES
 from vacuula_installer.i18n import Translator
 
 _FLAG_SIZE = 64
+_ICON_SIZE = _FLAG_SIZE - 32
 _GRID_COLUMNS = 4
 
 
@@ -21,13 +23,19 @@ class FlagButton(QToolButton):
 
         self.setObjectName("flagButton")
         self.setFixedSize(_FLAG_SIZE, _FLAG_SIZE)
+        self.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
-        self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextOnly)
+        self.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonIconOnly)
 
         self._menu = QMenu(self)
         self._menu.setObjectName("languageMenu")
         self._menu.setAttribute(Qt.WidgetAttribute.WA_TranslucentBackground)
+        self._menu.setWindowFlags(
+            self._menu.windowFlags()
+            | Qt.WindowType.FramelessWindowHint
+            | Qt.WindowType.NoDropShadowWindowHint
+        )
         self._build_menu()
 
         self.clicked.connect(self._show_language_menu)  # ny
@@ -64,7 +72,8 @@ class FlagButton(QToolButton):
         button.setObjectName("flagButton")
         button.setFixedSize(_FLAG_SIZE, _FLAG_SIZE)
         button.setCursor(Qt.CursorShape.PointingHandCursor)
-        button.setText(meta.flag if meta else code.upper())
+        button.setIcon(QIcon(str(meta.flag_svg)) if meta else QIcon())
+        button.setIconSize(QSize(_ICON_SIZE, _ICON_SIZE))
         button.setToolTip(meta.native_name if meta else code.upper())
         button.clicked.connect(self._make_selector(code))
         return button
@@ -82,5 +91,5 @@ class FlagButton(QToolButton):
 
     def _refresh(self) -> None:
         meta = LANGUAGES.get(self._translator.language)
-        self.setText(meta.flag if meta else "🏳️")  # if else I give up
+        self.setIcon(QIcon(str(meta.flag_svg)) if meta else QIcon())
         self.setToolTip(self._translator.tr("welcome.language_tooltip"))
