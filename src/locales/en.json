@@ -60,7 +60,7 @@
   "wifi.button": "Continue",
 
   "wifi.gen23.pre.title": "Connect to the robot's WiFi",
-  "wifi.gen23.pre.explanation": "Connect to WiFi network: <b>Neato-{mac}</b>",
+  "wifi.gen23.pre.explanation": "Connect to WiFi network \"<b>Neato-{mac}</b>\" on this computer",
   "wifi.gen23.pre.disclaimer": "Just like the original app, the Gen2/Gen3 robots need a setup via their own WiFi connection. The installer has automatically reset the network settings on the robot, so the robot wifi should show up soon! It may take up to a couple minutes, if you don't see it even after rescanning, try restarting the installer, the robot or reset network settings manually.",
   "wifi.gen23.pre.try_connection": "I have connected!",
 

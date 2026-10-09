@@ -50,6 +50,11 @@ def _request(method: str, path: str, read_timeout: float | None = 5,
         return False, None
     if not r.is_success:
         print("not success")
+        print(r)
+        try:
+            print(r.json())
+        except Exception:
+            print("could not json error")
         return False, None
     print(r)
     try:

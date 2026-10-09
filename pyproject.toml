@@ -15,6 +15,7 @@ dependencies = [
     "pyserial>=3.5",
     "zeroconf>=0.151.5",
     "httpx[http2]>=0.28.1",
+    "comtypes>=1.4.17",
 ]
 
 [project.scripts]

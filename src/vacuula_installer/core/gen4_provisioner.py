@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import threading
 from textwrap import dedent
 
@@ -8,6 +9,8 @@ from PySide6.QtCore import QObject, Signal
 
 from vacuula_installer.constants import SCRIPTS_DIR
 from vacuula_installer.core.mtp import MtpDevice
+from vacuula_installer.core.mtp.windows import WindowsMtpDevice
+from vacuula_installer.core.robot_detector import RobotDetector
 
 VENDOR_ID = 0x1D6B
 PRODUCT_ID = 0x0100
@@ -64,17 +67,25 @@ class Gen4Provisioner(QObject):
     def stop(self) -> None:
         self._active = False
 
+    # TODO: clean this up at some point... good enough for initial release
     def _run(self, dev: usb.core.Device) -> None:
         self._step.emit(1)  # connecting
-        try:
-            mtp = MtpDevice(dev)
+        if sys.platform == "win32":
+            serial_number = RobotDetector._get_serial(dev)
+            mtp = WindowsMtpDevice(serial_number)
             mtp.open_session(1)
             storage_id = mtp.get_storage_ids()[0]
-            data = mtp.read_file(storage_id, ["version.txt"])
-            print(f"data: {data}", mtp.get_storage_ids())
-        except Exception:  # noqa: BLE001
-            self._done.emit("error.generic.connect")
-            return
+            # raw_version_data = mtp.read_file(storage_id, ["version.txt"])
+        else:
+            try:
+                mtp = MtpDevice(dev)
+                mtp.open_session(1)
+                storage_id = mtp.get_storage_ids()[0]
+                # data = mtp.read_file(storage_id, ["version.txt"])
+                # print(f"data: {data}", mtp.get_storage_ids())
+            except Exception:  # noqa: BLE001
+                self._done.emit("error.generic.connect")
+                return
 
         self._step.emit(2)  # uploading
         try:
@@ -86,13 +97,13 @@ class Gen4Provisioner(QObject):
             return
         self._done.emit(None)
 
-    def _install_static_files(self, mtp: MtpDevice, storage_id: int) -> None:
+    def _install_static_files(self, mtp: MtpDevice | WindowsMtpDevice, storage_id: int) -> None:
         # install static files
         for install_path, local_path in FILES.items():
             with open(SCRIPTS_DIR / "gen4" / local_path, 'rb') as f:
                 mtp.send_file(install_path, storage_id, f.read())
 
-    def _set_vacuula_server(self, mtp: MtpDevice, storage_id: int) -> None:
+    def _set_vacuula_server(self, mtp: MtpDevice | WindowsMtpDevice, storage_id: int) -> None:
         # set server
         new_config = dedent(f"""\
             [N]
@@ -109,7 +120,7 @@ class Gen4Provisioner(QObject):
         # install certificate
         mtp.send_file('/home/root/tron/config/ssl/vacuula.crt', storage_id, self.vacuula_cert)
 
-    def _set_wifi(self, mtp: MtpDevice, storage_id: int) -> None:
+    def _set_wifi(self, mtp: MtpDevice | WindowsMtpDevice, storage_id: int) -> None:
         # update Wifi (optional)
         if self.wifi_ssid is None:
             return

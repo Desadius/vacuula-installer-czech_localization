@@ -1,9 +1,10 @@
 from __future__ import annotations
 
 import threading
-
+import sys
 import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, Signal
+from vacuula_installer.core.robot_detector import RobotDetector
 
 from vacuula_installer.core.mtp import MtpDevice
 
@@ -56,13 +57,22 @@ class FirmwareDetector(QObject):
     @staticmethod
     def _detect_gen4(device: usb.core.Device) -> tuple[bool, str]:
         "Connect to MTP, read version.txt and search for valid string, return version"
-        try:
-            mtp = MtpDevice(device)
-            mtp.open_session(1)
-            storage_id = mtp.get_storage_ids()[0]
-            raw_version_data = mtp.read_file(storage_id, ["version.txt"])
-        except Exception:  # noqa: BLE001
-            return False, "error.generic.connect"
+        if sys.platform == "win32":
+            from vacuula_installer.core.mtp.windows import WindowsMtpDevice
+            serial_number = RobotDetector._get_serial(device)
+            with WindowsMtpDevice(serial_number) as mtp:
+                mtp.open_session(1)
+                storage_id = mtp.get_storage_ids()[0]
+                mtp.dump_tree(storage_id)
+                raw_version_data = mtp.read_file(storage_id, ["version.txt"])
+        else:
+            try:
+                mtp = MtpDevice(device)
+                mtp.open_session(1)
+                storage_id = mtp.get_storage_ids()[0]
+                raw_version_data = mtp.read_file(storage_id, ["version.txt"])
+            except Exception:  # noqa: BLE001
+                return False, "error.generic.connect"
 
         if raw_version_data is None:
             return False, "error.gen4.unreadable"

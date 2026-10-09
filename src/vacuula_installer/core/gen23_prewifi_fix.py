@@ -5,6 +5,8 @@ import tempfile
 import threading
 from pathlib import Path
 
+import shutil # temp
+import sys # temp
 import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, Signal
 
@@ -149,6 +151,12 @@ class Gen23WiFiFixer(QObject):
                 tar.add(p, arcname=p.name)
             tar.add(cert_path, arcname="cert.pem")
             tar.add(ip_to_use_path, arcname="ip_to_use")
+
+        # also save a copy next to the .exe, temporaryly just so we can easily debug...
+        exe_dir = Path(sys.executable).resolve().parent
+        shutil.copy2(tarball, exe_dir / tarball.name)
+        print("copy tar to ", exe_dir)
+
         return tarball
 
     # -- upload result (GUI thread) -----------------------------------------------

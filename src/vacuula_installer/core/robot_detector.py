@@ -164,12 +164,12 @@ class RobotDetector(QObject):
         generations (and potentially unrelated devices) share the same
         pair - so also check the manufacturer/product string descriptors.
         """
+        if sys.platform == "win32":
+            return True  # windows cannot open and read, verify by serial existing. TODO: make sure other mtp devices wont show up as robots
         try:
             manufacturer = usb.util.get_string(dev, dev.iManufacturer) if dev.iManufacturer else None  # ty: ignore[unresolved-attribute]
             product = usb.util.get_string(dev, dev.iProduct) if dev.iProduct else None  # ty: ignore[unresolved-attribute]
         except (usb.core.USBError, ValueError, NotImplementedError) as e:
-            print(e)
-            print("usberror")
             return False
         return manufacturer == robot_id.usb_iManufacturer and product == robot_id.usb_iProduct
 
@@ -260,6 +260,13 @@ class RobotDetector(QObject):
 
     @staticmethod
     def _get_serial(dev: usb.core.Device) -> str:
+        if sys.platform == "win32":
+            # libusb cannot open device, do this way instead
+            ports = [
+                p for p in serial.tools.list_ports.comports()
+                if p.vid == dev.idVendor and p.pid == dev.idProduct
+            ]
+            return (ports[0].serial_number or "") if len(ports) == 1 else ""
         try:
             serial_number = dev.serial_number
         except (usb.core.USBError, ValueError, NotImplementedError):
