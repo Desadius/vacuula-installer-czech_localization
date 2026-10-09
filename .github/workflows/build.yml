@@ -77,7 +77,7 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Compress-Archive -Path "dist/${{ env.APP_NAME }}.exe" -DestinationPath "${{ env.APP_NAME }}-windows.zip"
+          Copy-Item "dist/${{ env.APP_NAME }}.exe" "${{ env.APP_NAME }}-windows.exe"
 
       - name: Package artifact (macOS)
         if: runner.os == 'macOS'
@@ -92,13 +92,15 @@ jobs:
           mkdir -p AppDir/usr/bin
           cp -r "dist/${{ env.APP_NAME }}"/. AppDir/usr/bin/
           chmod +x "AppDir/usr/bin/${{ env.APP_NAME }}"
+          cp src/assets/logo.svg vacuula-installer.svg
 
           cat > "${{ env.APP_NAME }}.desktop" <<EOF
           [Desktop Entry]
           Type=Application
           Name=${{ env.APP_NAME }}
           Exec=${{ env.APP_NAME }}
-          Icon=logo
+          Icon=vacuula-installer
+          StartupWMClass=${{ env.APP_NAME }}
           Categories=Utility;
           EOF
 
@@ -126,7 +128,7 @@ jobs:
             --appdir AppDir \
             --executable "AppDir/usr/bin/${{ env.APP_NAME }}" \
             --desktop-file "${{ env.APP_NAME }}.desktop" \
-            --icon-file src/assets/logo.svg \
+            --icon-file vacuula-installer.svg \
             --output appimage
           mv "${{ env.APP_NAME }}"-*.AppImage "${{ env.APP_NAME }}-linux.AppImage"
 

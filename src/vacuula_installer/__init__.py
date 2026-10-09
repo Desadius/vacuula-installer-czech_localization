@@ -10,11 +10,13 @@ from vacuula_installer.constants import DEFAULT_LANGUAGE, LOCALES_DIR
 from vacuula_installer.i18n import Translator
 from vacuula_installer.main_window import MainWindow
 from vacuula_installer.theme import STYLE_SHEET
+from vacuula_installer.app_identity import prepare_app_identity, apply_app_icon
 
 
 def main() -> int:
+    prepare_app_identity()
     app = QApplication(sys.argv)
-    app.setApplicationName("Vacuula Setup")
+    apply_app_icon(app)
     app.setStyleSheet(STYLE_SHEET)
 
     translator = Translator(LOCALES_DIR, default_language=DEFAULT_LANGUAGE)
