@@ -1,12 +1,13 @@
 from __future__ import annotations
 
-import threading
 import sys
+import threading
+
 import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, Signal
-from vacuula_installer.core.robot_detector import RobotDetector
 
 from vacuula_installer.core.mtp import MtpDevice
+from vacuula_installer.core.robot_detector import RobotDetector
 
 VALID_GEN3_VERSIONS = [
     ("4.5.3", "Software,4,5,3,189,0"),

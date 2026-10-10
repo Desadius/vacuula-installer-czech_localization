@@ -56,6 +56,7 @@ class CircleLinkButton(QPushButton):
         self.setFixedSize(CIRCLE_BUTTON_DIAMETER, CIRCLE_BUTTON_DIAMETER)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setFlat(True)
+        self.setFocusPolicy(Qt.FocusPolicy.NoFocus)
 
         self.setIcon(QIcon(str(spec.svg_path)))
         self.setIconSize(QSize(CIRCLE_ICON_SIZE, CIRCLE_ICON_SIZE))

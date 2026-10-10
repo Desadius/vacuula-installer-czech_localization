@@ -20,6 +20,7 @@ FILES = {
     '/usr/sbin/enable_vacuula_full.sh': 'enable_vacuula_full.sh',
     '/lib/systemd/system/usb-gadgets.service': 'usb-gadgets.service',
     '/etc/systemd/resolved.conf': 'resolved.conf',
+    '/etc/nsswitch.conf': 'nsswitch.conf',
     '/etc/systemd/network/wireless.network': 'wireless.network',
 }
 

@@ -6,17 +6,19 @@ Lots here was generated using claude sonnet, for example the cross platform seri
 """
 from __future__ import annotations
 
+import sys
+import time
 from dataclasses import dataclass
 from enum import IntEnum, auto
 
-import sys
-import usb.backend.libusb1
 import serial  # type: ignore[reportMissingTypeStubs]
 import serial.tools.list_ports  # type: ignore[reportMissingTypeStubs]
+import usb.backend.libusb1
 import usb.core  # type: ignore[reportMissingTypeStubs]
 import usb.util  # type: ignore[reportMissingTypeStubs]
-from vacuula_installer.constants import LIBUSB_DLL
 from PySide6.QtCore import QObject, QTimer, Signal
+
+from vacuula_installer.constants import LIBUSB_DLL
 
 # idVendor, idProduct
 GEN4_USB = [0x1D6B, 0x0100]
@@ -238,12 +240,17 @@ class RobotDetector(QObject):
             return vid_pid_matches[0].device
         return None
 
+    # TODO: uart stuff should be move to separate thing for just that!!
     @staticmethod
     def write_cmd(dev: usb.core.Device, cmd: str) -> str | None:
         target_serial = RobotDetector._get_serial(dev)
         port_name = RobotDetector._find_serial_port(dev, target_serial)
         if port_name is None:
             return None
+        return RobotDetector.write_cmd_port(port_name, cmd)
+
+    @staticmethod
+    def write_cmd_port(port_name: str, cmd: str) -> str | None:
         try:
             with serial.Serial(port_name, baudrate=SERIAL_BAUDRATE, timeout=SERIAL_TIMEOUT_S) as ser:
                 ser.reset_input_buffer()
@@ -253,6 +260,26 @@ class RobotDetector(QObject):
         except (serial.SerialException, OSError):
             return None
         return raw.decode("ascii", errors="ignore")
+
+    @staticmethod
+    def write_cmd_port_wait_terminator(
+        port_name: str, cmd: str, terminator: bytes = b"\x1A", timeout: float = 10.0
+    ) -> str:
+        with serial.Serial(port_name, baudrate=SERIAL_BAUDRATE, timeout=0.2) as ser:
+            ser.reset_input_buffer()
+            ser.write(cmd.encode("ascii") + b"\n")
+            ser.flush()
+            buf = bytearray()
+            deadline = time.monotonic() + timeout
+            while time.monotonic() < deadline:
+                chunk = ser.read(4096)
+                if chunk:
+                    buf += chunk
+                    if terminator in buf:
+                        return buf.decode("ascii", errors="ignore")
+            raise TimeoutError(
+                f"timed out waiting for terminator {terminator!r}; got {bytes(buf)!r}"
+            )
 
     @staticmethod
     def _query_get_version(dev: usb.core.Device) -> str | None:

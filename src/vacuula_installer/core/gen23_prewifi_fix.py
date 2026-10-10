@@ -103,6 +103,7 @@ class Gen23WiFiFixer(QObject):
             return serial
         return None
 
+    # TODO: resolve port here instead of later on in the code but meh for now, not in initial release
     def fix_robot(self, device: usb.core.Device, mac: str, session: SessionData) -> None:
         self._active = True
         threading.Thread(
