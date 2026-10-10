@@ -261,7 +261,21 @@ class RobotDetector(QObject):
     @staticmethod
     def _get_serial(dev: usb.core.Device) -> str:
         if sys.platform == "win32":
-            # libusb cannot open device, do this way instead
+            # libusb cannot open the device on Windows.
+            if [dev.idVendor, dev.idProduct] == GEN4_USB:  # ty: ignore[unresolved-attribute]
+                # Gen4 may expose only MTP (no COM port), so ask Windows'
+                # device list instead. Works for both USB layouts.
+                from vacuula_installer.core.mtp.windows import present_robot_serials
+                try:
+                    serials = present_robot_serials()
+                except Exception as e:  # noqa: BLE001
+                    print("could not list present robots:", e)
+                    serials = []
+                if len(serials) == 1:
+                    return serials[0]
+                if serials:
+                    return ""  # several robots: can't tell which libusb device is which
+            # Fallback (and gen2/3): serial number of the robot's COM port.
             ports = [
                 p for p in serial.tools.list_ports.comports()
                 if p.vid == dev.idVendor and p.pid == dev.idProduct

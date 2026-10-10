@@ -235,10 +235,76 @@ def _read_collection(coll) -> tuple[int, ...]:
 # device lookup
 # --------------------------------------------------------------------------
 
-def _parent_id_prefix(serial: str) -> str | None:
-    """Prefix shared by the instance IDs of all child interfaces of the
-    composite USB device with this serial, e.g. ``6&12425a59&0``. Assigned by
-    Windows per machine/port, so it's always looked up."""
+# Windows enumerates the robot in one of two layouts, depending on how many
+# USB functions it exposes:
+#
+#   composite:  USB\VID_1D6B&PID_0100\<serial>                (usbccgp)
+#                 └─ USB\VID_1D6B&PID_0100&MI_00\<prefix>&0000  = Neato Robot
+#               WPD path: \\?\usb#vid_1d6b&pid_0100&mi_00#<prefix>&0000#{wpd}
+#
+#   single:     USB\VID_1D6B&PID_0100\<serial>  = Neato Robot (parent = hub)
+#               WPD path: \\?\usb#vid_1d6b&pid_0100#<serial>#{wpd}
+#
+# Windows registers every WPD interface under DeviceClasses\{wpd}, so we read
+# the exact paths from there and only construct them as a fallback.
+
+_WPD_INTERFACES_KEY = (
+    rf"SYSTEM\CurrentControlSet\Control\DeviceClasses\{GUID_DEVINTERFACE_WPD}"
+)
+
+
+_cfgmgr32 = ctypes.WinDLL("cfgmgr32")
+_cfgmgr32.CM_Get_Device_ID_List_SizeW.argtypes = [
+    POINTER(ctypes.c_ulong), ctypes.c_wchar_p, ctypes.c_ulong]
+_cfgmgr32.CM_Get_Device_ID_List_SizeW.restype = ctypes.c_ulong
+_cfgmgr32.CM_Get_Device_ID_ListW.argtypes = [
+    ctypes.c_wchar_p, POINTER(ctypes.c_wchar), ctypes.c_ulong, ctypes.c_ulong]
+_cfgmgr32.CM_Get_Device_ID_ListW.restype = ctypes.c_ulong
+
+_CM_GETIDLIST_FILTER_ENUMERATOR = 0x00000001
+_CM_GETIDLIST_FILTER_PRESENT = 0x00000100
+_CR_SUCCESS = 0x00
+_CR_BUFFER_SMALL = 0x1A
+
+
+def _present_device_ids(enumerator: str = "USB") -> list[str]:
+    """Instance IDs of all currently present devices under ``enumerator``."""
+    flags = _CM_GETIDLIST_FILTER_ENUMERATOR | _CM_GETIDLIST_FILTER_PRESENT
+    for _ in range(3):  # list can grow between the two calls
+        size = ctypes.c_ulong()
+        cr = _cfgmgr32.CM_Get_Device_ID_List_SizeW(ctypes.byref(size), enumerator, flags)
+        if cr != _CR_SUCCESS:
+            raise MtpError(f"CM_Get_Device_ID_List_Size failed: {cr:#x}")
+        buf = ctypes.create_unicode_buffer(size.value)
+        cr = _cfgmgr32.CM_Get_Device_ID_ListW(enumerator, buf, size.value, flags)
+        if cr == _CR_BUFFER_SMALL:
+            continue
+        if cr != _CR_SUCCESS:
+            raise MtpError(f"CM_Get_Device_ID_List failed: {cr:#x}")
+        return [s for s in buf[:size.value].split("\0") if s]
+    raise MtpError("CM_Get_Device_ID_List kept growing")
+
+
+def present_robot_serials() -> list[str]:
+    """USB serials of the gen4 robots plugged in right now.
+
+    Both layouts have a ``USB\\VID_1D6B&PID_0100\\<serial>`` node (the whole
+    device), so this works whether or not the robot exposes a COM port.
+    Windows-generated instance IDs (no serial) contain ``&`` and are skipped.
+    """
+    prefix = f"USB\\{GEN4_VID_PID}\\".upper()
+    out = []
+    for dev_id in _present_device_ids():
+        if dev_id.upper().startswith(prefix):
+            instance = dev_id[len(prefix):]
+            if instance and "&" not in instance:
+                out.append(instance)
+    return out
+
+
+def _parent_id_prefix(serial: str | None) -> str | None:
+    """Prefix shared by the child interfaces of a *composite* robot with this
+    serial, e.g. ``6&12425a59&0``. None for the single-function layout."""
     if not serial:
         return None
     key_path = rf"SYSTEM\CurrentControlSet\Enum\USB\{GEN4_VID_PID}\{serial}"
@@ -249,13 +315,75 @@ def _parent_id_prefix(serial: str) -> str | None:
         return None
 
 
-def _device_id_for(serial: str) -> str:
-    """WPD PnP id of the robot's MTP interface (MI_00)."""
-    prefix = _parent_id_prefix(serial)
-    if prefix is None:
-        raise MtpError(f"No ParentIdPrefix in the registry for serial {serial!r}")
+def _registry_name_to_path(name: str) -> str | None:
+    """``##?#USB#VID_...#...#{guid}`` -> ``\\\\?\\usb#vid_...#...#{guid}``."""
+    if not name.startswith("##?#"):
+        return None
+    return ("\\\\?\\" + name[4:]).lower()
+
+
+def _is_linked(parent, name: str) -> bool:
+    """True if Windows marks this interface as currently present."""
+    try:
+        with winreg.OpenKey(parent, name + r"\#\Control") as ctl:
+            return bool(winreg.QueryValueEx(ctl, "Linked")[0])
+    except OSError:
+        return False
+
+
+def _registered_wpd_paths() -> list[tuple[str, bool]]:
+    """(path, present) for every robot WPD interface Windows knows about."""
     vid_pid = GEN4_VID_PID.lower()
-    return rf"\\?\usb#{vid_pid}&mi_00#{prefix}&0000#{GUID_DEVINTERFACE_WPD}"
+    out: list[tuple[str, bool]] = []
+    try:
+        with winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, _WPD_INTERFACES_KEY) as key:
+            i = 0
+            while True:
+                try:
+                    name = winreg.EnumKey(key, i)
+                except OSError:
+                    break
+                i += 1
+                path = _registry_name_to_path(name)
+                if path and f"#{vid_pid}" in path:
+                    out.append((path, _is_linked(key, name)))
+    except OSError:
+        pass
+    return out
+
+
+def _matches(path: str, serial: str | None, prefix: str | None) -> bool:
+    if prefix and f"#{prefix}&" in path:
+        return True  # composite layout
+    if serial and f"#{serial.lower()}#" in path:
+        return True  # single-function layout
+    return False
+
+
+def _candidate_device_ids(serial: str | None) -> list[str]:
+    """WPD paths that may be this robot, best guess first.
+
+    With a serial: registered paths matching it (present ones first), then the
+    constructed paths for both layouts. Without a serial (libusb couldn't read
+    it), every *present* robot interface, which is unambiguous when only one
+    robot is plugged in.
+    """
+    vid_pid = GEN4_VID_PID.lower()
+    prefix = _parent_id_prefix(serial)
+    registered = _registered_wpd_paths()
+
+    if serial:
+        found = [p for p, _ in sorted(registered, key=lambda r: not r[1])
+                 if _matches(p, serial, prefix)]
+        if prefix:
+            found.append(rf"\\?\usb#{vid_pid}&mi_00#{prefix}&0000#{GUID_DEVINTERFACE_WPD}")
+        found.append(rf"\\?\usb#{vid_pid}#{serial.lower()}#{GUID_DEVINTERFACE_WPD}")
+    else:
+        found = [p for p, present in registered if present]
+        if len(found) > 1:
+            raise MtpError("Several robots are connected; unplug all but one")
+
+    return list(dict.fromkeys(found))  # dedupe, keep order
 
 
 # --------------------------------------------------------------------------
@@ -263,14 +391,27 @@ def _device_id_for(serial: str) -> str:
 # --------------------------------------------------------------------------
 
 class WindowsMtpDevice(MtpDevice):
-    def __init__(self, serial: str, device_id: str | None = None) -> None:
+    def __init__(self, serial: str | None, device_id: str | None = None) -> None:
         # Deliberately NOT calling MtpDevice.__init__: that one needs libusb.
         comtypes.CoInitialize()
         self._dev = None
         try:
-            self._device_id = device_id or _device_id_for(serial)
-            _dbg("device id:", self._device_id)
-            self._dev = self._open(self._device_id)
+            candidates = [device_id] if device_id else _candidate_device_ids(serial)
+            if not candidates:
+                raise MtpError(f"Robot not found in Windows' device list (serial {serial!r})")
+            errors: list[str] = []
+            for candidate in candidates:
+                try:
+                    self._dev = self._open(candidate)
+                except MtpError as e:
+                    _dbg("open failed:", e)
+                    errors.append(str(e))
+                    continue
+                self._device_id = candidate
+                _dbg("device id:", candidate)
+                break
+            else:
+                raise MtpError("Could not open the robot: " + "; ".join(errors))
         except BaseException:
             comtypes.CoUninitialize()
             raise
