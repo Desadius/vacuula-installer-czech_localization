@@ -1,16 +1,16 @@
 # Vacuula installer
 
-Welcome to the vacuula installer, a cross platform application that will make transforming your artificially dumbed-down robot into a immortal* dust-sucker as easy as ~~possible~~ we could make it!
+![logo](src/assets/logo.svg)Welcome to the vacuula installer, a cross platform application that will make transforming your artificially dumbed-down robot into a immortal* dust-sucker as easy as ~~possible~~ we could make it!
 
-**Still can get physically damaged by stakes, among other things*
+**Still can get physically damaged by wooden stakes, among other things*
 
-Dont have a Neato robot vacuum, but stumbled here from somewhere? Let's just say Neato robots are *really* cheap on the second hand market now for some reason, this project returns their value *(and depending on how much you value your integrity and ownership of what you buy, surpass it)*.
+Don't have a Neato robot vacuum, but stumbled here from somewhere? Let's just say Neato robots are *really* cheap on the second hand market now for some reason, this project returns their value *(and depending on how much you value your integrity and ownership of what you buy, surpasses it)*.
 
 The installer supports all generation 2, 3 and 4 robots (Botvac Connected -> D10), and should work on Linux distros, Windows (7+) and probably (not tested yet) Mac.
 
-__Before you can let Vacuula *bite* your robot vacuum(s), you must install the vacuula server that replaces the closed Neato servers.__ This arrangement puts you in control of your own data and lifetime of the robot(s). If you havent set up a server yet, learn about it (and download) at [https://github.com/vacuula/vacuula/](github.com/vacuula/vacuula)!
+__Before you can let Vacuula *bite* your robot vacuum(s), you must install the vacuula server that replaces the closed Neato servers.__ This arrangement puts you in control of your own data and lifetime of the robot(s). If you havent set up a server yet, learn about it (and download) at [github.com/vacuula/vacuula](https://github.com/vacuula/)!
 
-The installer is as batteries-included as we could make it, but ofcourse we can't predict all states the robots are in. Particularly if your robot is in the "rainbow mode" and refuses to start fully, there can be many different causes which vary in how easy they are to fix (but most can!). To get help use the [https://discord.gg/PAgwhWvyD8](discord server) or the discussions tab here *(if enabled)*.
+The installer is as batteries-included as we could make it, but ofcourse we can't predict all states the robots are in. Particularly if your robot is in the "rainbow mode" and refuses to start fully, there can be many different causes which vary in how easy they are to fix (but most can!). To get help use the [discord server](https://discord.gg/PAgwhWvyD8/) or the discussions tab here *(if enabled)*.
 
 The installer __collects no data, only modifies your vacuum for the sole reason of allowing it to be controlled by your own server__. Generation 3 robots (after being bitten by vacuula) *currently* use nip.io to help connect to your server, this is a limitation of the models we haven't managed to work around cleanly yet.
 
@@ -50,7 +50,7 @@ The installer is written in python using Qt6 (pyside6)
 
 ## By whom, why?
 
-This app has been developed from a passion to fight arbitrary decripation, an idea that maybe its not how it should be that millions of robot vacuums get turned into ewaste-ish overnight by a whim of buisness.
+This app has been developed from a passion to fight arbitrary decripation, an idea that maybe it is not how it should be that millions of robot vacuums get turned into ewaste-ish overnight by a whim of buisness.
 
 Also it has been fun to try to do a clean UI that still handles the rather extensive quirks and limitations of the different models and cracking procedures.
 
