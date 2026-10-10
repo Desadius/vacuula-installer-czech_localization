@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from PySide6.QtCore import QRectF, QSize, Qt, QUrl
-from PySide6.QtGui import QColor, QDesktopServices, QIcon, QPainter, QPixmap
-from PySide6.QtSvg import QSvgRenderer
+from PySide6.QtGui import QColor, QDesktopServices, QIcon
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton, QVBoxLayout, QWidget
 
 from vacuula_installer.constants import (
@@ -39,32 +38,6 @@ LINK_BUTTONS: tuple[LinkButtonSpec, ...] = (
     LinkButtonSpec(KOFI_SVG, "Ko-Fi", "https://ko-fi.com/V7V61PBIY6"),
 )
 
-
-def _render_svg_icon(path: Path, size: int, color: QColor = ICON_COLOR) -> QPixmap:
-    renderer = QSvgRenderer(str(path))
-
-    view_box = renderer.viewBoxF().size()
-    if view_box.width() > 0 and view_box.height() > 0:
-        native_size = view_box.toSize()
-    else:
-        native_size = renderer.defaultSize()
-        if not (native_size.isValid() and native_size.width() > 0 and native_size.height() > 0):
-            native_size = QSize(size, size)
-
-    scaled = native_size.scaled(size, size, Qt.AspectRatioMode.KeepAspectRatio)
-    x = (size - scaled.width()) / 2
-    y = (size - scaled.height()) / 2
-
-    pixmap = QPixmap(size, size)
-    pixmap.fill(Qt.GlobalColor.transparent)
-    painter = QPainter(pixmap)
-    renderer.render(painter, QRectF(x, y, scaled.width(), scaled.height()))
-    painter.setCompositionMode(QPainter.CompositionMode.CompositionMode_SourceIn)
-    painter.fillRect(pixmap.rect(), color)
-    painter.end()
-    return pixmap
-
-
 class CircleLinkButton(QPushButton):
     """A round, outlined button with a centered svg icon. Click opens `url`
     in the system browser; hover shows the translated tooltip."""
@@ -84,7 +57,7 @@ class CircleLinkButton(QPushButton):
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setFlat(True)
 
-        self.setIcon(QIcon(_render_svg_icon(spec.svg_path, CIRCLE_ICON_SIZE)))
+        self.setIcon(QIcon(str(spec.svg_path)))
         self.setIconSize(QSize(CIRCLE_ICON_SIZE, CIRCLE_ICON_SIZE))
 
         self.clicked.connect(self._open_url)

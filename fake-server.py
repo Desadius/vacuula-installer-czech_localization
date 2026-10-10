@@ -1,6 +1,7 @@
 """Fake server if you don't have a real one running or whatever"""
 import secrets
 import socket
+import json
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from zeroconf import ServiceInfo, Zeroconf
@@ -17,10 +18,26 @@ finally:
 
 class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path != "/api/cert":
-            self.send_error(404)
-            return
+        if self.path == "/api/cert":
+            self.do_cert()
+        elif self.path == "/api/server":
+            self.do_server()
 
+    def do_server(self):
+        data = json.dumps({
+            "version": "1.0.0",
+            "gen4_port": 3443,
+            # "timezone": XXX, - not used by installer
+            # "utc_offset_minutes": XXX, - not used by installer
+        }).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(data)))
+        self.end_headers()
+        self.wfile.write(data)
+        self.wfile.flush()
+
+    def do_cert(self):
         data = f"{secrets.token_hex(32)}\n".encode()
         self.send_response(200)
         self.send_header("Content-Type", "text/plain; charset=utf-8")
@@ -31,6 +48,7 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
         self.wfile.write(data)
+        self.wfile.flush()
 
 httpd = HTTPServer(("0.0.0.0", PORT), Handler)
 zc = Zeroconf()
