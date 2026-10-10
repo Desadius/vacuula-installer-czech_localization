@@ -57,6 +57,6 @@ Also it has been fun to try to do a clean UI that still handles the rather exten
 Special thanks to:
 - Philip for the Vacuula project itself and for helping to add handling of quirks of the vacuum cleaners I don't have at home, getting it over the finish line.
 - Fjalar for getting it to modern build tooling, so we did not have to play with venvs forever.
-- nescio007, BK and everyone else in #secret who have provided methods to root the different neatos and/or helped test the installer
+- nescio007, BK and everyone else in core team who have provided methods to root the different neatos and/or helped test the installer
 - Me myself, Rinkana, for most of the app and UX direction. I take no credit for the amazing exploits that enable this (and the entire vacuula project).
 
