@@ -57,6 +57,7 @@ class DisclaimerScreen(QWidget):
         "disclaimer.bullet4",
         "disclaimer.bullet5",
         "disclaimer.bullet6",
+        "disclaimer.bullet7",
     )
     _BULLETS_BEFORE_CHECKBOX = 4
 
@@ -83,8 +84,11 @@ class DisclaimerScreen(QWidget):
         for key in self._BULLET_KEYS:
             self._add_bullet_row(block_layout, key)
         self._acknowledge_checkbox, self._acknowledge_caption = (
-            self._add_acknowledge_row(block_layout)
+            self._add_acknowledge_row(block_layout,4 )
         )
+        self._warning_checkbox, self._warning_caption = (
+                    self._add_acknowledge_row(block_layout, 6)
+                )
 
         self._understand_button = QPushButton(self)
         self._understand_button.setObjectName("understandButton")
@@ -131,6 +135,7 @@ class DisclaimerScreen(QWidget):
         text.setObjectName("serversearchDetailLabel")
         text.setWordWrap(True)
         text.setSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Minimum)
+        text.setOpenExternalLinks(True)
 
         row = self._new_row()
         row.addWidget(marker)
@@ -139,7 +144,7 @@ class DisclaimerScreen(QWidget):
         layout.addLayout(row)
         self._bullets.append((key, text))
 
-    def _add_acknowledge_row(self, layout: QVBoxLayout) -> tuple[QCheckBox, QLabel]:
+    def _add_acknowledge_row(self, layout: QVBoxLayout, position) -> tuple[QCheckBox, QLabel]:
         # QCheckBox only draws plain text, so the caption is a QLabel instead
         # (rich text + word wrap like the bullets); clicking it toggles the box.
         checkbox = QCheckBox(self._bullet_block)
@@ -158,7 +163,7 @@ class DisclaimerScreen(QWidget):
         row.addWidget(checkbox, alignment=_TOP)
         row.addWidget(caption, 1)
 
-        layout.insertLayout(self._BULLETS_BEFORE_CHECKBOX, row)
+        layout.insertLayout(position, row)
         return checkbox, caption
 
     @staticmethod
@@ -214,4 +219,5 @@ class DisclaimerScreen(QWidget):
             label.setText(tr(key))
         self._acknowledge_caption.setText(tr("disclaimer.acknowledge"))
         self._understand_button.setText(tr("disclaimer.understand"))
+        self._warning_caption.setText(tr("disclaimer.warning"))
         self._fit_to_fonts()

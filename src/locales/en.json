@@ -1,50 +1,46 @@
 {
-  "String-version": "7",
+  "String-version": "9",
   "app.window_title": "Vacuula-ifiyer",
 
-  "welcome.tagline": "Let's get your robot vacuum new <i>life</i>",
+  "welcome.tagline": "Let's get your robot vacuum a new <i>life</i>",
   "welcome.continue": "Continue",
   "welcome.language_tooltip": "Change language",
-  "welcome.find_help": "?¿ If you encounter any issues during installation, don't hesitate to get in touch on <a href='https://github.com/vacuula/installer'>GitHub</a>, <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> or your closest technical friend!",
+  "welcome.find_help": "?¿ <i>If you encounter any issues during installation, don't hesitate to get in touch on <a href='https://github.com/vacuula/installer'>GitHub</a>, <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> or ask your closest technical friend!<br><br>Missing a language? You can help! (see the github)</i>",
 
   "disclaimer.title": "~ The disclaimer ~",
   "disclaimer.acknowledge": "I will <b>not disconnect the usb cable</b> before instructed to do so",
+  "disclaimer.warning": "I have downloaded Vacuula from github.com/vacuula, as other sources could contain nefarious modifications",
   "disclaimer.bullet1": "You need a recently (re)started robot <i>(do it now if it has been on for a longer duration)</i>",
-  "disclaimer.bullet2": "If your robot is rainbowing, get in touch!",
+  "disclaimer.bullet2": "If your robot is <i>rainbowing</i>, get in touch!",
   "disclaimer.bullet3": "You will need an usb <b>data</b> cable",
   "disclaimer.bullet4": "Vacuula is not affilated with Neato",
-  "disclaimer.bullet5": "Vacuula modifies your robot software. It does so for the sole reason of allowing your vacuula server to control it. All code; installer, server and scripts are open source, take a look!",
-  "disclaimer.bullet6": "You proceed on your own risk",
+  "disclaimer.bullet5": "Vacuula modifies your robot software. It does so for the sole reason of allowing <i>your</i> vacuula server to control it. All code; installer, server and scripts are open source, take a <a href='https://github.com/vacuula'>look</a>!",
+  "disclaimer.bullet6": "Make sure your robot is fully charged or connected to the charger!",
+  "disclaimer.bullet7": "You proceed on your own risk",
   "disclaimer.understand": "I understand, let's continue!",
 
-
-
   "serversearch.title": "Vacuula needs a server",
-  "serversearch.body": "Before <i>biting</i> your robot a server needs to be setup. Follow instructions <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'>here</a> if not done already",
+  "serversearch.body": "Before <i>biting</i> your robot a server needs to be setup. Follow instructions <a href='https://github.com/vacuula/vacuula'>here</a> if not done already",
   "serversearch.detailinfo": "🛈 <i>The server needs to be accessible on both the network the robot will be connected to and on the network controlling devices will be - if separate</i>",
   "serversearch.status.searching": "Searching for a server",
   "serversearch.status.found": "Server found at {ip}!",
 
-
   "error.title": "An error occurred",
   "error.restart": "Try installing again",
 
-  "error.multiple_robots": "Multiple robots detected, please connect only one at a time",
-  "error.multiple_robots.detailed": "Currently the installer only supports one robot at a time, future versions will support a selector.",
+  "error.multiple_robots": "Multiple robots detected, please only connect one",
+  "error.multiple_robots.detailed": "Currently the installer only supports one robot at a time, future versions might support selecting amongst the connected.",
   "error.robot_disconnected": "Robot disconnected",
   "error.robot_disconnected.detailed": "The robot was disconnected during the installation process, please reconnect and try again",
 
   "error.firmware.invalid": "Invalid firmware detected",
   "error.generic.connect": "Failed to connect to the robot",
-  "error.generic.upload": "Failed to upload vacuula to robot",
+  "error.generic.upload": "Failed to upload Vacuula to robot",
   "error.gen4.unreadable": "Unable to read firmware version",
   "error.gen23.reset": "Network reset failed",
   "error.generic.unexpected": "An unexpected error occurred",
-  "error.generic.help": "🛈 <i> Make sure the robot is powered on and connected to your computer via USB. If the problem persists, try restarting the installer or the robot. If it refuses to work, ask for help in the discord </i>",
-  "error.firmware.help": "🛈 <i> Follow the guide on <a href=''>github</a> on how to update your robot to an supported firmware version or ask for help on the discord. </i>",
-
-
-
+  "error.generic.help": "🛈 <i> Make sure the robot is powered on and connected to your computer via USB. If the problem persists, try restarting the installer and the robot. If it refuses to work, ask for help in the discord!</i>",
+  "error.firmware.help": "🛈 <i> Follow the guide on <a href='https://github.com/vacuula/installer'>github</a> on how to update your robot to an supported firmware version or ask for help on the discord. </i>",
 
   "connect.title": "Connect a robot to your computer with a USB cable",
   "connect.howto": "🛈 <i>There is a USB contact under the dustbin, the green &quot;cable&quot; in the illustration ends at its approximate location</i>",
@@ -86,7 +82,7 @@
   "provision.gen23.step1": "Connecting to WiFi",
   "provision.gen23.step2": "Checking connection to internet",
   "provision.gen23.step3": "Vacuula takes over",
-  "provision.gen23.step4": "Rebooting, check <a href='http://vacuula.local'>vacuula.local</a>",
+  "provision.gen23.step4": "Shutting down for a restart",
   "provision.gen23.milestone.started": "Vacuula script started",
   "provision.gen23.milestone.reinstalling": "Vacuula reinstalling",
   "provision.gen23.milestone.installing": "Vacuula installing",
@@ -96,6 +92,6 @@
   "provision.gen4.step2": "Uploading Vacuula",
   "provision.gen4.instructions": "Done! To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until is has fully booted up.",
 
-  "finished.title": "Robot bitten by Vacuula",
-  "finished.subtitle": "You may now disconnect the robot from your computer and start the robot back up. The please wait for the robot to show up in your <a href='http://vacuula.local'>Vacuula server</a>"
+  "finished.title": "Robot <i>bitten</i> by Vacuula",
+  "finished.subtitle": "You may now disconnect the robot from your computer and start the robot back up! Then please wait for the robot to show up in your <a href='http://vacuula.local'>Vacuula server!</a>"
 }

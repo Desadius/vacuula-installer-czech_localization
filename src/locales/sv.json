@@ -1,16 +1,46 @@
 {
-  "String-version": "6",
+  "String-version": "9",
   "app.window_title": "Vacuula-ifierare",
 
   "welcome.tagline": "Dags att ge din robot nytt <i>liv</i>",
   "welcome.continue": "Fortsätt",
   "welcome.language_tooltip": "Byt språk",
+  "welcome.find_help": "?¿ <i>Tveka inte att höra av dig på <a href='https://github.com/vacuula/installer'>GitHub</a> eller <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> om du möter problem under installationen (eller fråga närmsta tekniskt-lagda vän)!<br><br>Saknar du ett språk? Du kan hjälpa ändra på saken (sväng förbi på github)!</i>",
+
+  "disclaimer.title": "~ Det små<i>(stor?)</i>stilta ~",
+  "disclaimer.acknowledge": "Jag kommer <b>inte koppla loss usb-kabeln</b> innan jag meddelas att det är o.k",
+  "disclaimer.warning": "Jag har hämtat Vacuula från github.com/vacuula, då andra ställen kan vara besudlade med illa-menande modifikationer",
+  "disclaimer.bullet1": "Din robot bör vara nyligen startad <i>(starta om den nu om den har varit igång länge)</i>",
+  "disclaimer.bullet2": "Om din robot istället för att starta visar <i>(några)</i> av regnbågens färger; hör av dig!",
+  "disclaimer.bullet3": "Du kommer behöva en usb-<b>data</b> kabel",
+  "disclaimer.bullet4": "Vacuula är inte affilierad med Neato",
+  "disclaimer.bullet5": "Vacuula modifierar din robots mjukvara. Ändringarna ägnar sig endast åt att låta den styras av <i>din</i> server. All kod: detta installationsprogram, server och skript har öppen källkod, ta en <a href='https://github.com/vacuula'>titt</a>!",
+  "disclaimer.bullet6": "Se till att din robot är fulladdad eller ansluten till laddaren!",
+  "disclaimer.bullet7": "Du går vidare på egen risk",
+  "disclaimer.understand": "Jag förstår, låt oss fortsätta!",
 
   "serversearch.title": "Vacuula behöver en server",
   "serversearch.body": "Innan din robot kan <i>bitas</i> måste en server vara uppsatt. Följ instruktionerna <a href='https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=RDdQw4w9WgXcQ&start_radio=1'>här</a> om du inte redan gjort det",
   "serversearch.detailinfo": "🛈 <i>Servern måste vara tillgänglig på både nätverket robotdammsugaren kommer ansluta till och nätverket styrenheter (mobil, dator) är anslutna till - ifall det skiljer sig</i>",
   "serversearch.status.searching": "Letar efter en server",
   "serversearch.status.found": "Fann en server på {ip}!",
+
+  "error.title": "Ett fel har inträffat",
+  "error.restart": "Prova köra installationsprogrammet på nytt",
+
+  "error.multiple_robots": "Flera robotar har detekterats, var god och anslut endast en",
+  "error.multiple_robots.detailed": "För tilfället stödjer installationsprogrammet endast en robotdammsugare åt gången.",
+  "error.robot_disconnected": "Robot frånkopplad",
+  "error.robot_disconnected.detailed": "Robotdammsugaren kopplades loss under installationen, anslut den på nytt och prova igen",
+
+  "error.firmware.invalid": "Roboten rapporterar en ogiltig fast mjukvara",
+  "error.generic.connect": "Misslyckades ansluta till robotdammsugaren",
+  "error.generic.upload": "Vacuula misslyckades <i>bita</i>(installera sig på) roboten",
+  "error.gen4.unreadable": "Kan inte läsa den fasta mjukvarans version",
+  "error.gen23.reset": "Lyckades inte återställa robotens nätverk",
+  "error.generic.unexpected": "Ett oväntat fel har inträffat",
+  "error.generic.help": "🛈 <i> Se till att robotdammsugaren är påslagen och ansluten till datorn med usb-kabel. Om problemet kvarstår, prova starta om både installationsprogrammet och roboten. Om det fortfarande vägrar fungera, fråga i discord:en!</i>",
+  "error.firmware.help": "🛈 <i> Följ instruktionerna i <a href='https://github.com/vacuula/installer'>github</a> om hur man uppdaterar din damssugare till en version av den fasta mjukvaran som stödjs, eller be om hjälp i discord:en.</i>",
 
   "connect.title": "Anslut din robotdammsugare med en USB kabel",
   "connect.howto": "🛈 <i>Det finns en USB-anslutning under dammuppsamlaren, den gröna streckade &quot;kabeln&quot; går till dess ungefärliga position</i>.",
@@ -22,12 +52,46 @@
   "wifi.title": "Anslut din robot till WiFi",
   "wifi.explanation": "Vacuula behöver ju ansluta till din server!",
   "wifi.ssid.title": "WiFi-nätverkets namn (SSID)",
+  "wifi.ssid.gen23.title": "Välj bland tillgängliga nätverk",
   "wifi.pass.title": "Lösenord, kan vara tomt",
   "wifi.disclaimer": "🛈 <i>Notera att Neato-robotarna som stödjs av Vacuula <b>inte stödjer</b> WPA3, se till att nätverket den ansluter till använder WPA2 eller blandat WPA2/WPA3 läge. Det är även klokt att ansluta roboten till 2,4GHz om tillgängligt.</i>",
   "wifi.button": "Fortsätt",
 
-  "firmware.scan": "Kollar om din robots firmware är senaste versionen",
-  "firmware.flash": "Flasha firmware",
+  "wifi.gen23.pre.title": "Anslut till din robots WiFi",
+  "wifi.gen23.pre.explanation": "Anslut denna dator till \"<b>Neato-{mac}</b>\" WiFi-nätverket",
+  "wifi.gen23.pre.disclaimer": "Precis som original-appen behöver generation 2 & 3 robotar konfigureras genom deras egna WiFi-nätverk. Installationsprogrammet har automatiskt återställt dess nätverk, så det borde snart dyka upp i din dators lista på tillgängliga anslutningar! Om det inte syns till efter några minuter, prova starta om programmet, roboten eller återställ nätverket manuellt om du har manualen kvar.",
+  "wifi.gen23.pre.try_connection": "Jag har anslutit!",
 
-  "install.launching": "Installerar Vacuula i {model}"
+  "wifi.gen23.explanation.title": "Din dator måste anslutas till robotens egna WiFi-nätverk för installations-proceduren",
+  "wifi.gen23.explanation.body": "Vänligen byt din dators WiFi-anslutning till robotsammsugarens egna nätverk: \"{robot-wifi-ssid}\". Detta är endast nödvändigt under installations-proceduren",
+  "wifi.gen23.disclaimer": "🛈 <i>Man kan endast välja bland nätverk som roboten själv ser. Neato-robotarna som stödjs av Vacuula <b>stödjer inte</b> WPA3, se till att nätverket den ansluter till använder WPA2 eller blandat WPA2/WPA3 läge. Det är även klokt att ansluta roboten till 2,4GHz om tillgängligt.</i>",
+  "wifi.gen23.scan_failed": "<i style='color:red'>Kunde inte söka efter nätverk</i>",
+  "wifi.gen23.none_found": "<i style='color:yellow'>Hittade inga nätverk</i>",
+  "wifi.gen23.loading": "<i>Roboten söker efter nätverk</i>",
+  "wifi.gen23.use_list": "Välj bland de tillgängliga nätverken",
+  "wifi.gen23.use_manual": "Ange nätverk manuellt",
+  "wifi.gen23.rescan": "Sök igen",
+
+  "firmware.scan": "Kollar om din robots fasta mjukvara är senaste versionen",
+  "firmware.flash": "Installera fast mjukvara",
+
+  "install.launching": "Installerar Vacuula i {model}",
+
+  "provision.title": "Konfigurerar din robotdammsugare",
+
+  "provision.gen23.step1": "Ansluter till WiFi",
+  "provision.gen23.step2": "Kontrollerar anslutning till internet",
+  "provision.gen23.step3": "Vacuula tar över",
+  "provision.gen23.step4": "Stänger av roboten för en omstart",
+  "provision.gen23.milestone.started": "Vacuula installations-skript har startat",
+  "provision.gen23.milestone.reinstalling": "Vacuula ominstalleras",
+  "provision.gen23.milestone.installing": "Vacuula installeras",
+  "provision.gen23.milestone.finished": "Vacuula har <i>bitit</i> färdigt",
+
+  "provision.gen4.step1": "Ansluter till robotdammsugaren",
+  "provision.gen4.step2": "Laddar upp Vacuula",
+  "provision.gen4.instructions": "Klar! För att ansluta till servern, håll först startknappen nertryckt tills roboten stängs av.",
+
+  "finished.title": "<i>Biten</i> av Vacuula",
+  "finished.subtitle": "Du kan nu koppla loss din robotdammsugare från datorn och starta upp den! Den bör snart därefter dyka upp i din <a href='http://vacuula.local'>Vacuula server</a>!"
 }
