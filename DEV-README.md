@@ -8,8 +8,8 @@ Goals for this is to:
 5. Be as much of "one click install" mantra as possible aka. KISS
 
 Goals are NOT:
-1. Server install walk-trough
-2. Un-rainbower
+1. Server install walk-trough, that can be found [here]()
+2. Un-rainbower, the [discord]() will serve that purpose
 
 ## Current TODO:s in random order
 
@@ -55,12 +55,12 @@ flowchart LR
     style Fb fill:#90EE90,stroke:#2e7d32,color:#000
 ```
 
-- Prettify the connect vacuula svg, removing the WIP banner (robot->out with dustbin + robot<->computer)
+- Prettify the connect vacuula svg, removing the WIP banner (robot->out with dustbin + robot<->computer) __<-- prio!__
 - Fix a more direct link in error.firmware.help
 - Go trough the TODO:s that are sprinkled as comments in the code
-- Add translations (help wanted, what languages do yall speak?)
+- Add translations (help wanted, what languages do yall speak?) __<-- prio!__
 - Prettify and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
-- Test on osx
+- Test on osx __<-- prio!__
 
 
 ## Run it as dev
@@ -69,11 +69,10 @@ flowchart LR
 uv run vacuula-installer
 ```
 
-To pass server detection screen without a server (using avahi-utils):
+To pass server detection screen without a server:
 ```bash
-avahi-publish -a vacuula-server.local <a-random-but-valid-ip>
+uv run fake-server.py
 ```
-You can also use that if the server mDNS does not reach the robot network (but the robot can connect to the ip)
 
 ## Adding a language
 
@@ -90,9 +89,5 @@ a language, update its strings-version to the same as the language it caught up 
 
 NOTE! While locale.json with the higest "Strings-version" is technically the translation to translate from, lets keep it to en.json.
 
-
-## Placeholders:
-- **`src/vacuula_installer/core/installer.py`** — `InstallerLauncher.launch(model_id)`
-  A placeholder draft, needs some refactoring but the working principle is there.
-  Real scripts go into `_SCRIPTS` (paths per model) and replace the `TODO` with
-  an actual (non-blocking) launch, e.g. `QProcess`.
+## Future ideas
+- Prettify and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
