@@ -247,7 +247,7 @@ class MainWindow(QMainWindow):
         """Set what clicking "back" does right now (or hide the button)."""
         # TODO: initial release we disable back button, will make it work later
         self._back_action = action
-        # self._back_button.setVisible(action is not None)
+        self._back_button.setVisible(action is not None)
 
     def _go_back(self) -> None:
         if self._back_action is not None:
@@ -400,6 +400,7 @@ class MainWindow(QMainWindow):
         if valid:
             self._goto_wifi_screen()
         else:
+            #TODO: check if link is clickable here (error.firmware.help)
             self._show_error(msg, detailed="error.firmware.help" if msg == "error.firmware.invalid" else "error.generic.help")
 
     def _select_dev_or_server_screen(self) -> None:
@@ -416,15 +417,7 @@ class MainWindow(QMainWindow):
             self._goto_notice_screen()
 
     def _goto_notice_screen(self) -> None:
-        #TODO:
-        #- rebooted robot
-        #- if your robot is rainbowing, get in touch in the discord
-        #- you will need an usb cable
-        #- vaccula modifies your robot software, blablabla, is removableish (kinda not gen 3)
-        #- Vacuula is not affilated with neato
-        #- You proceed on your own risk
-        # I understand
-
+        self._set_back_action(self._back_to_welcome)
         self._crossfade_to(self._disclaimer_screen)
 
     def _goto_dev_only_screen(self) -> None:

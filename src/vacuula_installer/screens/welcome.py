@@ -23,13 +23,17 @@ class WelcomeScreen(QWidget):
         layers.setStackingMode(QStackedLayout.StackingMode.StackAll)
 
         self._flair = BackgroundFlairWidget(self)
+        
         layers.addWidget(self._flair)
+
 
         foreground = QWidget(self)
         foreground.setAttribute(Qt.WidgetAttribute.WA_StyledBackground, True)
         fg_layout = QVBoxLayout(foreground)
-        fg_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        #fg_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
         fg_layout.setSpacing(16)
+        fg_layout.setContentsMargins(50, 40, 50, 26)
+        fg_layout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
         self._flag_button = FlagButton(self._translator, foreground)
         self._tagline_label = QLabel(foreground)
@@ -39,6 +43,11 @@ class WelcomeScreen(QWidget):
         self._continue_button.setObjectName("continueButton")
         self._continue_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self._continue_button.clicked.connect(self.continueRequested)
+        self._helpinfo = QLabel(foreground)
+        self._helpinfo.setObjectName("serversearchDetailLabel")
+        self._helpinfo.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._helpinfo.setWordWrap(True)
+        self._helpinfo.setOpenExternalLinks(True)
 
         fg_layout.addStretch(1)
         fg_layout.addWidget(self._flag_button, alignment=Qt.AlignmentFlag.AlignHCenter)
@@ -47,7 +56,10 @@ class WelcomeScreen(QWidget):
         fg_layout.addWidget(
             self._continue_button, alignment=Qt.AlignmentFlag.AlignHCenter
         )
+        fg_layout.addSpacing(24)
+        fg_layout.addWidget(self._helpinfo)
         fg_layout.addStretch(1)
+        
 
         layers.addWidget(foreground)
 
@@ -57,3 +69,4 @@ class WelcomeScreen(QWidget):
     def _retranslate(self) -> None:
         self._tagline_label.setText(self._translator.tr("welcome.tagline"))
         self._continue_button.setText(self._translator.tr("welcome.continue"))
+        self._helpinfo.setText(self._translator.tr("welcome.find_help"))
