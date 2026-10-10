@@ -4,7 +4,7 @@ name: Build Desktop App
 #   build:2.3.1-b   -> build + push image tagged 2.3.1-b
 #   build:1.0.0     -> build + push image tagged 1.0.0 AND latest
 #   release:1.0.0    -> same as build, plus a GitHub Release with files attached
-# When using release, making a beta (-b or similar) it will make a prerelease, if no beta marker, it will make a draft release to be published
+# When using release, making a beta (-b or similar) it will make a prerelease, if no beta marker, it will make a draft release to be published.
 
 on:
   push:
