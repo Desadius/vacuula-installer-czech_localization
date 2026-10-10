@@ -383,8 +383,8 @@ class MainWindow(QMainWindow):
             vacuula_cert=self._session.server_certificate or "",
             wifi_ssid=self._session.wifi_ssid,
             wifi_psk=self._session.wifi_pass,
-            gen4_port=self._session.gen4_port or 336,
-            vacuula_port=self._session.vacuula_port or 8050,
+            gen4_port=self._session.gen4_port or 3443,
+            vacuula_port=self._session.vacuula_port or 80,
             parent=self,
         )
         self._gen4_provisioner.stepChanged.connect(self._gen4_provision_screen.set_step)
