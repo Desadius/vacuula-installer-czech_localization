@@ -16,16 +16,21 @@ server deployments and preprogram its public part here - none are desirable.
 """
 
 from __future__ import annotations
-import logging, requests, threading
-from PySide6.QtCore import QObject, QTimer, Signal, QRunnable, QThreadPool, Slot
-from zeroconf import Zeroconf, ServiceBrowser, ServiceInfo, ServiceListener
+
+import logging
+import threading
+
+import requests
+from PySide6.QtCore import QObject, QRunnable, QThreadPool, QTimer, Signal, Slot
+from zeroconf import ServiceBrowser, ServiceInfo, ServiceListener, Zeroconf
+
 from vacuula_installer.constants import M_DNS_SERVICE_TYPE
 
 logger = logging.getLogger(__name__)
 
 
 class _DetectionWorkerSignals(QObject):
-    found = Signal(str, str)  # ip, cert
+    found = Signal(str, str, int, int) # ip, cert, vacuula_port, gen4_port # TODO: make this better in the future...
     not_found = Signal()
 
 
@@ -124,19 +129,14 @@ class _DetectionWorker(QRunnable):
 
         port = info.port
 
-        url = f"http://{ip}:{port}{cert_path}"
+        base_url = f"http://{ip}:{port}"
+        cert_url = f"{base_url}{cert_path}"
 
-        logger.debug(
-            "Vacuula server discovered at %s",
-            url,
-        )
+        print("Vacuula server discovered at %s", cert_url)
 
         try:
-            response = requests.get(
-                url,
-                timeout=3,
-            )
-            response.raise_for_status()
+            cert_response = requests.get(cert_url, timeout=3)
+            cert_response.raise_for_status()
         except requests.RequestException:
             logger.warning(
                 "Resolved host but failed to fetch cert", exc_info=False
@@ -144,7 +144,21 @@ class _DetectionWorker(QRunnable):
             self.signals.not_found.emit()
             return
 
-        self.signals.found.emit(ip, response.text)
+        try:
+            server_response = requests.get(f"{base_url}/api/server", timeout=3)
+            server_response.raise_for_status()
+            server_info = server_response.json()
+
+            version = server_info["version"]
+            gen4_port = server_info["gen4_port"]
+        except (requests.RequestException, ValueError, KeyError, TypeError):
+            print("Resolved host but failed to fetch/parse /api/server")
+            self.signals.not_found.emit()
+            return
+
+        print(f"Vacuula server version: {version}")
+
+        self.signals.found.emit(ip, cert_response.text, port, gen4_port)
 
     @staticmethod
     def _discover_vacuula() -> ServiceInfo | None:
@@ -178,7 +192,7 @@ class _DetectionWorker(QRunnable):
 class ServerDetector(QObject):
     """Polls for M_DNS_HOSTNAME and emits its IP + cert once found."""
 
-    serverDetected = Signal(str, str)  # ip, cert
+    serverDetected = Signal(str, str, int, int)  # ip, cert, vacuula_port, gen4_port
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
@@ -209,14 +223,14 @@ class ServerDetector(QObject):
         worker.signals.not_found.connect(self._on_not_found)
         self._pool.start(worker)
 
-    def _on_found(self, ip: str, cert: str) -> None:
+    def _on_found(self, ip: str, cert: str, vacuula_port: int, gen4_port: int) -> None:
         self._busy = False
         self._workers.clear()
         if not self._active:
             return  # stop() was called while this was resolving
         self._timer.stop()
         self._active = False
-        self.serverDetected.emit(ip, cert)
+        self.serverDetected.emit(ip, cert, vacuula_port, gen4_port)
 
     def _on_not_found(self) -> None:
         self._busy = False

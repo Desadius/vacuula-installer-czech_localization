@@ -358,11 +358,18 @@ class MainWindow(QMainWindow):
                 | "Neato Botvac D3"
                 | "Neato Botvac Connected"
             ):
-                # gen23
+                # gen23. TODO: redo this as this is horricic lol
                 self._provision_screen_gen23.reset()
                 self._crossfade_to(self._provision_screen_gen23)
                 self._set_back_action(None)
-                self._provisioner.start(self._session.robot_usb_device, ssid, password)
+                if not self._session.robot_usb_device:
+                    self._handle_robot_disconnected()
+                else:
+                    mac = self._gen23_wifi_fixer.gen23_get_mac_from_version(self._session.firmware_version)
+                    if mac is None:
+                        self._show_error("error.gen23.firmware", detailed="error.gen23.generic.detailed")
+                        return
+                    self._provisioner.start(self._session.robot_usb_device, ssid, password, mac)
             case _:
                 self._show_error("error.generic.unexpected", detailed="error.generic.help")
 
@@ -376,12 +383,17 @@ class MainWindow(QMainWindow):
             vacuula_cert=self._session.server_certificate or "",
             wifi_ssid=self._session.wifi_ssid,
             wifi_psk=self._session.wifi_pass,
+            gen4_port=self._session.gen4_port or 336,
+            vacuula_port=self._session.vacuula_port or 8050,
             parent=self,
         )
         self._gen4_provisioner.stepChanged.connect(self._gen4_provision_screen.set_step)
-        self._gen4_provisioner.provisioningFailed.connect(lambda err: self._show_error(err, detailed=f"error.generic.help"))
+        self._gen4_provisioner.provisioningFailed.connect(lambda err: self._show_error(err, detailed="error.generic.help"))
         self._gen4_provisioner.provisioningFinished.connect(self._gen4_set_provision_finished)
-        self._gen4_provisioner.start(self._session.robot_usb_device)
+        if not self._session.robot_usb_device:
+            self._handle_robot_disconnected()
+        else:
+            self._gen4_provisioner.start(self._session.robot_usb_device)
 
     def _gen4_set_provision_finished(self) -> None:
         self._session.install_done = True
@@ -431,11 +443,13 @@ class MainWindow(QMainWindow):
         self._server_detector.start(NETWORK_POLLING_DELAY_MS)
         self._set_back_action(self._back_to_welcome)
 
-    def _goto_connect_robot_screen(self, ip: str, cert: str) -> None:
+    def _goto_connect_robot_screen(self, ip: str, cert: str, vacuula_port: int, gen4_port: int) -> None:
         anim = self._server_search_screen.show_server_detected(ip)
         self._active_animations.append(anim)
         self._session.server_ip = ip
         self._session.server_certificate = cert
+        self._session.vacuula_port = vacuula_port
+        self._session.gen4_port = gen4_port
         # Dont @ me
         anim.finished.connect(
             lambda: QTimer.singleShot(

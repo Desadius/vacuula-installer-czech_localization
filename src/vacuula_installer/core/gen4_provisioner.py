@@ -44,10 +44,13 @@ class Gen4Provisioner(QObject):
 
     def __init__(
         self,
+        *,
         vacuula_server: str,
         vacuula_cert: str | bytes,
         wifi_ssid: str | None = None,
         wifi_psk: str | None = None,
+        gen4_port: int,
+        vacuula_port: int,
         parent: QObject | None = None,
     ) -> None:
         super().__init__(parent)
@@ -55,6 +58,8 @@ class Gen4Provisioner(QObject):
         self.vacuula_cert = vacuula_cert.encode() if isinstance(vacuula_cert, str) else vacuula_cert
         self.wifi_ssid = wifi_ssid
         self.wifi_psk = wifi_psk
+        self.gen4_port = gen4_port
+        self.vacuula_port = vacuula_port
         self._active = False
         self._step.connect(self._on_step)
         self._done.connect(self._on_done)
@@ -108,11 +113,11 @@ class Gen4Provisioner(QObject):
         new_config = dedent(f"""\
             [N]
             host = {self.vacuula_server}
-            port = 3443
+            port = {self.gen4_port}
             cacerts = config/ssl/vacuula.crt
             ntp = pool.ntp.org
             check_host = {self.vacuula_server}
-            check_port = 80
+            check_port = {self.vacuula_port}
             check_timeout = 10
             """).encode('utf-8')
         mtp.send_file('/home/root/tron/config/vendors.ini', storage_id, new_config)
