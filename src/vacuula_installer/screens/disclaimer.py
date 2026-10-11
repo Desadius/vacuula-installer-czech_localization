@@ -46,7 +46,7 @@ class DisclaimerScreen(QWidget):
         "disclaimer.bullet5",
         "disclaimer.bullet6",
         "disclaimer.bullet7",
-        "disclaimer.bullet7",
+        "disclaimer.bullet8",
     )
     _BULLETS_BEFORE_CHECKBOX = 4
 

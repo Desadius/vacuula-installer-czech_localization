@@ -61,6 +61,8 @@ flowchart LR
 - Add translations (help wanted, what languages do yall speak?) __<-- prio!__
 - Prettify and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
 - Test on osx __<-- prio!__
+- Show/hide passwordfield (eye) wifisection(s)
+- Clean up the firmware.install.done.disconnected. error page building to a ifstatement, removing the duplicate strings in the lang.json as well (same for firmware.genx-x.x.x.description)
 
 
 ## Run it as dev
