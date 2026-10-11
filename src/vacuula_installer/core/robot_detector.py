@@ -6,6 +6,7 @@ Lots here was generated using claude sonnet, for example the cross platform seri
 """
 from __future__ import annotations
 
+import logging
 import sys
 import time
 from dataclasses import dataclass
@@ -19,6 +20,8 @@ import usb.util  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, QTimer, Signal
 
 from vacuula_installer.constants import LIBUSB_DLL
+
+logger = logging.getLogger(__name__)
 
 # idVendor, idProduct
 GEN4_USB = [0x1D6B, 0x0100]
@@ -124,8 +127,13 @@ class RobotDetector(QObject):
 
         resolved: list[tuple[usb.core.Device, RobotUsbId]] = []
 
-        for dev in usb.core.find(find_all=True, idVendor=GEN4_USB[0], idProduct=GEN4_USB[1], backend=USB_BACKEND):
-            print("Gen4")
+        gen4_devices = usb.core.find(find_all=True, idVendor=GEN4_USB[0], idProduct=GEN4_USB[1], backend=USB_BACKEND)
+        for dev in gen4_devices if gen4_devices is not None else []:
+            logger.debug("usb.core.find matched GEN4 device")
+            if not isinstance(dev, usb.core.Device):
+                logger.debug("usb.core.find returned non-Device for GEN4 device")
+                continue
+
             descriptor_matches = [c for c in ids_by_usb_id[(0x1D6B, 0x0100)] if self._descriptor_matches(dev, c)]
             if not descriptor_matches:
                 continue
@@ -134,8 +142,13 @@ class RobotDetector(QObject):
                 resolved.append((dev, robot_id))
            
 
-        for dev in usb.core.find(find_all=True, idVendor=GEN23_USB[0], idProduct=GEN23_USB[1], backend=USB_BACKEND):
-            print("Gen23")
+        gen23_devices = usb.core.find(find_all=True, idVendor=GEN23_USB[0], idProduct=GEN23_USB[1], backend=USB_BACKEND)
+        for dev in gen23_devices if gen23_devices is not None else []:
+            logger.debug("usb.core.find matched GEN2/GEN3 device")
+            if not isinstance(dev, usb.core.Device):
+                logger.debug("usb.core.find returned non-Device for GEN2/GEN3 device")
+                continue
+
             descriptor_matches = [c for c in ids_by_usb_id[(0x2108, 0x780c)]]
             robot_id = self._resolve_robot(dev, descriptor_matches)
             if robot_id is not None:
@@ -295,8 +308,8 @@ class RobotDetector(QObject):
                 from vacuula_installer.core.mtp.windows import present_robot_serials
                 try:
                     serials = present_robot_serials()
-                except Exception as e:  # noqa: BLE001
-                    print("could not list present robots:", e)
+                except Exception:  # noqa: BLE001
+                    logger.error("present_robot_serials could not list present robots to fetch serial")
                     serials = []
                 if len(serials) == 1:
                     return serials[0]

@@ -6,11 +6,14 @@ Requires: pyserial
 from __future__ import annotations
 
 import argparse
+import logging
 import os
 import struct
 import sys
 import time
 from collections.abc import Callable
+
+logger = logging.getLogger(__name__)
 
 try:
     import serial
@@ -102,7 +105,7 @@ class NeatoRobot:
 
     def _log(self, msg: str) -> None:
         if self.verbose:
-            print(msg, flush=True)
+            logger.info(msg)
 
     def send_command(self, command: str) -> None:
         """Send a terminal command. The trailing '\\n' is added here."""
@@ -407,7 +410,7 @@ def main(argv=None) -> int:
             quiet=args.quiet,
         )
     except FileNotFoundError as e:
-        print(e, file=sys.stderr)
+        logger.error(e)
         return 2
 
     return 0 if ok else 1

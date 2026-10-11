@@ -7,6 +7,7 @@ in ``app.core`` -- here are signals connecting ui and core.
 
 from __future__ import annotations
 
+import logging
 import sys
 from collections.abc import Callable
 
@@ -66,6 +67,7 @@ from vacuula_installer.screens.wifi import WifiScreen
 from vacuula_installer.widgets.back_button import BackButton
 from vacuula_installer.widgets.logo import LogoWidget
 
+logger = logging.getLogger(__name__)
 
 def _clear_graphics_effect(widget: QWidget) -> None:
     # Pyside has annoying stub, this gets rid of errors shown by linter
@@ -354,7 +356,7 @@ class MainWindow(QMainWindow):
             self._firmware_updater.start_gen4_update(self._session.robot_usb_device, key)
 
     def _show_error(self, message: str, *, detailed: bool | str = False) -> None:
-        print(f"Error: {message}")
+        logger.error(f"Error: {message}, detailed: {detailed}")
         self._robot_detector.stop()
         self._server_detector.stop()
         self._ap_poller.stop()
@@ -385,7 +387,6 @@ class MainWindow(QMainWindow):
         self._ap_poller.check_now()
 
     def _on_robot_ap_reached(self, info: dict) -> None:
-        print(f"Robot AP reachable: {info}")
         self._connect_to_wifi_screen.set_prewifi_checking(False)
         self._connect_to_wifi_screen.set_gen23_page()
         self._connect_to_wifi_screen.set_gen23_wifi_loading(True)
@@ -444,7 +445,7 @@ class MainWindow(QMainWindow):
         self._gen4_provision_screen.set_finished()
 
     def _on_provision_failed(self, stage: str) -> None:
-        print(f"Provisioning failed at: {stage}")
+        logger.error(f"Provisioning failed at: {stage}")
         self._provision_screen_gen23.set_failed()
         self._set_back_action(self._back_to_wifi)
 

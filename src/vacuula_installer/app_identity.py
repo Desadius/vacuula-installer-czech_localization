@@ -1,20 +1,16 @@
 from __future__ import annotations
 
+import logging
 import sys
 
 from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtGui import QGuiApplication, QIcon, QPainter, QPixmap
 from PySide6.QtSvg import QSvgRenderer
 
-from vacuula_installer.constants import LOGO_SVG
+from vacuula_installer.constants import APP_ID, LOGO_SVG, WINDOWS_APP_USER_MODEL_ID
 
-# Must equal the .desktop file's basename (without ".desktop") on Linux.
-APP_ID = "VacuulaInstaller"
-# Unique icon name for the Linux icon theme. "logo" is too generic and may
-# collide with an icon in the user's theme.
-LINUX_ICON_NAME = "vacuula-installer"
-# Windows taskbar grouping id: "Company.Product" style, any stable string.
-WINDOWS_APP_USER_MODEL_ID = "Vacuula.Installer"
+logger = logging.getLogger(__name__)
+
 
 _ICON_SIZES = (16, 24, 32, 48, 64, 128, 256)
 
@@ -34,7 +30,7 @@ def apply_app_icon(app: QGuiApplication) -> QIcon:
     if not icon.isNull():
         app.setWindowIcon(icon)
     else:
-        print(f"Warning: could not load app icon from {LOGO_SVG}")
+        logger.warning(f"Could not load app icon from {LOGO_SVG}")
     return icon
 
 

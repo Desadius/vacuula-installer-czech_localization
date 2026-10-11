@@ -83,14 +83,11 @@ class Gen4Provisioner(QObject):
             mtp = WindowsMtpDevice(serial_number)
             mtp.open_session(1)
             storage_id = mtp.get_storage_ids()[0]
-            # raw_version_data = mtp.read_file(storage_id, ["version.txt"])
         else:
             try:
                 mtp = MtpDevice(dev)
                 mtp.open_session(1)
                 storage_id = mtp.get_storage_ids()[0]
-                # data = mtp.read_file(storage_id, ["version.txt"])
-                # print(f"data: {data}", mtp.get_storage_ids())
             except Exception:  # noqa: BLE001
                 self._done.emit("error.generic.connect")
                 return

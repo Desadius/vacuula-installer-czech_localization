@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import logging
 import os
 from collections.abc import Callable, Iterable
 from typing import BinaryIO, Union
@@ -9,6 +10,8 @@ import usb.core
 import usb.util
 
 from .consts import *
+
+logger = logging.getLogger(__name__)
 
 # Something to upload: raw bytes, a path, or an open binary file.
 DataSource = Union[bytes, bytearray, memoryview, str, os.PathLike, BinaryIO]
@@ -311,7 +314,7 @@ class MtpDevice:
             try:
                 name = self.get_object_filename(handle)
             except MtpError as e:
-                print(f"{prefix}[{handle:#010x}] <error: {e}>")
+                logger.debug(f"{prefix}[{handle:#010x}] <error: {e}>")
                 continue
-            print(f"{prefix}[{handle:#010x}] {name}")
+            logger.debug(f"{prefix}[{handle:#010x}] {name}")
             self.dump_tree(storage_id, handle, prefix + "  ")

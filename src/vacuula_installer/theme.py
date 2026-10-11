@@ -222,42 +222,6 @@ QPushButton:pressed {{
     background-color: {PALETTE.accent_blue_pressed};
 }}
 
-
-QPushButton#goldButton {{
-    background: qlineargradient(
-        x1:0, y1:0, x2:0, y2:1,
-        stop:0 {PALETTE.gold_top},
-        stop:1 {PALETTE.gold_bottom}
-    );
-    color: {PALETTE.gold_text};
-    border: none;
-    border-radius: 24px;
-    padding: 15px 48px;
-    font-size: 15px;
-    font-weight: 700;
-}}
-
-QPushButton#goldButton:hover {{
-    background: qlineargradient(
-        x1:0, y1:0, x2:0, y2:1,
-        stop:0 {PALETTE.gold_hover_top},
-        stop:1 {PALETTE.gold_bottom}
-    );
-}}
-
-QPushButton#goldButton:pressed {{
-    background: qlineargradient(
-        x1:0, y1:0, x2:0, y2:1,
-        stop:0 {PALETTE.gold_bottom},
-        stop:1 {PALETTE.gold_pressed_bottom}
-    );
-}}
-
-QPushButton#goldButton:disabled {{
-    background: {PALETTE.border_soft};
-    color: {PALETTE.text_muted};
-}}
-
 #wifiInput {{
     background-color: rgba(255, 255, 255, 14);
     border: 1px solid {PALETTE.border_soft};

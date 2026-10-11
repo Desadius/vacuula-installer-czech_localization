@@ -1,4 +1,5 @@
 from __future__ import annotations
+import logging
 import sys
 
 if sys.platform != "win32":
@@ -19,13 +20,12 @@ from comtypes import GUID
 from . import DataSource, MtpDevice, MtpError, ProgressFn, _Source
 from .consts import Response
 
-DEBUG = True
+logger = logging.getLogger(__name__)
 
 # TODO: this is very rudamentory and llm made, however it works and will be good enough for initial release. 
 
 def _dbg(*args) -> None:
-    if DEBUG:
-        print("[winmtp]", *args, flush=True)
+    logger.debug("[winmtp]", *args, flush=True)
 
 
 # --------------------------------------------------------------------------

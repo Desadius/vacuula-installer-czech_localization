@@ -158,11 +158,6 @@ class Gen23WiFiFixer(QObject):
             tar.add(cert_path, arcname="cert.pem")
             tar.add(config_path, arcname="config")
 
-        # also save a copy next to the .exe, temporaryly just so we can easily debug...
-        exe_dir = Path(sys.executable).resolve().parent
-        shutil.copy2(tarball, exe_dir / tarball.name)
-        print("copy tar to ", exe_dir)
-
         return tarball
 
     # -- upload result (GUI thread) -----------------------------------------------

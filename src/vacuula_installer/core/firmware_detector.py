@@ -64,7 +64,6 @@ class FirmwareDetector(QObject):
             with WindowsMtpDevice(serial_number) as mtp:
                 mtp.open_session(1)
                 storage_id = mtp.get_storage_ids()[0]
-                mtp.dump_tree(storage_id)
                 raw_version_data = mtp.read_file(storage_id, ["version.txt"])
         else:
             try:
