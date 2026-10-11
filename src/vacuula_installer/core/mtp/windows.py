@@ -20,13 +20,22 @@ from comtypes import GUID
 from . import OBJECT_FILENAME_PROP, DataSource, MtpDevice, MtpError, ProgressFn, _Source
 from .consts import Operations, Response
 
+DEBUG = True
+
 # TODO: this is very rudamentory and llm made, however it works and will be good enough for initial release.
 
-logger = logging.getLogger(__name__)
+# Upload API is defined explicitly in WindowsMtpDevice (same names and
+# behaviour as core/mtp/__init__.py):
+#   send_file(name, storage_id, bytes)                 plain, in memory
+#   send_update_file(name, storage_id, src, progress)  firmware, streamed
+
+_log = logging.getLogger(__name__)
 
 
 def _dbg(*args) -> None:
-    logger.debug(" ".join(str(a) for a in args))
+    # logging, not print: frozen GUI builds have no stdout.
+    if DEBUG:
+        _log.debug(" ".join(str(a) for a in args))
 
 
 # --------------------------------------------------------------------------
@@ -106,12 +115,21 @@ def _load() -> SimpleNamespace:
     """Load the WPD type libraries once (comtypes generates wrappers)."""
     global _wpd
     if _wpd is None:
-        sysdir = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32")
         try:
-            api = comtypes.client.GetModule(os.path.join(sysdir, "PortableDeviceApi.dll"))
-            types = comtypes.client.GetModule(os.path.join(sysdir, "PortableDeviceTypes.dll"))
-        except (OSError, comtypes.COMError) as e:
-            raise MtpError(f"Could not load the WPD type libraries: {e!r}") from e
+            # Pre-generated at build time and bundled by PyInstaller (see
+            # app.spec), so the frozen app never has to write comtypes.gen.
+            from comtypes.gen import PortableDeviceApiLib as api  # type: ignore
+            from comtypes.gen import PortableDeviceTypesLib as types  # type: ignore
+            _log.debug("using pre-generated comtypes wrappers")
+        except ImportError:
+            # Dev run (or bundle missing them): generate now.
+            sysdir = os.path.join(os.environ.get("SystemRoot", r"C:\Windows"), "System32")
+            try:
+                api = comtypes.client.GetModule(os.path.join(sysdir, "PortableDeviceApi.dll"))
+                types = comtypes.client.GetModule(os.path.join(sysdir, "PortableDeviceTypes.dll"))
+            except (OSError, comtypes.COMError) as e:
+                raise MtpError(f"Could not load the WPD type libraries: {e!r}") from e
+            _log.debug("generated comtypes wrappers at runtime")
         _wpd = SimpleNamespace(api=api, types=types)
     return _wpd
 
@@ -405,7 +423,7 @@ class WindowsMtpDevice(MtpDevice):
                 try:
                     self._dev = self._open(candidate)
                 except MtpError as e:
-                    logger.warning("open failed: %s", e)
+                    _log.warning("open failed: %s", e)
                     errors.append(str(e))
                     continue
                 self._device_id = candidate
@@ -414,7 +432,7 @@ class WindowsMtpDevice(MtpDevice):
             else:
                 raise MtpError("Could not open the robot: " + "; ".join(errors))
         except BaseException:
-            logger.exception("WindowsMtpDevice init failed (serial %r)", serial)
+            _log.exception("WindowsMtpDevice init failed (serial %r)", serial)
             # Release COM objects BEFORE CoUninitialize, never after.
             if self._dev is not None:
                 try:

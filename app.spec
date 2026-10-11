@@ -10,6 +10,12 @@
 import sys
 from pathlib import Path
 
+from PyInstaller.utils.hooks import collect_submodules
+
+hiddenimports = []
+if sys.platform == "win32":
+    hiddenimports += collect_submodules("comtypes.gen")
+
 APP_NAME = "VacuulaInstaller"
 ENTRY_POINT = "src/vacuula_installer/__init__.py"
 SVG_ICON = Path("src/assets/logo.svg")
@@ -102,7 +108,7 @@ a = Analysis(
     pathex=["src"],
     binaries=[],
     datas=datas,
-    hiddenimports=[],
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
