@@ -9,6 +9,7 @@ chmod a+r /etc/systemd/network/wireless.network
 chmod a+r /home/root/tron/config/vendors.ini
 chmod a+r /home/root/tron/config/ssl/vacuula.crt
 chmod a+r /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
+chmod a+r /etc/hosts
 
 # Disable "orbital." prefix in server address
 if [ ! -f /home/root/tron/tron/configutils.py.bak ]
