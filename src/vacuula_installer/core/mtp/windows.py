@@ -1,5 +1,4 @@
 from __future__ import annotations
-import logging
 import sys
 
 if sys.platform != "win32":
@@ -7,6 +6,7 @@ if sys.platform != "win32":
 
 import ctypes
 import functools
+import logging
 import os
 import winreg
 from ctypes import POINTER, c_ubyte, c_uint64, c_ushort, c_void_p, cast, pointer
@@ -17,15 +17,16 @@ import comtypes
 import comtypes.client
 from comtypes import GUID
 
-from . import DataSource, MtpDevice, MtpError, ProgressFn, _Source
-from .consts import Response
+from . import OBJECT_FILENAME_PROP, DataSource, MtpDevice, MtpError, ProgressFn, _Source
+from .consts import Operations, Response
+
+# TODO: this is very rudamentory and llm made, however it works and will be good enough for initial release.
 
 logger = logging.getLogger(__name__)
 
-# TODO: this is very rudamentory and llm made, however it works and will be good enough for initial release. 
 
 def _dbg(*args) -> None:
-    logger.debug("[winmtp]", *args, flush=True)
+    logger.debug(" ".join(str(a) for a in args))
 
 
 # --------------------------------------------------------------------------
@@ -404,7 +405,7 @@ class WindowsMtpDevice(MtpDevice):
                 try:
                     self._dev = self._open(candidate)
                 except MtpError as e:
-                    _dbg("open failed:", e)
+                    logger.warning("open failed: %s", e)
                     errors.append(str(e))
                     continue
                 self._device_id = candidate
@@ -413,6 +414,14 @@ class WindowsMtpDevice(MtpDevice):
             else:
                 raise MtpError("Could not open the robot: " + "; ".join(errors))
         except BaseException:
+            logger.exception("WindowsMtpDevice init failed (serial %r)", serial)
+            # Release COM objects BEFORE CoUninitialize, never after.
+            if self._dev is not None:
+                try:
+                    self._dev.Close()
+                except Exception:  # noqa: BLE001
+                    pass
+                self._dev = None
             comtypes.CoUninitialize()
             raise
 
@@ -428,10 +437,19 @@ class WindowsMtpDevice(MtpDevice):
         info.SetUnsignedIntegerValue(_k(_CLIENT, _C_DESIRED_ACCESS), GENERIC_READ_WRITE)
 
         dev = comtypes.client.CreateObject(w.api.PortableDevice, interface=w.api.IPortableDevice)
+        error: str | None = None
         try:
             dev.Open(device_id, info)
         except comtypes.COMError as e:
-            raise MtpError(f"Could not open WPD device {device_id!r}: {_hr(e)}") from e
+            error = f"Could not open WPD device {device_id!r}: HRESULT {_hr(e)}"
+        except Exception as e:  # noqa: BLE001  e.g. ctypes.ArgumentError from a wrapper mismatch
+            error = f"Could not open WPD device {device_id!r}: {type(e).__name__}: {e}"
+        if error is not None:
+            # Raise outside the except block with no chained exception: the
+            # original traceback holds the COM pointers, which would then be
+            # released after CoUninitialize.
+            dev = info = None
+            raise MtpError(error)
         return dev
 
     def close(self) -> None:
