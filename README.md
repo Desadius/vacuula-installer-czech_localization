@@ -1,16 +1,32 @@
 # Vacuula installer
 
-![logo](src/assets/logo.svg)Welcome to the vacuula installer, a cross platform application that will make transforming your artificially dumbed-down robot into a immortal* dust-sucker as easy as ~~possible~~ we could make it!
+<img src="src/assets/logo.svg" alt="Vacuula logo" width="150" align="left" />
 
-**Still can get physically damaged by wooden stakes, among other things*
+Welcome to the Vacuula installer, a cross-platform application that turns your artificially dumbed-down robot into an immortal\* dust-sucker — as easy as ~~possible~~ we could make it!<br /><sub>\* Still can get physically damaged by wooden stakes, among other things.</sub>
 
-Don't have a Neato robot vacuum, but stumbled here from somewhere? Let's just say Neato robots are *really* cheap on the second hand market now for some reason, this project returns their value *(and depending on how much you value your integrity and ownership of what you buy, surpasses it)*.
+<br />
 
-The installer supports all generation 3 and 4 robots (D3 -> D10), and should work on Linux distros, Windows (7+) and probably (not tested yet) Mac. *Botvac Connected is currently not supported.*
+[![Latest release](https://img.shields.io/github/v/release/OWNER/REPO?style=for-the-badge&label=download&color=brightgreen)](https://github.com/OWNER/REPO/releases/latest) [![Discord](https://img.shields.io/badge/chat-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/redacted)
 
-__Before you can let Vacuula *bite* your robot vacuum(s), you must install the vacuula server that replaces the closed Neato servers.__ This arrangement puts you in control of your own data and lifetime of the robot(s). If you havent set up a server yet, learn about it (and download) at [github.com/vacuula/vacuula](https://github.com/vacuula/)!
+<br clear="left" />
 
-The installer is as batteries-included as we could make it, but ofcourse we can't predict all states the robots are in. Particularly if your robot is in the "rainbow mode" and refuses to start fully, there can be many different causes which vary in how easy they are to fix (but most can!). To get help use the [discord server](https://discord.gg/PAgwhWvyD8/) or the discussions tab here *(if enabled)*.
+The installer supports all generation 3 and 4 Neato robots (D3 -> D10), and should work on Linux distros, Windows (7+) and probably (not tested yet) Mac. *Botvac Connected is currently not supported.*
+
+<details><summary>Don't have a Neato robot vacuum, but stumbled here from somewhere?</summary>
+  
+Let's just say Neato robots are *really* cheap on the second hand market now for some reason, this project returns their value *(and depending on how much you value your integrity and ownership of what you buy, surpasses it)*.
+
+</details>
+
+> [!IMPORTANT]
+> __Before you can let Vacuula *bite* your robot vacuum(s), you must install the vacuula-server that replaces the closed Neato servers.__ This arrangement puts you in control of your own data and lifetime of the robot(s). If you haven't set up a server yet, learn about it (and download) at [github.com/vacuula/vacuula](https://github.com/vacuula/)!
+
+<div>
+  
+The installer is as batteries-included as we could make it, but of course we can't predict all states the robots are in. Particularly if your robot is in the "$`\color{#A020F0}{\textsf{r}}\color{#802DF6}{\textsf{a}}\color{#6037FA}{\textsf{i}}\color{#403FFD}{\textsf{n}}\color{#2044FE}{\textsf{b}}\color{#0047FF}{\textsf{o}}\color{#3C3EE6}{\textsf{w}}\ \color{#7839D2}{\textsf{m}}\color{#AA37BE}{\textsf{o}}\color{#D23AAF}{\textsf{d}}\color{#FF3FA4}{\textsf{e}}`$" and refuses to start fully, there can be many different causes which vary in how easy they are to fix (but most can!). To get help use the [discord server](https://discord.gg/PAgwhWvyD8/) or the discussions tab here.
+
+</div>
+
 
 The installer __collects no data, only modifies your vacuum for the sole reason of allowing it to be controlled by your own server__. Generation 3 robots (after being bitten by vacuula) *currently* use nip.io to help connect to your server, this is a limitation of the models we haven't managed to work around cleanly yet.
 
@@ -24,17 +40,17 @@ Are you missing a language? Take a look at one of the lang.json here and either 
 
 Basically: __Copy en.json (or another language that you prefer with an equal "strings.version" compared to the en.json)__ and translate to a language you speak fluently.
 
-Do not translate litteraly, make it sound natural; as you would say in person speaking that language!
+Do not translate literally, make it sound natural; as you would say in person speaking that language!
 
-Do not use AI for the translation, that we could have done ourselves - do a language you are fluent in so you can detect what sounds akward!
+Do not use AI for the translation, that we could have done ourselves - do a language you are fluent in so you can detect what sounds awkward!
 
 If you want to fully integrate the language yourself, there are instructions in the DEV-README on how to add the language to the menu!
 
 ## Disclaimer
 
-We are not afiliated with Neato.
+We are not affiliated with Neato.
 
-We offer no guarantee, __you try to revive your robot on your own risk__ - we are however eager to help! Jump in discord or the discussions here (if open)!
+We offer no guarantee, __you try to revive your robot on your own risk__ - we are however eager to help! Jump in discord or the discussions here!
 
 
 ## Frequently asked questions
@@ -50,12 +66,12 @@ The installer is written in python using Qt6 (pyside6)
 
 ## By whom, why?
 
-This app has been developed from a passion to fight arbitrary decripation, an idea that maybe it is not how it should be that millions of robot vacuums get turned into ewaste-ish overnight by a whim of buisness.
+This app has been developed from a passion to fight arbitrary decrepitation, an idea that maybe it is not how it should be that millions of robot vacuums get turned into ewaste-ish overnight by a whim of business.
 
 Also it has been fun to try to do a clean UI that still handles the rather extensive quirks and limitations of the different models and cracking procedures.
 
 Special thanks to:
 - Philip for the Vacuula project itself and for helping to add handling of quirks of the vacuum cleaners I don't have at home, getting it over the finish line.
 - Fjalar for getting it to modern build tooling, so we did not have to play with venvs forever.
-- nescio007, BK and everyone else in core team who have provided methods to root the different neatos and/or helped test the installer
-- Me myself, Rinkana, for most of the app and UX direction. I take no credit for the amazing exploits that enable this (and the entire vacuula project).
+- nescio007, BK and everyone else in core team who have provided methods to root the different Neatos and/or helped test the installer
+- Me myself, Rinkana, for most of the app and UX direction. I take no credit for the amazing exploits that enable this (and the entire Vacuula project).
