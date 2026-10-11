@@ -42,6 +42,9 @@
   "error.generic.help": "🛈 <i> Make sure the robot is powered on and connected to your computer via USB. If the problem persists, try restarting the installer and the robot. If it refuses to work, ask for help in the discord!</i>",
   "error.firmware.help": "🛈 <i> Follow the guide on <a href='https://github.com/vacuula/installer'>github</a> on how to update your robot to an supported firmware version or ask for help on the discord. </i>",
 
+  "error.gen2.unsupported": "Gen2 robot is not yet supported",
+  "error.gen2.unsupported.detailed": "Sadly we didn't have time to get the Gen2 BotVac Connected working with Vacuula in time, but we are currently working on adding support for it!",
+
   "connect.title": "Connect a robot to your computer with a USB cable",
   "connect.howto": "🛈 <i>There is a USB contact under the dustbin, the green &quot;cable&quot; in the illustration ends at its approximate location</i>",
   "connect.status.waiting": "No robot detected yet",
@@ -88,18 +91,18 @@
   "firmware.install.step.awaiting_ack": "Waiting for robot to acknowledge firmware",
   "firmware.install.step.verifying": "Verifying firmware on robot",
   "firmware.install.step.rebooting": "Rebooting robot",
-  "firmware.install.step.done.gen3": "Uploaded to robot, sadly we cannot verify at this stage if it worked, but if it works, the robot should reboot within 30 seconds (it will try to detect that), and then you can rerun the installer to continue the installation of Vacuula",
+  "firmware.install.step.done.gen3": "Uploaded to robot, sadly we cannot verify at this stage if it worked, but if it did, the robot should reboot within 30 seconds (we will detect that), and then you can rerun the installer to continue the installation of Vacuula",
   "firmware.install.step.done.gen4": "Uploaded to robot, the will continue flashing yellow, this means it is working. It may take up to 15-20 minutes. Let it finish, the robot will automatically reboot when ready and then you can continue with the installation of Vacuula",
 
-  "firmware.install.done.disconnected": "Robot disconnected after firmware update, that most likely means the update was successful",
-  "firmware.install.done.disconnected.detailed": "Please wait for the robot to reboot, the red error light will start flashing (as the dustbin is not in place), and then you can click below to restart the installation with supported firmware!",
-  "firmware.install.done.disconnected": "Robot disconnected after firmware update, that most likely means the update was successful",
-  "firmware.install.done.disconnected.detailed": "Please wait for the robot to reboot, the red error light will start flashing (as the dustbin is not in place), and then you can click below to restart the installation with supported firmware!",
+  "firmware.install.done.disconnected.gen3": "Robot disconnected after firmware update, that most likely means the update was successful",
+  "firmware.install.done.disconnected.gen3.detailed": "Please wait for the robot to reboot, the red error light will start flashing (as the dustbin is not in place), and then you can click below to restart the installation with supported firmware!",
+  "firmware.install.done.disconnected.gen4": "Robot disconnected after firmware update, that most likely means the update was successful",
+  "firmware.install.done.disconnected.gen4.detailed": "Please wait for the robot to reboot, it will do a rainbow of colors, play a sound and then show battery status and white buttons. Once that happens you can click below to restart the installation with supported firmware!",
 
 
   "firmware.gen3.factory_reset_ack": "For the firmware update to be a garantied success, your robot needs to be factory reset. Please confirm that you have done so recently, or see below instructions.",
   "firmware.gen3.factory_reset_link": "How to factory reset",
-  "firmware.gen3.factory_reset.explanation": "Because of the way the Neato firmware works, an factory reset ensures the firmware update will be successful. Stay on this page if you are doing an factory reset!",
+  "firmware.gen3.factory_reset.explanation": "Because of the way the Neato firmware works, an factory reset ensures the firmware update will be successful. Stay on this page if you are doing an factory reset for a guided experiance",
   "firmware.gen3.factory_reset.instructions": "To factory reset your robot, open the dustbin (which should be open at this point), press and hold the left side (side with power button) and left front side bumper (you should hear 2 \"clicks\") while holding down the power button to turn the robot off. Keep holding the bumper, and press the power button once to turn the robot on. You may release the bumper when the blue light stops flashing.",
   "firmware.gen3.factory_reset.disconnected": "Robot disconnected, continue holding the bumper as described before and press the power button to turn the robot on",
   "firmware.gen3.factory_reset.disconnected.detailed": "The robot will start flashing with a blue light, you may release the bumper when the blue light stops and there is only a green battery light. When the robot is fully started (right error will flash because of no dustbin), click below to restart the installer and flash the latest firmware!",

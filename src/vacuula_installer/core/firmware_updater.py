@@ -16,26 +16,6 @@ from vacuula_installer.core.mtp import MtpDevice
 from vacuula_installer.core.neato_blast import upload_file
 from vacuula_installer.core.robot_detector import RobotDetector
 
-# -- firmware registry ------------------------------------------------------------
-#
-# Right now the firmwares live as assets on a private GitHub release, so
-# each one is downloaded via the GitHub API using an asset id and a
-# bearer token, e.g.:
-#
-#   curl -fL -H "Authorization: Bearer YOUR_GITHUB_TOKEN" \
-#        -H "Accept: application/octet-stream" \
-#        "https://api.github.com/repos/vacuula/neato-firmware/releases/assets/<asset_id>" \
-#        -o <filename>
-#
-# This will move to plain public links soon. To make that swap painless,
-# each entry below can carry either an `asset_id` (private API download,
-# used now) or a `url` (plain direct download, used once public) -- the
-# caller doesn't need to change, _resolve_download() picks whichever is
-# set. When the public links land: replace `asset_id=...` with
-# `url="https://.../filename"` on the affected entries, nothing else
-# in this file needs to change.
-
-
 @dataclass(frozen=True)
 class FirmwareAsset:
     filename: str
@@ -49,7 +29,7 @@ class FirmwareAsset:
 
 
 GITHUB_REPO = "vacuula/neato-firmware"
-GITHUB_TOKEN = "" # temp
+GITHUB_TOKEN = "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" # temp
 
 FIRMWARE_ASSETS: dict[str, FirmwareAsset] = {
     "gen4-1.7.0": FirmwareAsset(

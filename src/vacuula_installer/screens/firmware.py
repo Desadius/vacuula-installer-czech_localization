@@ -68,11 +68,16 @@ class _FirmwareOption(QWidget):
         self._desc_label.setObjectName("serversearchDetailLabel")
         self._desc_label.setWordWrap(True)
         self._desc_label.setContentsMargins(24, 0, 0, 0)  # line up under the radio's text
+        self._desc_label.setCursor(Qt.CursorShape.PointingHandCursor)
 
         layout.addWidget(self.radio)
         layout.addWidget(self._desc_label)
 
         self._retranslate()
+
+    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
+        if event.button() == Qt.MouseButton.LeftButton and self.rect().contains(event.position().toPoint()): self.radio.setChecked(True)
+        super().mouseReleaseEvent(event)
 
     def _retranslate(self) -> None:
         title = self._translator.tr("firmware.version", version=self._asset.version)
@@ -201,6 +206,7 @@ class FirmwareUpdateScreen(QWidget):
 
         self._progress_bar = QProgressBar(self._progress_row)
         self._progress_bar.setFixedWidth(350)
+        self._progress_bar.setFixedHeight(24)
         self._progress_bar.setTextVisible(True)
 
         progress_layout.addWidget(self._progress_status, alignment=Qt.AlignmentFlag.AlignHCenter)
@@ -326,7 +332,7 @@ class FirmwareUpdateScreen(QWidget):
         if key != self._downloaded_key:
             return
         self._progress_status.setText(self._translator.tr(f"firmware.install.step.done.{self._gen}"))
-        self._progress_status.adjustSize()
+        self._progress_status.setFixedHeight(self._progress_status.heightForWidth(350))
         self.page = "done" # temp hack thing to detect disconnectes
         self._progress_bar.hide()
 

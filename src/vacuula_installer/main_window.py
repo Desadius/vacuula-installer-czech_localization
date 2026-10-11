@@ -321,10 +321,9 @@ class MainWindow(QMainWindow):
 
     def _on_firmware_install_finished(self, key: str) -> None:
         self._firmware_update_screen.set_install_finished(key)
-        # TODO: crossfade to whatever comes next (power-cycle instructions, finished screen, etc.)
 
     def _on_firmware_install_requested(self, key: str) -> None:
-        gen = key.split("-", 1)[0]  # "gen23" or "gen4"
+        gen = key.split("-", 1)[0]
         if gen == "gen3":
             mac = self._gen23_wifi_fixer.gen23_get_mac_from_version(self._session.firmware_version)
             if mac is None:
@@ -377,19 +376,10 @@ class MainWindow(QMainWindow):
         self._session.wifi_pass = password
 
         # TODO: clean up this to select generation
-        match self._session.robot_model_display_name:
-            case "Neato D10" | "Neato D9" | "Neato D8" | "Neato D800":
-                # gen4
+        match self.get_gen():
+            case "gen4":
                 self._start_gen4_provisioning()
-            case (
-                "Neato Botvac D7"
-                | "Neato Botvac D6"
-                | "Neato Botvac D5"
-                | "Neato Botvac D4"
-                | "Neato Botvac D3"
-                | "Neato Botvac Connected"
-            ):
-                # gen23. TODO: redo this as this is horricic lol
+            case "gen3":
                 self._provision_screen_gen23.reset()
                 self._crossfade_to(self._provision_screen_gen23)
                 self._set_back_action(None)
@@ -401,6 +391,8 @@ class MainWindow(QMainWindow):
                         self._show_error("error.gen23.firmware", detailed="error.gen23.generic.detailed")
                         return
                     self._provisioner.start(self._session.robot_usb_device, ssid, password, mac)
+            case "gen2":
+                self._show_error("error.gen2.unsupported", detailed=True)
             case _:
                 self._show_error("error.generic.unexpected", detailed="error.generic.help")
 
@@ -444,17 +436,17 @@ class MainWindow(QMainWindow):
             self._goto_wifi_screen()
         elif msg == "error.firmware.invalid":
             self._crossfade_to(self._firmware_update_screen)
-            self._firmware_update_screen.set_generation("gen4") # TODO: unhardcode!
+            self._firmware_update_screen.set_generation(self.get_gen())
         else:
             #TODO: check if link is clickable here (error.firmware.help)
             self._show_error(msg, detailed="error.firmware.help" if msg == "error.firmware.invalid" else "error.generic.help")
 
     def _select_dev_or_server_screen(self) -> None:
         if not getattr(sys, "frozen", False):
-            self._goto_notice_screen()
+            # self._goto_notice_screen()
             # self._goto_dev_only_screen() # Temporary
+            self._goto_connect_robot_screen('123', '123', 123, 123)  # Not implemented yet
             
-            # self._goto_connect_robot_screen('', '')  # Not implemented yet
             # self._goto_connect_robot_screen('', '')  # Not implemented yet
             # self._crossfade_to(self._connect_to_wifi_screen)
             # self._connect_to_wifi_screen.set_gen23_prewifi_page()
@@ -468,8 +460,7 @@ class MainWindow(QMainWindow):
 
     def _goto_dev_only_screen(self) -> None:
         # Shortcut place!
-        self._firmware_update_screen.set_generation("gen4")  # or "gen4", based on self._session.robot_model_display_name
-        self._crossfade_to(self._firmware_update_screen)
+        pass
 
     def _goto_server_search_screen(self) -> None:
         self._crossfade_to(self._server_search_screen)
@@ -514,24 +505,15 @@ class MainWindow(QMainWindow):
         elif self._firmware_update_screen.page == "factory_reset":
             self._show_error("firmware.gen3.factory_reset.disconnected", detailed=True)
         elif self._firmware_update_screen.page == "done":
-            self._show_error("firmware.install.done.disconnected", detailed=True)
+            self._show_error(f"firmware.install.done.disconnected.{self.get_gen()}", detailed=True)
         else:
             self._show_error("error.robot_disconnected", detailed=True)
 
     def _goto_wifi_screen(self) -> None:
-        # self._goto_dev_only_screen()
-        # return
-        match self._session.robot_model_display_name:
-            case "Neato D10" | "Neato D9" | "Neato D8" | "Neato D800":
+        match self.get_gen():
+            case "gen4":
                 self._crossfade_to(self._connect_to_wifi_screen)
-            case (
-                "Neato Botvac D7"
-                | "Neato Botvac D6"
-                | "Neato Botvac D5"
-                | "Neato Botvac D4"
-                | "Neato Botvac D3"
-                | "Neato Botvac Connected"
-            ):
+            case "gen3":
                 mac = self._gen23_wifi_fixer.gen23_get_mac_from_version(self._session.firmware_version)
                 if mac is None:
                     self._show_error("error.gen23.firmware", detailed="error.gen23.generic.detailed")
@@ -544,9 +526,28 @@ class MainWindow(QMainWindow):
                     return
                 self._gen23_wifi_fixer.fix_robot(self._session.robot_usb_device, mac, self._session)
                 self._ap_poller.start()
+            case "gen2":
+                self._show_error("error.gen2.unsupported", detailed=True)
             case _:
                 # this could never happen normally
                 self._show_error("error.generic.unexpected", detailed="error.generic.help")
+
+    def get_gen(self) -> "gen2" | "gen3" | "gen4" | None:
+        match self._session.robot_model_display_name:
+            case "Neato D10" | "Neato D9" | "Neato D8" | "Neato D800":
+                return "gen4"
+            case (
+                "Neato Botvac D7"
+                | "Neato Botvac D6"
+                | "Neato Botvac D5"
+                | "Neato Botvac D4"
+                | "Neato Botvac D3"
+            ):
+                return "gen3"
+            case "Neato Botvac Connected":
+                return "gen2"
+            case _:
+                return None
 
     def _goto_install_screen(self, ssid: str, password: str) -> None:
         self._session.wifi_ssid = ssid

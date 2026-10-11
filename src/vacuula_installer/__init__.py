@@ -16,6 +16,7 @@ from vacuula_installer.app_identity import prepare_app_identity, apply_app_icon
 def main() -> int:
     prepare_app_identity()
     app = QApplication(sys.argv)
+    app.setStyle("Fusion")
     apply_app_icon(app)
     app.setStyleSheet(STYLE_SHEET)
 

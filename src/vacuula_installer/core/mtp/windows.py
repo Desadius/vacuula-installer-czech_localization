@@ -16,7 +16,7 @@ import comtypes
 import comtypes.client
 from comtypes import GUID
 
-from . import MtpDevice, MtpError
+from . import DataSource, MtpDevice, MtpError, ProgressFn, _Source
 from .consts import Response
 
 DEBUG = True
@@ -576,6 +576,33 @@ class WindowsMtpDevice(MtpDevice):
         except Exception:
             self._abort(context, code)
             raise
+        return self._end_transfer(context, code)
+
+    def _tx_data_out_stream(self, code: int, args: Iterable[int], data: DataSource,
+                            progress: ProgressFn | None = None) -> tuple:
+        args = list(args)
+        with _Source(data) as src:
+            _dbg(f"op {code:#06x} args={_hex_args(args)} data out: {src.size} bytes")
+            results = self._begin(_CMD_DATA_WRITE, code, args, total_size=src.size)
+            context = results.GetStringValue(_k(_MTP_EXT, _P_CONTEXT))
+            chunk = self._chunk_size(results)
+
+            try:
+                sent = 0
+                pending = b""
+                while sent < src.size:
+                    if not pending:
+                        pending = src.read_exact(min(chunk, src.size - sent))
+                    written = self._write_chunk(context, pending)
+                    if written <= 0:
+                        raise MtpError(f"WPD wrote 0 bytes at offset {sent}")
+                    pending = pending[written:]  # driver may take less than offered
+                    sent += written
+                    if progress:
+                        progress(sent, src.size)
+            except Exception:
+                self._abort(context, code)
+                raise
         return self._end_transfer(context, code)
 
     def _tx_data_in(self, code: int, args: Iterable[int]) -> tuple[tuple, bytes]:
