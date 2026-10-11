@@ -8,6 +8,10 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+
+from PySide6.QtGui import QColor, QPalette
+from PySide6.QtWidgets import QApplication
+
 from vacuula_installer.constants import ASSETS_DIR
 
 _CHECK_SVG = (ASSETS_DIR / "check.svg").as_posix()
@@ -31,12 +35,6 @@ class Palette:
     accent_green: str = "#0f9616"
     accent_green_hover: str = "#0f9616"
     accent_green_pressed: str = "#0f9616"
-
-    gold_top: str = "#f5db8c"
-    gold_bottom: str = "#c99b34"
-    gold_hover_top: str = "#ffe8a8"
-    gold_pressed_bottom: str = "#a87e26"
-    gold_text: str = "#2a1d08"
 
 
 PALETTE = Palette()
@@ -273,4 +271,26 @@ QProgressBar::chunk {{
     border-radius: 11px;   /* outer radius minus the 1px border */
 }}
 
+QComboBox#wifiInput QAbstractItemView {{
+    color: black;
+    background-color: white;
+    selection-background-color: {PALETTE.accent_blue};
+    selection-color: white;
+    outline: none;
+}}
+
+QMessageBox, QDialog {{
+    background-color: {PALETTE.bg_colour};
+}}
+
 """
+
+def apply_app_palette(app: QApplication) -> None:
+    """Apply the Vacuula palette to the given QApplication."""
+    app.setStyle("Fusion")
+    app.setStyleSheet(STYLE_SHEET)
+
+    palette = app.palette()
+    palette.setColor(QPalette.ColorRole.Link, QColor(PALETTE.accent_blue))
+    palette.setColor(QPalette.ColorRole.LinkVisited, QColor(PALETTE.accent_blue))
+    app.setPalette(palette)
