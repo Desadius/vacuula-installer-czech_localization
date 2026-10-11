@@ -6,6 +6,11 @@ from pathlib import Path
 from typing import NamedTuple
 
 # --------------------------------------------------------------------------
+# Application metadata
+# --------------------------------------------------------------------------
+from ._build_version import APP_VERSION
+
+# --------------------------------------------------------------------------
 # Filesystem layout
 # --------------------------------------------------------------------------
 APP_ROOT: Path = Path(__file__).resolve().parent.parent

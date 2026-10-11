@@ -18,8 +18,10 @@ from PySide6.QtCore import (
     QRect,
     QTimer,
 )
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import (
     QGraphicsOpacityEffect,
+    QLabel,
     QMainWindow,
     QStackedLayout,
     QVBoxLayout,
@@ -27,6 +29,7 @@ from PySide6.QtWidgets import (
 )
 
 from vacuula_installer.constants import (
+    APP_VERSION,
     BACK_BUTTON_MARGIN,
     INTRO_DELAY_MS,
     LEFT_PANEL_RATIO,
@@ -145,6 +148,14 @@ class MainWindow(QMainWindow):
         self._logo.setGeometry(self._logo_centered_rect())
         self._logo.raise_()
 
+        # Version label - TODO: expand later to include more status etc
+        logo_rect = self._logo_docked_rect()
+        self._version_label = QLabel(self._translator.tr("app.version", version=APP_VERSION), central)
+        self._version_label.setObjectName("statusLabel")
+        self._version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._version_label.setGeometry(0, logo_rect.y() + logo_rect.height() + 8, self._left_panel_rect().width(), 24)
+        self._version_label.hide()
+
         self._robot_detector = RobotDetector(self)
         self._server_detector = ServerDetector(self)
         self._firmware_detector = FirmwareDetector(self)
@@ -197,6 +208,7 @@ class MainWindow(QMainWindow):
         self._run(animation)
 
     def _reveal_right_panel(self) -> None:
+        self._version_label.show()
         animation = QPropertyAnimation(self._right_panel_opacity, b"opacity", self)
         animation.setDuration(PANEL_FADE_DURATION_MS)
         animation.setStartValue(0.0)

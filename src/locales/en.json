@@ -1,6 +1,7 @@
 {
   "String-version": "9",
   "app.window_title": "Vacuula-ifiyer",
+  "app.version": "Installer v{version}",
 
   "welcome.tagline": "Let's get your robot vacuum a new <i>life</i>",
   "welcome.continue": "Continue",
