@@ -146,7 +146,6 @@ class Gen4Provisioner(QObject):
 
     def _set_hosts(self, mtp: MtpDevice | WindowsMtpDevice, storage_id: int) -> None:
         # update hosts file if manual ip was used (optional)
-        print("manual ip", self.manual_ip)
         if not self.manual_ip:
             return
         hosts_config = dedent(f"""\
