@@ -7,7 +7,12 @@ from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtGui import QGuiApplication, QIcon, QPainter, QPixmap
 from PySide6.QtSvg import QSvgRenderer
 
-from vacuula_installer.constants import APP_ID, LOGO_SVG, WINDOWS_APP_USER_MODEL_ID
+from vacuula_installer.constants import (
+    APP_ID,
+    LOGO_SVG,
+    ORG_NAME,
+    WINDOWS_APP_USER_MODEL_ID,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +24,9 @@ def prepare_app_identity() -> None:
     """Call before QApplication is constructed."""
     QCoreApplication.setApplicationName(APP_ID)
     # Wayland app_id / X11 hint used to match the .desktop file.
+    QCoreApplication.setOrganizationName(ORG_NAME)
     QGuiApplication.setDesktopFileName(APP_ID)
+
 
     if sys.platform == "win32":
         _set_windows_app_user_model_id()

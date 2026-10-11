@@ -47,6 +47,7 @@ class Gen4Provisioner(QObject):
         self,
         *,
         vacuula_server: str,
+        vacuula_server_ip: str,
         vacuula_cert: str | bytes,
         wifi_ssid: str | None = None,
         wifi_psk: str | None = None,
@@ -57,6 +58,7 @@ class Gen4Provisioner(QObject):
     ) -> None:
         super().__init__(parent)
         self.vacuula_server = vacuula_server
+        self.vacuula_server_ip = vacuula_server_ip
         self.vacuula_cert = vacuula_cert.encode() if isinstance(vacuula_cert, str) else vacuula_cert
         self.wifi_ssid = wifi_ssid
         self.wifi_psk = wifi_psk
@@ -144,9 +146,10 @@ class Gen4Provisioner(QObject):
 
     def _set_hosts(self, mtp: MtpDevice | WindowsMtpDevice, storage_id: int) -> None:
         # update hosts file if manual ip was used (optional)
+        print("manual ip", self.manual_ip)
         if not self.manual_ip:
             return
-        wifi_config = dedent(f"""\
+        hosts_config = dedent(f"""\
             127.0.0.1	localhost.localdomain		localhost
 
             # The following lines are desirable for IPv6 capable hosts
@@ -158,9 +161,9 @@ class Gen4Provisioner(QObject):
             127.0.1.1 imx8mnlego-ddr4
 
             # Vacuula server
-            {self.vacuula_server} vacuula.local
+            {self.vacuula_server_ip} vacuula.local
             """).encode('utf-8')
-        mtp.send_file('/etc/hosts', storage_id, wifi_config)
+        mtp.send_file('/etc/hosts', storage_id, hosts_config)
 
 
     def _on_step(self, step: int) -> None:

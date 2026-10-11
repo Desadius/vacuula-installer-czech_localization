@@ -12,6 +12,7 @@ from ._build_version import APP_VERSION
 
 # Must equal the .desktop file's basename (without ".desktop") on Linux.
 APP_ID = "VacuulaInstaller"
+ORG_NAME = "Vacuula"
 # Windows taskbar grouping id: "Company.Product" style, any stable string.
 WINDOWS_APP_USER_MODEL_ID = "Vacuula.Installer"
 

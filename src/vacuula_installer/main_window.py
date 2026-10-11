@@ -54,6 +54,7 @@ from vacuula_installer.core.robot_detector import RobotDetector
 from vacuula_installer.core.server_detector import ServerDetector
 from vacuula_installer.core.session import SessionData
 from vacuula_installer.i18n import Translator
+from vacuula_installer.logger import download_logs
 from vacuula_installer.screens.connect_robot import ConnectRobotScreen
 from vacuula_installer.screens.disclaimer import DisclaimerScreen
 from vacuula_installer.screens.error import ErrorScreen
@@ -65,6 +66,7 @@ from vacuula_installer.screens.gen23_provision import Gen23ProvisionScreen
 from vacuula_installer.screens.welcome import WelcomeScreen
 from vacuula_installer.screens.wifi import WifiScreen
 from vacuula_installer.widgets.back_button import BackButton
+from vacuula_installer.widgets.clickable_label import ClickableLabel
 from vacuula_installer.widgets.logo import LogoWidget
 
 logger = logging.getLogger(__name__)
@@ -158,6 +160,13 @@ class MainWindow(QMainWindow):
         self._version_label.setGeometry(0, logo_rect.y() + logo_rect.height() + 8, self._left_panel_rect().width(), 24)
         self._version_label.hide()
 
+        self._download_logs = ClickableLabel(self._translator.tr("app.download_logs"), central)
+        self._download_logs.clicked.connect(download_logs)
+        self._download_logs.setObjectName("statusLabel")
+        self._download_logs.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._download_logs.setGeometry(0, self._version_label.y() + self._version_label.height(), self._left_panel_rect().width(), 24)
+        self._download_logs.hide()
+
         self._robot_detector = RobotDetector(self)
         self._server_detector = ServerDetector(self)
         self._firmware_detector = FirmwareDetector(self)
@@ -211,6 +220,7 @@ class MainWindow(QMainWindow):
 
     def _reveal_right_panel(self) -> None:
         self._version_label.show()
+        self._download_logs.show()
         animation = QPropertyAnimation(self._right_panel_opacity, b"opacity", self)
         animation.setDuration(PANEL_FADE_DURATION_MS)
         animation.setStartValue(0.0)
@@ -424,6 +434,7 @@ class MainWindow(QMainWindow):
 
         self._gen4_provisioner = Gen4Provisioner(
             vacuula_server="vacuula.local",
+            vacuula_server_ip=self._session.server_ip or "",
             vacuula_cert=self._session.server_certificate or "",
             wifi_ssid=self._session.wifi_ssid,
             wifi_psk=self._session.wifi_pass,

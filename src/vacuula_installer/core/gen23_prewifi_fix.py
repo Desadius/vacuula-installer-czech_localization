@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import shutil  # temp
-import sys  # temp
 import tarfile
 import tempfile
 import threading
