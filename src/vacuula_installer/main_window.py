@@ -277,7 +277,8 @@ class MainWindow(QMainWindow):
         )
         self._disclaimer_screen.understandRequested.connect(self._goto_server_search_screen)
 
-        self._server_detector.serverDetected.connect(self._goto_connect_robot_screen)
+        self._server_detector.serverDetected.connect(self._on_server_detected)
+        self._server_detector.manualCheckFailed.connect(self._on_manual_check_failed)
 
         self._error_screen.restartRequested.connect(self._restart_wizard)
 
@@ -325,11 +326,18 @@ class MainWindow(QMainWindow):
         self._firmware_updater.installFailed.connect(self._firmware_update_screen.set_install_failed)
         self._firmware_updater.installFinished.connect(self._on_firmware_install_finished)
 
+        self._server_search_screen.manualConnectionTestRequested.connect(
+            self._server_detector.check_manual
+        )
 
-        # self._connect_screen.startInstallRequested.connect(
-        #     self._goto_wifi_screen
-        # )  # TODO wrong name signal and order
-        # self._connect_to_wifi_screen.wifiAdded.connect(self._goto_install_screen)
+    def _on_server_detected(self, ip: str, cert: str, port: int, gen4_port: int, manual: bool) -> None:
+        self._session.server_ip_manual = manual
+        if manual:
+            self._server_search_screen.set_manual_ip_test_result(True)
+        self._goto_connect_robot_screen(ip, cert, port, gen4_port)
+
+    def _on_manual_check_failed(self, kind: str) -> None:
+        self._server_search_screen.set_manual_ip_test_result(False, self._translator.tr(f"serversearch.manual.{kind}"))
 
     def _on_firmware_install_finished(self, key: str) -> None:
         self._firmware_update_screen.set_install_finished(key)
@@ -420,6 +428,7 @@ class MainWindow(QMainWindow):
             wifi_psk=self._session.wifi_pass,
             gen4_port=self._session.gen4_port or 3443,
             vacuula_port=self._session.vacuula_port or 80,
+            manual_ip=self._session.server_ip_manual,
             parent=self,
         )
         self._gen4_provisioner.stepChanged.connect(self._gen4_provision_screen.set_step)
@@ -455,9 +464,9 @@ class MainWindow(QMainWindow):
 
     def _select_dev_or_server_screen(self) -> None:
         if not getattr(sys, "frozen", False):
-            # self._goto_notice_screen()
+            self._goto_notice_screen()
             # self._goto_dev_only_screen() # Temporary
-            self._goto_connect_robot_screen('123', '123', 123, 123)  # Not implemented yet
+            # self._goto_connect_robot_screen('123', '123', 123, 123)  # Not implemented yet
             
             # self._goto_connect_robot_screen('', '')  # Not implemented yet
             # self._crossfade_to(self._connect_to_wifi_screen)

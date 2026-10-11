@@ -1,7 +1,6 @@
 """Fake server if you don't have a real one running or whatever"""
-import secrets
-import socket
 import json
+import socket
 from http.server import BaseHTTPRequestHandler, HTTPServer
 
 from zeroconf import ServiceInfo, Zeroconf
@@ -38,7 +37,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.flush()
 
     def do_cert(self):
-        data = f"{secrets.token_hex(32)}\n".encode()
+        data = b"FAKE-BEGIN CERTIFICATE-FAKE\n"
         self.send_response(200)
         self.send_header("Content-Type", "text/plain; charset=utf-8")
         self.send_header(
@@ -51,6 +50,8 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.flush()
 
 httpd = HTTPServer(("0.0.0.0", PORT), Handler)
+
+
 zc = Zeroconf()
 SERVICE_TYPE = "_vacuula._tcp.local."
 SERVICE_NAME = "Vacuula Server._vacuula._tcp.local."
@@ -70,8 +71,8 @@ info = ServiceInfo(
     },
 )
 zc.register_service(info)
-
 print(f"Advertising {HOSTNAME} -> {ip}")
+
 print(f"Download: http://vacuula.local:{PORT}/api/cert")
 
 try:

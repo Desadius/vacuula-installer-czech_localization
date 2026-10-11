@@ -1,12 +1,13 @@
 from __future__ import annotations
 
+import shutil  # temp
+import sys  # temp
 import tarfile
 import tempfile
 import threading
+from dataclasses import dataclass
 from pathlib import Path
 
-import shutil # temp
-import sys # temp
 import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, Signal
 
@@ -73,6 +74,10 @@ def reset_network_cmd(mac: str):
 def getversion_cmd():
     return "GetVerion"
 
+@dataclass(frozen=True)
+class File:
+    filename: str
+    sha256: str
 
 class Gen23WiFiFixer(QObject):
     """Uploads the install scripts over serial, then tells the robot to

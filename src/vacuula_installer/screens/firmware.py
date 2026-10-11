@@ -17,6 +17,7 @@ from PySide6.QtWidgets import (
 
 from vacuula_installer.core.firmware_updater import FirmwareAsset, assets_for_gen
 from vacuula_installer.i18n import Translator
+from vacuula_installer.widgets.clickable_label import ClickableLabel
 
 # Steps FirmwareUpdater.installStepChanged can send, each mapped to a
 # translation key below. "sending" is the only one with real percent
@@ -33,19 +34,7 @@ INSTALL_STEP_KEYS = {
 }
 
 
-class _ClickableLabel(QLabel):
-    """A label that emits :attr:`clicked` on a left click (used as a
-    checkbox caption) -- same small widget DisclaimerScreen uses, kept
-    local here since that one's private to its own module."""
 
-    clicked = Signal()
-
-    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
-        if event.button() == Qt.MouseButton.LeftButton and self.rect().contains(
-            event.position().toPoint()
-        ):
-            self.clicked.emit()
-        super().mouseReleaseEvent(event)
 
 
 class _FirmwareOption(QWidget):
@@ -144,7 +133,7 @@ class FirmwareUpdateScreen(QWidget):
         self._factory_reset_ack_checkbox.setCursor(Qt.CursorShape.PointingHandCursor)
         self._factory_reset_ack_checkbox.toggled.connect(self._update_download_enabled)
 
-        self._factory_reset_ack_caption = _ClickableLabel(self._factory_reset_ack_row)
+        self._factory_reset_ack_caption = ClickableLabel(self._factory_reset_ack_row)
         self._factory_reset_ack_caption.setObjectName("serversearchDetailLabel")
         self._factory_reset_ack_caption.setWordWrap(True)
         self._factory_reset_ack_caption.setCursor(Qt.CursorShape.PointingHandCursor)

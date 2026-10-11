@@ -52,6 +52,7 @@ class Gen4Provisioner(QObject):
         wifi_psk: str | None = None,
         gen4_port: int,
         vacuula_port: int,
+        manual_ip: bool = False,
         parent: QObject | None = None,
     ) -> None:
         super().__init__(parent)
@@ -61,6 +62,7 @@ class Gen4Provisioner(QObject):
         self.wifi_psk = wifi_psk
         self.gen4_port = gen4_port
         self.vacuula_port = vacuula_port
+        self.manual_ip = manual_ip
         self._active = False
         self._step.connect(self._on_step)
         self._done.connect(self._on_done)
@@ -98,6 +100,7 @@ class Gen4Provisioner(QObject):
             self._install_static_files(mtp, storage_id)
             self._set_vacuula_server(mtp, storage_id)
             self._set_wifi(mtp, storage_id)
+            self._set_hosts(mtp, storage_id)
         except Exception:  # noqa: BLE001
             self._done.emit("error.generic.upload")
             return
@@ -141,6 +144,27 @@ class Gen4Provisioner(QObject):
 }}
             """).encode('utf-8')
         mtp.send_file('/etc/wpa_supplicant/wpa_supplicant-wlan0.conf', storage_id, wifi_config)
+
+    def _set_hosts(self, mtp: MtpDevice | WindowsMtpDevice, storage_id: int) -> None:
+        # update hosts file if manual ip was used (optional)
+        if not self.manual_ip:
+            return
+        wifi_config = dedent(f"""\
+            127.0.0.1	localhost.localdomain		localhost
+
+            # The following lines are desirable for IPv6 capable hosts
+            ::1     localhost ip6-localhost ip6-loopback
+            fe00::0 ip6-localnet
+            ff00::0 ip6-mcastprefix
+            ff02::1 ip6-allnodes
+            ff02::2 ip6-allrouters
+            127.0.1.1 imx8mnlego-ddr4
+
+            # Vacuula server
+            {self.vacuula_server} vacuula.local
+            """).encode('utf-8')
+        mtp.send_file('/etc/hosts', storage_id, wifi_config)
+
 
     def _on_step(self, step: int) -> None:
         if self._active:

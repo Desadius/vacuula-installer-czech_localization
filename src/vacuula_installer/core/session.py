@@ -11,6 +11,7 @@ import usb.core  # type: ignore[reportMissingTypeStubs]
 @dataclass
 class SessionData:
     server_ip: str | None = None
+    server_ip_manual: bool = False
     server_certificate: str | None = None
 
     # TODO: clean this up later as well, not really the cleanesy way rn

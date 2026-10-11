@@ -16,6 +16,7 @@ from vacuula_installer.core.mtp import MtpDevice
 from vacuula_installer.core.neato_blast import upload_file
 from vacuula_installer.core.robot_detector import RobotDetector
 
+
 @dataclass(frozen=True)
 class FirmwareAsset:
     filename: str
