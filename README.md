@@ -59,4 +59,3 @@ Special thanks to:
 - Fjalar for getting it to modern build tooling, so we did not have to play with venvs forever.
 - nescio007, BK and everyone else in core team who have provided methods to root the different neatos and/or helped test the installer
 - Me myself, Rinkana, for most of the app and UX direction. I take no credit for the amazing exploits that enable this (and the entire vacuula project).
-
