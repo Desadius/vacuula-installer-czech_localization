@@ -6,7 +6,7 @@
 
 Don't have a Neato robot vacuum, but stumbled here from somewhere? Let's just say Neato robots are *really* cheap on the second hand market now for some reason, this project returns their value *(and depending on how much you value your integrity and ownership of what you buy, surpasses it)*.
 
-The installer supports all generation 2, 3 and 4 robots (Botvac Connected -> D10), and should work on Linux distros, Windows (7+) and probably (not tested yet) Mac.
+The installer supports all generation 3 and 4 robots (D3 -> D10), and should work on Linux distros, Windows (7+) and probably (not tested yet) Mac. *Botvac Connected is currently not supported.*
 
 __Before you can let Vacuula *bite* your robot vacuum(s), you must install the vacuula server that replaces the closed Neato servers.__ This arrangement puts you in control of your own data and lifetime of the robot(s). If you havent set up a server yet, learn about it (and download) at [github.com/vacuula/vacuula](https://github.com/vacuula/)!
 
