@@ -102,18 +102,18 @@ QLabel#statusLabel {{
 }}
 
 QRadioButton, QCheckBox {{
-    spacing: 10px;
+    spacing: 0px;
 }}
 
 QRadioButton::indicator, QCheckBox::indicator {{
-    width: 18px;
-    height: 18px;
+    width: 12px;
+    height: 12px;
     border: 2px solid {PALETTE.border_soft};
     background: rgba(255, 255, 255, 14);
 }}
 
 QRadioButton::indicator {{
-    border-radius: 9px;   /* half of 18 */
+    border-radius: 6px;   /* half of 18 */
 }}
 
 QCheckBox::indicator {{
