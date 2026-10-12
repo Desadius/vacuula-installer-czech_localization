@@ -6,7 +6,7 @@ import math
 
 from PySide6 import QtGui
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QMouseEvent, QShowEvent, QTextDocument
+from PySide6.QtGui import QShowEvent, QTextDocument
 from PySide6.QtWidgets import (
     QCheckBox,
     QHBoxLayout,
