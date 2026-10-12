@@ -84,7 +84,8 @@ class DisclaimerScreen(QWidget):
         self._understand_button.setCursor(Qt.CursorShape.PointingHandCursor)
         self._understand_button.setEnabled(False)
         self._understand_button.clicked.connect(self.understandRequested)
-        self._acknowledge_checkbox.toggled.connect(self._understand_button.setEnabled)
+        self._acknowledge_checkbox.toggled.connect(self._update_understand_button)
+        self._warning_checkbox.toggled.connect(self._update_understand_button)
 
         # Centre the block with stretches on both sides. A horizontal layout hands
         # the block its real width, so the wrapped rows get the height they need
@@ -106,6 +107,14 @@ class DisclaimerScreen(QWidget):
 
         self._translator.languageChanged.connect(self._retranslate)
         self._retranslate()
+
+
+    def _update_understand_button(self) -> None:
+        """Enable the button only while every acknowledgement is ticked."""
+        self._understand_button.setEnabled(
+            self._acknowledge_checkbox.isChecked()
+            and self._warning_checkbox.isChecked()
+        )
 
     def _new_row(self) -> QHBoxLayout:
         row = QHBoxLayout()
@@ -175,12 +184,16 @@ class DisclaimerScreen(QWidget):
 
     def _fit_to_fonts(self) -> None:
         """Everything that depends on the final fonts: block width, checkbox alignment."""
-        checkbox, caption = self._acknowledge_checkbox, self._acknowledge_caption
-        checkbox.ensurePolished()
+        checkbox_rows = (
+            (self._acknowledge_checkbox, self._acknowledge_caption),
+            (self._warning_checkbox, self._warning_caption),
+        )
 
         # Block exactly as wide as its widest wrapped line.
         rows = [(label, self._MARKER_WIDTH) for _, label in self._bullets]
-        rows.append((caption, checkbox.sizeHint().width()))
+        for checkbox, caption in checkbox_rows:
+            checkbox.ensurePolished()
+            rows.append((caption, checkbox.sizeHint().width()))
         width = 0
         for label, lead in rows:  # lead = marker / checkbox column in front of the text
             lead += self._ROW_SPACING
@@ -191,9 +204,11 @@ class DisclaimerScreen(QWidget):
         self._bullet_block.setFixedWidth(min(width + 2, self._MAX_BLOCK_WIDTH))
 
         # Checkbox centred on the first text line, whichever of the two is taller.
-        line = caption.fontMetrics().height()
-        checkbox.setMinimumHeight(line)
-        caption.setContentsMargins(0, max(0, (checkbox.sizeHint().height() - line) // 2), 0, 0)
+        for checkbox, caption in checkbox_rows:
+            line = caption.fontMetrics().height()
+            checkbox.setMinimumHeight(line)
+            hint = checkbox.sizeHint().height()
+            caption.setContentsMargins(0, max(0, (hint - line) // 2), 0, 0)
 
     def showEvent(self, event: QShowEvent) -> None:
         # A stylesheet inherited from the parent window only applies once the
