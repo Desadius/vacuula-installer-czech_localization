@@ -94,12 +94,12 @@ flowchart TD
     style FIN fill:#90EE90,stroke:#2e7d32,color:#000
 ```
 
-- Prettify the connect vacuula svg, removing the WIP banner (robot->out with dustbin + robot<->computer) __<-- prio!__
 - Fix a more direct link in error.firmware.help
 - Go trough the TODO:s that are sprinkled as comments in the code
 - Add translations (help wanted, what languages do yall speak?) __<-- prio!__
 - Prettify and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
 - Test on osx __<-- prio!__
+- Figure out why gen4 does not work on mac __<-- prio!__
 - Show/hide passwordfield (eye) wifisection(s)
 - Clean up the firmware.install.done.disconnected. error page building to a ifstatement, removing the duplicate strings in the lang.json as well (same for firmware.genx-x.x.x.description)
 

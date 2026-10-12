@@ -10,7 +10,7 @@ Welcome to the Vacuula installer, a cross-platform application that turns your a
 
 <br clear="left" />
 
-The installer supports all generation 3 and 4 Neato robots (D3 → D10), and should work on Linux distros, Windows (7+) and probably (not tested yet) Mac. *Botvac Connected is currently not supported.*
+The installer supports all generation 3 and 4 Neato robots (D3 → D10), and should work on Linux distros, Windows (7+) and *__partly__* on mac\* (\*gen3 robots work, gen4 do not). *Botvac Connected is currently not supported.*
 
 <details><summary>Don't have a Neato robot vacuum, but stumbled here from somewhere?</summary>
   
