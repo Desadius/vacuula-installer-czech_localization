@@ -1,10 +1,5 @@
-"""Second screen: ask the user to plug in the robot, presenting a last confirmation before
-robot is rooted n stuff.
+"""Second screen: ask the user to plug in the robot"""
 
-Has two internal pages to switch between, however TODO: a third for wifi should be added
-"""
-
-# TODO: Text explaining it is reversible might be fit for the "detected" page
 from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal
@@ -51,7 +46,7 @@ class ConnectRobotScreen(QWidget):
         self.reset_searching()
 
     # -- page builders -----------------------------------------------------
-
+    #TODO: Move the enttire thing up slightly
     def _build_searching_page(self) -> QWidget:
         page = QWidget(self)
         layout = QVBoxLayout(page)
