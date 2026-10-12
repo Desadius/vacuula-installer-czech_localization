@@ -1,9 +1,9 @@
 """Class containing colours to use, and the stylesheet"""
 
-# Colours chosen based on Vacuula logo and what Philip likes
+# Colours chosen based on Vacuula logo + green and blue (ish) which happen to be colours Philip likes 
 # They will need refinement
 
-# Don't question the stylesheet, I know what im doing™
+# Don't question the stylesheet, I know what Im doing™
 
 from __future__ import annotations
 
@@ -26,8 +26,6 @@ class Palette:
     accent_blue_desaturated: str = "#2d324d"
 
     accent_green: str = "#0f9616"
-    accent_green_hover: str = "#0f9616"
-    accent_green_pressed: str = "#0f9616"
 
     gold_top: str = "#f5db8c"
     gold_bottom: str = "#c99b34"
