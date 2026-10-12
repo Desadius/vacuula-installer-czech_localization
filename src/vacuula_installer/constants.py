@@ -53,7 +53,7 @@ LOGO_SIZE_DOCKED: int = 300     # logo size once settled in the left panel
 BACK_BUTTON_SIZE: int = 36
 BACK_BUTTON_MARGIN: int = 16
 
-WIREFRAME_SIZE: tuple[int, int] = (400, 200)
+WIREFRAME_SIZE: tuple[int, int] = (400, 225)
 
 # --------------------------------------------------------------------------
 # Animation timings (ms)
