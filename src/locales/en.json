@@ -17,7 +17,7 @@
   "disclaimer.bullet3": "You will need an usb <b>data</b> cable",
   "disclaimer.bullet4": "Vacuula is not affiliated with Neato",
   "disclaimer.bullet5": "Vacuula modifies your robot software. It does so for the sole reason of allowing <i>your</i> vacuula server to control it. All code; installer, server and scripts are open source, take a <a href='https://github.com/vacuula'>look</a>!",
-  "disclaimer.bullet6": "Make sure your robot is fully charged or connected to the charger!",
+  "disclaimer.bullet6": "Make sure your robot is fully charged <b>and</b> connected to the charger!",
   "disclaimer.bullet7": "If you have previously done a ESP32-mod you <b>have to remove the device</b> prior of installing Vacuula",
   "disclaimer.bullet8": "You proceed on your own risk",
   "disclaimer.understand": "I understand, let's continue!",
