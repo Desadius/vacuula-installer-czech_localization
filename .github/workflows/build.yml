@@ -67,6 +67,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     env:
       APP_VERSION: ${{ needs.prepare.outputs.version || '0.0.0-dev' }}
+      ASSET_TAG: ${{ (needs.prepare.outputs.release != 'true' || needs.prepare.outputs.prerelease == 'true') && format('-{0}', needs.prepare.outputs.version || '0.0.0-dev') || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -159,13 +160,13 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: |
-          Copy-Item "dist/${{ env.APP_NAME }}.exe" "${{ env.APP_NAME }}-${{ env.APP_VERSION }}-windows.exe"
+          Copy-Item "dist/${{ env.APP_NAME }}.exe" "${{ env.APP_NAME }}-${{ env.ASSET_TAG }}-windows.exe"
 
       - name: Package artifact (macOS)
         if: runner.os == 'macOS'
         run: |
           cd dist
-          zip -r -y "../${{ env.APP_NAME }}-${{ env.APP_VERSION }}-${{ matrix.label }}.zip" "${{ env.APP_NAME }}.app"
+          zip -r -y "../${{ env.APP_NAME }}-${{ env.ASSET_TAG }}-${{ matrix.label }}.zip" "${{ env.APP_NAME }}.app"
 
       # --- Linux: wrap the onedir build into an AppImage --------------
       - name: Build AppDir for AppImage (Linux)
@@ -212,7 +213,7 @@ jobs:
             --desktop-file "${{ env.APP_NAME }}.desktop" \
             --icon-file vacuula-installer.svg \
             --output appimage
-          mv "${{ env.APP_NAME }}"-*.AppImage "${{ env.APP_NAME }}-${{ env.APP_VERSION }}-linux.AppImage"
+          mv "${{ env.APP_NAME }}"-*.AppImage "${{ env.APP_NAME }}-${{ env.ASSET_TAG }}-linux.AppImage"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -257,7 +258,8 @@ jobs:
           - **macOS, Intel:** \`-macos-intel.zip\`
           - **Linux:** \`-linux.AppImage\`
 
-          The macOS builds are unsigned. If macOS refuses to open the app, right-click it and choose Open, or run \`xattr -cr VacuulaInstaller.app\` once."
+          The macOS builds are unsigned. Open Settings -> Security & Privacy and click "Open Anyway" to run VacuulaInstaller
+          Windows builds are unsigned. When blue popup appears, click "More info" and then "Run anyway" to run VacuulaInstaller."
 
           gh release create "v$VERSION" release-assets/* \
             --target "$GITHUB_SHA" \
