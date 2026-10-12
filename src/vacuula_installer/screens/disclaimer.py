@@ -6,7 +6,7 @@ import math
 
 from PySide6 import QtGui
 from PySide6.QtCore import Qt, Signal
-from PySide6.QtGui import QMouseEvent, QShowEvent, QTextDocument
+from PySide6.QtGui import QShowEvent, QTextDocument
 from PySide6.QtWidgets import (
     QCheckBox,
     QHBoxLayout,
@@ -18,22 +18,10 @@ from PySide6.QtWidgets import (
 )
 
 from vacuula_installer.i18n import Translator
+from vacuula_installer.widgets.clickable_label import ClickableLabel
 
 _CENTER = Qt.AlignmentFlag.AlignHCenter
 _TOP = Qt.AlignmentFlag.AlignTop
-
-
-class _ClickableLabel(QLabel):
-    """A label that emits :attr:`clicked` on a left click (used as a checkbox caption)."""
-
-    clicked = Signal()
-
-    def mouseReleaseEvent(self, event: QMouseEvent) -> None:
-        if event.button() == Qt.MouseButton.LeftButton and self.rect().contains(
-            event.position().toPoint()
-        ):
-            self.clicked.emit()
-        super().mouseReleaseEvent(event)
 
 
 class DisclaimerScreen(QWidget):
@@ -58,6 +46,7 @@ class DisclaimerScreen(QWidget):
         "disclaimer.bullet5",
         "disclaimer.bullet6",
         "disclaimer.bullet7",
+        "disclaimer.bullet8",
     )
     _BULLETS_BEFORE_CHECKBOX = 4
 
@@ -151,7 +140,7 @@ class DisclaimerScreen(QWidget):
         checkbox.setObjectName("acknowledgeCheckBox")
         checkbox.setCursor(Qt.CursorShape.PointingHandCursor)
 
-        caption = _ClickableLabel(self._bullet_block)
+        caption = ClickableLabel(self._bullet_block)
         caption.setObjectName("serversearchDetailLabel")
         caption.setWordWrap(True)
         caption.setAlignment(Qt.AlignmentFlag.AlignLeft | _TOP)  # first line at the top

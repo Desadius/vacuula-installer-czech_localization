@@ -20,6 +20,7 @@ FILES = {
     '/usr/sbin/enable_vacuula_full.sh': 'enable_vacuula_full.sh',
     '/lib/systemd/system/usb-gadgets.service': 'usb-gadgets.service',
     '/etc/systemd/resolved.conf': 'resolved.conf',
+    '/etc/nsswitch.conf': 'nsswitch.conf',
     '/etc/systemd/network/wireless.network': 'wireless.network',
 }
 
@@ -44,17 +45,26 @@ class Gen4Provisioner(QObject):
 
     def __init__(
         self,
+        *,
         vacuula_server: str,
+        vacuula_server_ip: str,
         vacuula_cert: str | bytes,
         wifi_ssid: str | None = None,
         wifi_psk: str | None = None,
+        gen4_port: int,
+        vacuula_port: int,
+        manual_ip: bool = False,
         parent: QObject | None = None,
     ) -> None:
         super().__init__(parent)
         self.vacuula_server = vacuula_server
+        self.vacuula_server_ip = vacuula_server_ip
         self.vacuula_cert = vacuula_cert.encode() if isinstance(vacuula_cert, str) else vacuula_cert
         self.wifi_ssid = wifi_ssid
         self.wifi_psk = wifi_psk
+        self.gen4_port = gen4_port
+        self.vacuula_port = vacuula_port
+        self.manual_ip = manual_ip
         self._active = False
         self._step.connect(self._on_step)
         self._done.connect(self._on_done)
@@ -75,14 +85,11 @@ class Gen4Provisioner(QObject):
             mtp = WindowsMtpDevice(serial_number)
             mtp.open_session(1)
             storage_id = mtp.get_storage_ids()[0]
-            # raw_version_data = mtp.read_file(storage_id, ["version.txt"])
         else:
             try:
                 mtp = MtpDevice(dev)
                 mtp.open_session(1)
                 storage_id = mtp.get_storage_ids()[0]
-                # data = mtp.read_file(storage_id, ["version.txt"])
-                # print(f"data: {data}", mtp.get_storage_ids())
             except Exception:  # noqa: BLE001
                 self._done.emit("error.generic.connect")
                 return
@@ -92,6 +99,7 @@ class Gen4Provisioner(QObject):
             self._install_static_files(mtp, storage_id)
             self._set_vacuula_server(mtp, storage_id)
             self._set_wifi(mtp, storage_id)
+            self._set_hosts(mtp, storage_id)
         except Exception:  # noqa: BLE001
             self._done.emit("error.generic.upload")
             return
@@ -108,11 +116,11 @@ class Gen4Provisioner(QObject):
         new_config = dedent(f"""\
             [N]
             host = {self.vacuula_server}
-            port = 3443
+            port = {self.gen4_port}
             cacerts = config/ssl/vacuula.crt
             ntp = pool.ntp.org
             check_host = {self.vacuula_server}
-            check_port = 80
+            check_port = {self.vacuula_port}
             check_timeout = 10
             """).encode('utf-8')
         mtp.send_file('/home/root/tron/config/vendors.ini', storage_id, new_config)
@@ -135,6 +143,27 @@ class Gen4Provisioner(QObject):
 }}
             """).encode('utf-8')
         mtp.send_file('/etc/wpa_supplicant/wpa_supplicant-wlan0.conf', storage_id, wifi_config)
+
+    def _set_hosts(self, mtp: MtpDevice | WindowsMtpDevice, storage_id: int) -> None:
+        # update hosts file if manual ip was used (optional)
+        if not self.manual_ip:
+            return
+        hosts_config = dedent(f"""\
+            127.0.0.1	localhost.localdomain		localhost
+
+            # The following lines are desirable for IPv6 capable hosts
+            ::1     localhost ip6-localhost ip6-loopback
+            fe00::0 ip6-localnet
+            ff00::0 ip6-mcastprefix
+            ff02::1 ip6-allnodes
+            ff02::2 ip6-allrouters
+            127.0.1.1 imx8mnlego-ddr4
+
+            # Vacuula server
+            {self.vacuula_server_ip} vacuula.local
+            """).encode('utf-8')
+        mtp.send_file('/etc/hosts', storage_id, hosts_config)
+
 
     def _on_step(self, step: int) -> None:
         if self._active:

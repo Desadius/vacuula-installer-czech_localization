@@ -1,11 +1,51 @@
 from __future__ import annotations
 
-from typing import Iterable
+import io
+import logging
+import os
+from collections.abc import Callable, Iterable
+from typing import BinaryIO, Union
 
 import usb.core
 import usb.util
 
 from .consts import *
+
+logger = logging.getLogger(__name__)
+
+# Something to upload: raw bytes, a path, or an open binary file.
+DataSource = Union[bytes, bytearray, memoryview, str, os.PathLike, BinaryIO]
+ProgressFn = Callable[[int, int], None]  # (bytes_sent, total_bytes)
+class _Source:
+    """Uniform (stream, size) view of a DataSource; closes files it opened."""
+
+    def __init__(self, source: DataSource) -> None:
+        self._owned = False
+        if isinstance(source, (bytes, bytearray, memoryview)):
+            self.stream: BinaryIO = io.BytesIO(source)
+            self.size = len(source)
+        elif isinstance(source, (str, os.PathLike)):
+            self.stream = open(source, "rb")
+            self._owned = True
+            self.size = os.fstat(self.stream.fileno()).st_size
+        else:
+            self.stream = source
+            pos = source.tell()
+            self.size = source.seek(0, io.SEEK_END) - pos
+            source.seek(pos)
+
+    def read_exact(self, n: int) -> bytes:
+        data = self.stream.read(n)
+        if len(data) != n:
+            raise MtpError(f"Source ended early: wanted {n} bytes, got {len(data)}")
+        return data
+
+    def __enter__(self) -> "_Source":
+        return self
+
+    def __exit__(self, *exc) -> None:
+        if self._owned:
+            self.stream.close()
 
 
 class MTP_PACKET:
@@ -65,10 +105,13 @@ def find_mtp_bulk_endpoints(dev: usb.core.Device) -> tuple[usb.core.Endpoint, us
     raise MtpError("Could not find MTP endpoints")
 
 OBJECT_FILENAME_PROP = 0xDC07
-ROOT_PARENT = 0xFFFFFFFF  # "root of the storage" in GetObjectHandles / parent in ObjectInfo
+ROOT_PARENT = 0xFFFFFFFF
 
 class MtpDevice:
     MAX_BUF = 4096
+    WRITE_CHUNK = 1024 * 1024
+    WRITE_TIMEOUT_MS = 10_000
+    RESPONSE_TIMEOUT_MS = 120_000
 
     def __init__(self, dev: usb.core.Device):
         self.ep_in, self.ep_out = find_mtp_bulk_endpoints(dev)
@@ -80,10 +123,39 @@ class MtpDevice:
         return self._tx_id
 
     def _write_pkt(self, pkt: MTP_PACKET):
-        self.ep_out.write(pkt)
+        self.ep_out.write(bytes(pkt), self.WRITE_TIMEOUT_MS)
 
-    def _read_pkt(self):
-        return MTP_PACKET.parse(bytes(self.ep_in.read(self.MAX_BUF)))
+    def _read_pkt(self, timeout: int | None = None):
+        return MTP_PACKET.parse(bytes(self.ep_in.read(self.MAX_BUF, timeout)))
+
+    def _send_data_stream(self, tx_id: int, code: int, src: _Source,
+                          progress: ProgressFn | None = None) -> None:
+        packet = self.ep_out.wMaxPacketSize
+        chunk = max(packet, self.WRITE_CHUNK // packet * packet)
+        total = 12 + src.size
+        length = total if total <= 0xFFFFFFFF else 0xFFFFFFFF  # MTP >4 GB marker
+        header = (
+            length.to_bytes(4, "little")
+            + int(ContainerType.Data).to_bytes(2, "little")
+            + int(code).to_bytes(2, "little")
+            + int(tx_id).to_bytes(4, "little")
+        )
+
+        first = min(src.size, chunk - len(header))
+        self.ep_out.write(header + src.read_exact(first), self.WRITE_TIMEOUT_MS)
+        sent = first
+        if progress:
+            progress(sent, src.size)
+
+        while sent < src.size:
+            part = src.read_exact(min(chunk, src.size - sent))
+            self.ep_out.write(part, self.WRITE_TIMEOUT_MS)
+            sent += len(part)
+            if progress:
+                progress(sent, src.size)
+
+        if total % packet == 0:
+            self.ep_out.write(b"", self.WRITE_TIMEOUT_MS)
 
     def _send_command(self, tx_id: int, code: int, args: Iterable[int]):
         pld = b''.join(arg.to_bytes(4, 'little', signed=arg < 0) for arg in args)
@@ -98,8 +170,8 @@ class MtpDevice:
             raise MtpError(f"Expected Data, got {data.container_type}")
         return data.payload
 
-    def _read_response(self) -> tuple[int]:
-        resp = self._read_pkt()
+    def _read_response(self, timeout: int | None = None) -> tuple[int]:
+        resp = self._read_pkt(timeout)
         if resp.container_type != ContainerType.Response:
             raise MtpError(f"Expected Response, got {resp.container_type}")
         if resp.code != Response.OK:
@@ -117,6 +189,13 @@ class MtpDevice:
         self._send_command(tx_id, code, args)
         self._send_data(tx_id, code, data)
         return self._read_response()
+
+    def _tx_data_out_stream(self, code: int, args: Iterable[int], data: DataSource,progress: ProgressFn | None = None) -> tuple:
+        tx_id = self._new_tx_id()
+        self._send_command(tx_id, code, args)
+        with _Source(data) as src:
+            self._send_data_stream(tx_id, code, src, progress)
+        return self._read_response(self.RESPONSE_TIMEOUT_MS)
 
     def _tx_data_in(self, code: int, args: Iterable[int]) -> tuple[tuple, bytes]:
         tx_id = self._new_tx_id()
@@ -136,12 +215,12 @@ class MtpDevice:
         n_ids = int.from_bytes(ids_raw[:4], 'little')
         return [int.from_bytes(ids_raw[4 + i * 4:4 + (i + 1) * 4], 'little') for i in range(n_ids)]
 
-    def send_object_info(self, target_path: str, storage_id: int, parent_id: int = -1) -> int:
+    def send_object_info(self, target_path: str, storage_id: int, parent_id: int = -1, size: int = 0) -> int:
         object_info = bytes.fromhex(
             "01 00 ff ff"  # StorageID
             "00 00"  # Object Format
             "00 00      "  # Protection Status
-            "00 00 00 00"  # Object Compressed Size
+        ) + min(size, 0xFFFFFFFF).to_bytes(4, 'little') + bytes.fromhex(  # Object Compressed Size (0 = unknown)
             "00 00      "  # Thumb Format
             "00 00 00 00"  # Thumb Compressed Size
             "00 00 00 00"  # Thumb Pix Width
@@ -165,9 +244,23 @@ class MtpDevice:
 
     def send_object(self, file_data: bytes):
         self._tx_data_out(Operations.SendObject, [], file_data)
+    
+    def send_object_stream(self, data: DataSource, progress: ProgressFn | None = None):
+        self._tx_data_out_stream(Operations.SendObject, [], data, progress)
 
     def set_object_prop_value(self, filehandle: int, prop: int, new_value: bytes):
         self._tx_data_out(Operations.SetObjectPropValue, [filehandle, prop], new_value)
+
+    def send_update_file(self, target_path: str, storage_id: int, data: DataSource, progress: ProgressFn | None = None):
+        with _Source(data) as src:
+            staging_path = f"{target_path}.swu"
+            file_handle = self.send_object_info(staging_path, storage_id, size=src.size)
+            self.send_object_stream(src.stream, progress)
+        final_path = f"{target_path}"
+        payload = (len(final_path) + 1).to_bytes(1, 'little') + final_path.encode('utf-16-le') + bytes.fromhex(
+            "00 00"  # null-terminator of actual filename
+        )
+        self.set_object_prop_value(file_handle, 0xDC07, payload)
 
     def send_file(self, target_path: str, storage_id: int, file_data: bytes):
         staging_path = f"./../../{target_path}.swu"
@@ -221,7 +314,7 @@ class MtpDevice:
             try:
                 name = self.get_object_filename(handle)
             except MtpError as e:
-                print(f"{prefix}[{handle:#010x}] <error: {e}>")
+                logger.debug(f"{prefix}[{handle:#010x}] <error: {e}>")
                 continue
-            print(f"{prefix}[{handle:#010x}] {name}")
+            logger.debug(f"{prefix}[{handle:#010x}] {name}")
             self.dump_tree(storage_id, handle, prefix + "  ")

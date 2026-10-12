@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import logging
 import ssl
 import threading
 from typing import Any
 
 import httpx
 from PySide6.QtCore import QObject, QTimer, Signal
+
+logger = logging.getLogger(__name__)
 
 BASE_URL = "https://192.168.219.1:4443"
 POLL_INTERVAL_MS = 5000
@@ -43,22 +46,15 @@ def _request(method: str, path: str, read_timeout: float | None = 5,
             timeout=httpx.Timeout(read_timeout, connect=2.0),
             headers=HEADERS,
         ) as client:
-            print("requesting", f"{BASE_URL}{path}")
+            logger.debug(f"Requesting {method} {BASE_URL}{path}")
             r = client.request(method, f"{BASE_URL}{path}", json=json_body)
     except (httpx.HTTPError, ssl.SSLError, OSError):
-        print("error")
+        logger.error(f"Request failed: {method} {BASE_URL}{path}")
         return False, None
     if not r.is_success:
-        print("not success")
-        print(r)
-        try:
-            print(r.json())
-        except Exception:
-            print("could not json error")
+        logger.debug(f"Request not successful: {method} {BASE_URL}{path}, status: {r.status_code}")
         return False, None
-    print(r)
     try:
-        print(r.json())
         return True, r.json()
     except ValueError:
         return True, None

@@ -109,6 +109,8 @@ make_mod () {
     dd if=${FOLDER}/beehive_path of=${MODDED_ASTRO} bs=1 seek=${BEEHIVE_OFFSET} conv=notrunc
     dd if=${FOLDER}/cloudmock_path of=${MODDED_ASTRO} bs=1 seek=${CLOUDMOCK_OFFSET} conv=notrunc
 
+    # TODO: verification of all mods!
+
     log "Modded astro binary created successfully"
     log "$(ls -lah ${FOLDER})"
 }
@@ -137,7 +139,3 @@ case "${OPERATION}" in
         run_once
         start_mod
 esac
-
-
-
-

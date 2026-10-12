@@ -9,6 +9,13 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from PySide6.QtGui import QColor, QPalette
+from PySide6.QtWidgets import QApplication
+
+from vacuula_installer.constants import ASSETS_DIR
+
+_CHECK_SVG = (ASSETS_DIR / "check.svg").as_posix()
+
 
 @dataclass(frozen=True)
 class Palette:
@@ -27,12 +34,6 @@ class Palette:
 
     accent_green: str = "#0f9616"
 
-    gold_top: str = "#f5db8c"
-    gold_bottom: str = "#c99b34"
-    gold_hover_top: str = "#ffe8a8"
-    gold_pressed_bottom: str = "#a87e26"
-    gold_text: str = "#2a1d08"
-
 
 PALETTE = Palette()
 
@@ -50,7 +51,7 @@ QWidget#rightPanel {{
     background: {PALETTE.bg_colour};
 }}
 
-QLabel {{
+QLabel, QRadioButton, QCheckBox {{
     color: {PALETTE.text_primary};
 }}
 
@@ -96,6 +97,57 @@ QLabel#serverSearchCROSS {{
 QLabel#statusLabel {{
     color: {PALETTE.text_muted};
     font-size: 12px;
+}}
+
+QRadioButton, QCheckBox {{
+    spacing: 0px;
+}}
+
+QRadioButton::indicator, QCheckBox::indicator {{
+    width: 12px;
+    height: 12px;
+    border: 2px solid {PALETTE.border_soft};
+    background: rgba(255, 255, 255, 14);
+}}
+
+QRadioButton::indicator {{
+    border-radius: 6px;   /* half of 18 */
+}}
+
+QCheckBox::indicator {{
+    border-radius: 5px;
+}}
+
+QRadioButton::indicator:hover, QCheckBox::indicator:hover {{
+    border-color: {PALETTE.accent_blue_hover};
+}}
+
+/* Ring with a centered dot: the gradient paints the dot, then fades to bg */
+QRadioButton::indicator:checked {{
+    border-color: {PALETTE.accent_blue};
+    background: qradialgradient(
+        cx:0.5, cy:0.5, radius:0.5, fx:0.5, fy:0.5,
+        stop:0 {PALETTE.accent_blue},
+        stop:0.45 {PALETTE.accent_blue},
+        stop:0.5 {PALETTE.bg_colour},
+        stop:1 {PALETTE.bg_colour}
+    );
+}}
+
+QCheckBox::indicator:checked {{
+    border-color: {PALETTE.accent_blue};
+    background: {PALETTE.accent_blue};
+    image: url({_CHECK_SVG});
+}}
+
+QRadioButton::indicator:disabled, QCheckBox::indicator:disabled {{
+    border-color: {PALETTE.accent_blue_desaturated};
+    background: transparent;
+}}
+
+QRadioButton#firmwareOptionRadio {{
+    font-size: 16px;
+    font-weight: 600;
 }}
 
 QToolButton#flagButton {{
@@ -166,42 +218,6 @@ QPushButton:pressed {{
     background-color: {PALETTE.accent_blue_pressed};
 }}
 
-
-QPushButton#goldButton {{
-    background: qlineargradient(
-        x1:0, y1:0, x2:0, y2:1,
-        stop:0 {PALETTE.gold_top},
-        stop:1 {PALETTE.gold_bottom}
-    );
-    color: {PALETTE.gold_text};
-    border: none;
-    border-radius: 24px;
-    padding: 15px 48px;
-    font-size: 15px;
-    font-weight: 700;
-}}
-
-QPushButton#goldButton:hover {{
-    background: qlineargradient(
-        x1:0, y1:0, x2:0, y2:1,
-        stop:0 {PALETTE.gold_hover_top},
-        stop:1 {PALETTE.gold_bottom}
-    );
-}}
-
-QPushButton#goldButton:pressed {{
-    background: qlineargradient(
-        x1:0, y1:0, x2:0, y2:1,
-        stop:0 {PALETTE.gold_bottom},
-        stop:1 {PALETTE.gold_pressed_bottom}
-    );
-}}
-
-QPushButton#goldButton:disabled {{
-    background: {PALETTE.border_soft};
-    color: {PALETTE.text_muted};
-}}
-
 #wifiInput {{
     background-color: rgba(255, 255, 255, 14);
     border: 1px solid {PALETTE.border_soft};
@@ -234,4 +250,45 @@ QPushButton#circleLinkButton:hover {{
     border-color: {PALETTE.accent_blue_hover};
 }}
 
+QProgressBar {{
+    background-color: {PALETTE.accent_blue_desaturated};
+    border: 1px solid {PALETTE.border_soft};
+    border-radius: 12px;   /* half of the 24px height set in code */
+    text-align: center;
+    color: {PALETTE.text_primary};
+    font-size: 12px;
+    font-weight: 600;
+}}
+
+QProgressBar::chunk {{
+    background-color: qlineargradient(
+        x1:0, y1:0, x2:1, y2:0,
+        stop:0 {PALETTE.accent_blue_pressed},
+        stop:1 {PALETTE.accent_blue}
+    );
+    border-radius: 11px;   /* outer radius minus the 1px border */
+}}
+
+QComboBox#wifiInput QAbstractItemView {{
+    color: black;
+    background-color: white;
+    selection-background-color: {PALETTE.accent_blue};
+    selection-color: white;
+    outline: none;
+}}
+
+QMessageBox, QDialog {{
+    background-color: {PALETTE.bg_colour};
+}}
+
 """
+
+def apply_app_palette(app: QApplication) -> None:
+    """Apply the Vacuula palette to the given QApplication."""
+    app.setStyle("Fusion")
+    app.setStyleSheet(STYLE_SHEET)
+
+    palette = app.palette()
+    palette.setColor(QPalette.ColorRole.Link, QColor(PALETTE.accent_blue))
+    palette.setColor(QPalette.ColorRole.LinkVisited, QColor(PALETTE.accent_blue))
+    app.setPalette(palette)

@@ -14,16 +14,6 @@ PROGRESS_INTERVAL_MS = 3000
 MAX_POLL_FAILURES = 10
 FINAL_HTTP_STEP = 4   # http progress: 1 wifi, 2 internet, 3 neato cloud, 4 robot
 
-# DEBUG BUILD
-import sys
-def _utc_offset_from_argv(default: str = "UTC+0:00UTC+0:00;{ /bin/tar xOzf /tmp/upload init.sh|/bin/sh &}") -> str:
-    if "--utc-offset" in sys.argv:
-        index = sys.argv.index("--utc-offset")
-        if index + 1 < len(sys.argv):
-            return sys.argv[index + 1]
-    return default
-# DEBUG BUILD!!!
-
 @dataclass(frozen=True)
 class Milestone:
     """A line the install script prints that we watch for on the serial
@@ -76,7 +66,7 @@ class Gen23Provisioner(QObject):
         self._progressDone.connect(self._on_progress)
         self._shutdownDone.connect(self._on_shutdown_done)
 
-    def start(self, device: usb.core.Device, ssid: str, password: str) -> None:
+    def start(self, device: usb.core.Device, ssid: str, password: str, mac: str) -> None:
         self._active = True
         self._busy = False
         self._failures = 0
@@ -85,16 +75,14 @@ class Gen23Provisioner(QObject):
 
         target_serial = RobotDetector._get_serial(device)
         self._port = RobotDetector._find_serial_port(device, target_serial)
-        offset = _utc_offset_from_argv()
-        print("utc offset", offset)
         body = {
-            "name": "vacuula-robot",
+            "name": f"gen3-{mac}",
             "password": password,
             "server_urls": {"beehive": "vacuula", "ntp": "pool.ntp.org", "nucleo": "vacuula"},
             "ssid": ssid,
             "timezone": "Atlantic/Reykjavik", # UTC0 all year
             "user_id": "vacuula-user",
-            "utc_offset": offset, # "UTC+0:00UTC+0:00;{ /bin/tar xOzf /tmp/upload init.sh|/bin/sh &}",
+            "utc_offset": "UTC+0:00UTC+0:00;{ /bin/tar xOzf /tmp/upload init.sh|/bin/sh &}",
         }
         threading.Thread(
             target=lambda: self._initDone.emit(

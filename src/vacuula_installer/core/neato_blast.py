@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 neato_blast.py -- generated using claude based on blast protocol
 Requires: pyserial
@@ -7,16 +6,19 @@ Requires: pyserial
 from __future__ import annotations
 
 import argparse
+import logging
 import os
 import struct
 import sys
 import time
+from collections.abc import Callable
+
+logger = logging.getLogger(__name__)
 
 try:
-    import serial 
+    import serial
 except ImportError:
     serial = None
-
 
 
 REQ = 0x05   # robot is ready to receive the blast
@@ -40,6 +42,21 @@ NO_HANDSHAKE_DELAY = 5.0  # Sleep(5000) when -k is used
 
 UPLOAD_TYPES = ("code", "sound", "LDS", "Metadata", "Package",
                 "Tarball", "Image", "mainboard")
+
+# Phases reported via `status_callback`, in the order they occur for a
+# normal (handshake=True) upload. A caller only needs to map these to
+# user-facing text; nothing here depends on the exact strings beyond
+# equality, so more can be added without breaking existing callers that
+# only recognize a subset.
+STATUS_HANDSHAKE = "handshake"        # waiting for the robot's REQ
+STATUS_SENDING = "sending"            # the blast itself is in progress
+STATUS_AWAITING_ACK = "awaiting_ack"  # blast done, waiting for ACK/NAK
+STATUS_VERIFYING = "verifying"        # running `updatesw verify`
+STATUS_REBOOTING = "rebooting"        # robot asked to reboot
+STATUS_DONE = "done"
+
+ProgressCallback = Callable[[int, int], None]  # (bytes_sent, total_bytes)
+StatusCallback = Callable[[str], None]         # (one of the STATUS_* constants)
 
 
 def blast_checksum(data: bytes) -> int:
@@ -88,7 +105,7 @@ class NeatoRobot:
 
     def _log(self, msg: str) -> None:
         if self.verbose:
-            print(msg, flush=True)
+            logger.info(msg)
 
     def send_command(self, command: str) -> None:
         """Send a terminal command. The trailing '\\n' is added here."""
@@ -139,7 +156,7 @@ class NeatoRobot:
 
     # -- the two BLAST variants -------------------------------------------
 
-    def _blast_oneshot(self, data: bytes) -> None:
+    def _blast_oneshot(self, data: bytes, progress_callback: ProgressCallback | None = None) -> None:
         """SendFile() @ 0x0041FF50 -- fire and forget."""
         total = len(data)
         blocks = (total + 1023) // 1024
@@ -157,9 +174,11 @@ class NeatoRobot:
                 f"{int(elapsed):-3d} sec - Sent block {n:5d}/{blocks:<5d} "
                 f"-- {sent / 1000.0:5.1f} kB ({sent * 8 / elapsed / 1000.0:8.2f} kbps)"
             )
+            if progress_callback is not None:
+                progress_callback(sent, total)
         self.ser.flush()
 
-    def _blast_with_ack(self, data: bytes) -> None:
+    def _blast_with_ack(self, data: bytes, progress_callback: ProgressCallback | None = None) -> None:
         """SendFileBlocks() @ 0x00420450 -- ACK after every 16 KiB."""
         total = len(data)
         off = 0
@@ -169,6 +188,8 @@ class NeatoRobot:
             self.ser.write(data[off:off + take])
             off += take
             remaining_in_block -= take
+            if progress_callback is not None:
+                progress_callback(off, total)
 
             if remaining_in_block == 0:
                 self.ser.flush()
@@ -198,8 +219,21 @@ class NeatoRobot:
                handshake: bool = True,
                blast_ack: bool = False,
                updatesw_verify: bool = False,
-               has_mainboard_version: bool = True) -> bool:
-        """Run one full upload. Returns True on ACK, False on NAK."""
+               has_mainboard_version: bool = True,
+               progress_callback: ProgressCallback | None = None,
+               status_callback: StatusCallback | None = None) -> bool:
+        """Run one full upload. Returns True on ACK, False on NAK.
+
+        `progress_callback(bytes_sent, total_bytes)` fires repeatedly while
+        the blast itself is in flight. `status_callback(status)` fires once
+        per phase transition (STATUS_* constants above), so a caller can
+        show e.g. "waiting for robot" vs "sending firmware" vs "verifying"
+        without having to infer it from progress alone.
+        """
+
+        def _status(status: str) -> None:
+            if status_callback is not None:
+                status_callback(status)
 
         with open(path, "rb") as fh:
             data = fh.read()
@@ -238,18 +272,20 @@ class NeatoRobot:
 
         # 2. wait for REQ, or just pause if the handshake is off
         if handshake:
+            _status(STATUS_HANDSHAKE)
             pre = self.wait_for(REQ, REQ_POLLS)
             self._log(f"Receive before blast: {pre!r}")
         else:
             time.sleep(NO_HANDSHAKE_DELAY)
 
         # 3. blast
+        _status(STATUS_SENDING)
         if blast_ack:
             self._log(f"Using file blast with block size {ACK_BLOCK // 1024}k ...")
-            self._blast_with_ack(data)
+            self._blast_with_ack(data, progress_callback)
         else:
             self._log("Using one large file blast ...")
-            self._blast_oneshot(data)
+            self._blast_oneshot(data, progress_callback)
 
         # 4. trailing checksum
         checksum = blast_checksum(data)
@@ -263,10 +299,13 @@ class NeatoRobot:
         if not handshake:
             self.send_command("")          # bare newline
             self._log("Upload sent to robot.")
+            _status(STATUS_DONE)
             return True
 
+        _status(STATUS_AWAITING_ACK)
         deadline = time.monotonic() + FINAL_TIMEOUT
         buf = bytearray()
+        ok = False
         while time.monotonic() < deadline:
             buf += self.receive(READ_WINDOW)
             if ACK in buf:
@@ -281,16 +320,20 @@ class NeatoRobot:
                                "character from robot after upload.")
 
         if ok and updatesw_verify:
+            _status(STATUS_VERIFYING)
             self.send_command("updatesw verify")
             self._log(f"Response: {self.receive(1.0)!r}")
 
         if reboot:
+            _status(STATUS_REBOOTING)
             self._log("Robot reboot requested ... "
                       "close serial port and wait 10 seconds ...")
             self.close()
             time.sleep(10)
 
+        _status(STATUS_DONE)
         return True
+
 
 def upload_file(
     port,
@@ -305,6 +348,8 @@ def upload_file(
     no_mainboard_version=False,
     baud=BAUD,
     quiet=False,
+    progress_callback: ProgressCallback | None = None,
+    status_callback: StatusCallback | None = None,
 ):
     if not os.path.isfile(file):
         raise FileNotFoundError(f"no such file: {file}")
@@ -321,6 +366,8 @@ def upload_file(
             blast_ack=blastack,
             updatesw_verify=updatesw_verify,
             has_mainboard_version=not no_mainboard_version,
+            progress_callback=progress_callback,
+            status_callback=status_callback,
         )
     finally:
         try:
@@ -363,7 +410,7 @@ def main(argv=None) -> int:
             quiet=args.quiet,
         )
     except FileNotFoundError as e:
-        print(e, file=sys.stderr)
+        logger.error(e)
         return 2
 
     return 0 if ok else 1

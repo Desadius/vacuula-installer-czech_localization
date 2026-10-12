@@ -10,6 +10,7 @@ from __future__ import annotations
 
 from PySide6.QtCore import (
     QEasingCurve,
+    QMargins,
     QParallelAnimationGroup,
     QRect,
     Qt,
@@ -18,17 +19,28 @@ from PySide6.QtCore import (
 )
 from PySide6.QtGui import QColor
 from PySide6.QtSvgWidgets import QSvgWidget
-from PySide6.QtWidgets import QHBoxLayout, QLabel, QStackedLayout, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLabel,
+    QLineEdit,
+    QPushButton,
+    QStackedLayout,
+    QVBoxLayout,
+    QWidget,
+)
 
 from vacuula_installer.constants import COMPUTER_SVG, SERVER_SVG
 from vacuula_installer.i18n import Translator
 from vacuula_installer.theme import PALETTE
+from vacuula_installer.widgets.clickable_label import ClickableLabel
 from vacuula_installer.widgets.spinner import SpinnerWidget
 from vacuula_installer.widgets.width_tracking_label import WidthTrackingLabel
 
 
 class FindServerScreen(QWidget):
     startFindServerRequested = Signal(str)
+    enterIpManuallyRequested = Signal()
+    manualConnectionTestRequested = Signal(str)
 
     """Simple informational screen shown while locating a Vacuula server."""
 
@@ -50,10 +62,28 @@ class FindServerScreen(QWidget):
 
         outer.addLayout(self._build_status_row())
 
+        self._enter_ip_button = ClickableLabel(self)
+        self._enter_ip_button.setObjectName("statusLabel")
+        self._enter_ip_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._enter_ip_button.clicked.connect(self._handle_enter_ip_clicked)
+        self._enter_ip_button.adjustSize()
+        self._corner_margin = QMargins(0, 0, 14, 14)
+
         self._translator.languageChanged.connect(self._retranslate)
         self._title_label.widthChanged.connect(self._apply_label_margins)
         self._retranslate()
         self.reset_searching()
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        self._reposition_enter_ip_button()
+
+    def _reposition_enter_ip_button(self) -> None:
+        self._enter_ip_button.adjustSize()
+        m = self._corner_margin
+        x = self.width() - self._enter_ip_button.width() - m.right()
+        y = self.height() - self._enter_ip_button.height() - m.bottom()
+        self._enter_ip_button.move(max(0, x), max(0, y))
 
     def _build_info_page(self) -> QWidget:
         page = QWidget(self)
@@ -81,9 +111,46 @@ class FindServerScreen(QWidget):
 
         layout.addWidget(self._title_label)
         layout.addWidget(self._body_label)
+        self._manual_ip_container = self._build_manual_ip_container(page)
+        layout.addWidget(self._manual_ip_container)
         layout.addWidget(self._icon_row)
         layout.addWidget(self._detailinfo_label)
         return page
+
+    def _build_manual_ip_container(self, parent: QWidget) -> QWidget:
+        container = QWidget(parent)
+        container_layout = QVBoxLayout(container)
+        container_layout.setContentsMargins(0, 0, 0, 0)
+        container_layout.setSpacing(6)
+
+        row = QWidget(container)
+        row_layout = QHBoxLayout(row)
+        row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.setSpacing(8)
+
+        self._manual_ip_input = QLineEdit(row)
+        self._manual_ip_input.setObjectName("wifiInput")
+        self._manual_ip_input.setFixedWidth(220)
+        self._manual_ip_input.returnPressed.connect(self._handle_try_connection_clicked)
+
+        self._try_connection_button = QPushButton(row)
+        self._try_connection_button.setObjectName("continueButton")
+        self._try_connection_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self._try_connection_button.clicked.connect(self._handle_try_connection_clicked)
+
+        row_layout.addWidget(self._manual_ip_input)
+        row_layout.addWidget(self._try_connection_button)
+
+        self._manual_ip_status_label = QLabel(container)
+        self._manual_ip_status_label.setObjectName("statusLabel")
+        self._manual_ip_status_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self._manual_ip_status_label.setWordWrap(True)
+        self._manual_ip_status_label.hide()
+
+        container_layout.addWidget(row, alignment=Qt.AlignmentFlag.AlignHCenter)
+        container_layout.addWidget(self._manual_ip_status_label)
+        container.hide()
+        return container
 
     def _build_icon_row(self, parent: QWidget) -> QWidget:
         container = QWidget(parent)
@@ -126,6 +193,14 @@ class FindServerScreen(QWidget):
         self._dots_right.setStyleSheet("")
         self._x_mark.setText("✕")
         self._spinner.start()
+
+        self._manual_ip_container.hide()
+        self._manual_ip_status_label.hide()
+        self._manual_ip_status_label.clear()
+        self._manual_ip_input.clear()
+        self._manual_ip_input.setEnabled(True)
+        self._try_connection_button.setEnabled(True)
+        self._enter_ip_button.show()
 
     def _fade_text_colour(
         self, label: QLabel, start_hex: str, end_hex: str, duration_ms: int = 1000
@@ -179,6 +254,33 @@ class FindServerScreen(QWidget):
         row.addStretch(1)
         return row
 
+    def _handle_enter_ip_clicked(self) -> None:
+        self.enterIpManuallyRequested.emit()
+        self._enter_ip_button.hide()
+        self._manual_ip_container.show()
+        self._manual_ip_input.setFocus()
+
+    def _handle_try_connection_clicked(self) -> None:
+        ip = self._manual_ip_input.text().strip()
+        if not ip:
+            return
+        self._manual_ip_input.setEnabled(False)
+        self._try_connection_button.setEnabled(False)
+        self._manual_ip_status_label.hide()
+        self.manualConnectionTestRequested.emit(ip)
+
+    def set_manual_ip_test_result(self, success: bool, message: str = "") -> None:
+        if success:
+            self._manual_ip_container.hide()
+            self._manual_ip_status_label.clear()
+        else:
+            self._manual_ip_input.setEnabled(True)
+            self._try_connection_button.setEnabled(True)
+            self._manual_ip_status_label.setText(
+                message or self._translator.tr("serversearch.manual.failed")
+            )
+            self._manual_ip_status_label.show()
+
     # Part of getting title textwidth as limit for other Qlabels
     def _apply_label_margins(self) -> None:
         available = self._title_label.width()
@@ -210,6 +312,10 @@ class FindServerScreen(QWidget):
         self._title_label.setText(self._translator.tr("serversearch.title"))
         self._body_label.setText(self._translator.tr("serversearch.body"))
         self._detailinfo_label.setText(self._translator.tr("serversearch.detailinfo"))
+        self._enter_ip_button.setText(self._translator.tr("serversearch.enter_ip_manually"))
+        self._reposition_enter_ip_button()
+        self._manual_ip_input.setPlaceholderText(self._translator.tr("serversearch.manual.placeholder"))
+        self._try_connection_button.setText(self._translator.tr("serversearch.manual.try_connection"))
 
         # Part of getting title textwidth as limit for other Qlabels
         self._title_label.setContentsMargins(0, 0, 0, 0)

@@ -2,13 +2,16 @@
 
     Server detector uses zeroconf python package that should be cross,
     compatible with all OS.
-    
-    If a IP is returned it will fetch the cert from the server.
 
 If a IP is returned it will fetch the cert from the server.
 
 If both succeed the information is sent as signals, main_windows saves it
 in the session.
+
+A server can also be checked manually (user-entered address) with
+ServerDetector.check_manual(). It runs the exact same checks as mDNS
+discovery and reports why it failed: "not_found" if nothing answered,
+"incompatible" if something answered but isn't a (compatible) Vacuula server.
 
 NOTE: Does NOT support self-signed certs if server, proxy or w/e redirects to https!
 For that we would have to a. disable verification or b. use same selfsigned on all
@@ -16,17 +19,102 @@ server deployments and preprogram its public part here - none are desirable.
 """
 
 from __future__ import annotations
-import logging, requests, threading
-from PySide6.QtCore import QObject, QTimer, Signal, QRunnable, QThreadPool, Slot
-from zeroconf import Zeroconf, ServiceBrowser, ServiceInfo, ServiceListener
+
+import logging
+import threading
+from dataclasses import dataclass
+
+import requests
+from PySide6.QtCore import QObject, QRunnable, QThreadPool, QTimer, Signal, Slot
+from zeroconf import ServiceBrowser, ServiceInfo, ServiceListener, Zeroconf
+
 from vacuula_installer.constants import M_DNS_SERVICE_TYPE
 
 logger = logging.getLogger(__name__)
 
+DEFAULT_SERVER_PORT = 80
+MANUAL_CERT_PATH = "/api/cert"
 
-class _DetectionWorkerSignals(QObject):
-    found = Signal(str, str)  # ip, cert
-    not_found = Signal()
+REQUEST_TIMEOUT_S = 3
+
+NOT_FOUND = "not_found"          # nothing answered at that address
+INCOMPATIBLE = "incompatible"    # something answered, but not a usable Vacuula server
+
+
+class _ServerCheckError(Exception):
+    def __init__(self, kind: str, detail: str = "") -> None:
+        super().__init__(detail or kind)
+        self.kind = kind
+        logger.debug("Server check failed (%s): %s", kind, detail)
+
+
+@dataclass(frozen=True)
+class _ServerDetails:
+    ip: str
+    cert: str
+    port: int
+    gen4_port: int
+    version: str
+
+
+def _check_server(ip: str, port: int, cert_path: str) -> _ServerDetails:
+    base_url = f"http://{ip}:{port}"
+    logger.debug("Checking server at %s (cert path %s)", base_url, cert_path)
+
+    try:
+        cert_response = requests.get(f"{base_url}{cert_path}", timeout=REQUEST_TIMEOUT_S)
+    except requests.RequestException as exc:
+
+        raise _ServerCheckError(NOT_FOUND, f"no answer from {base_url}: {exc}") from exc
+
+    if not cert_response.ok:
+        raise _ServerCheckError(
+            INCOMPATIBLE, f"{cert_path} returned HTTP {cert_response.status_code}"
+        )
+    cert = cert_response.text
+    if "BEGIN CERTIFICATE" not in cert:
+        raise _ServerCheckError(INCOMPATIBLE, f"{cert_path} did not return a certificate")
+
+    logger.debug("Certificate looks valid, fetching server info from /api/server")
+    try:
+        server_response = requests.get(f"{base_url}/api/server", timeout=REQUEST_TIMEOUT_S)
+    except requests.RequestException as exc:
+        raise _ServerCheckError(NOT_FOUND, f"/api/server: {exc}") from exc
+    logger.debug("/api/server returned HTTP %d", server_response.status_code)
+    try:
+        server_response.raise_for_status()
+        server_info = server_response.json()
+        logger.debug("/api/server JSON: %s", server_info)
+        version = str(server_info["version"])
+        gen4_port = int(server_info["gen4_port"])
+    except (requests.RequestException, ValueError, KeyError, TypeError) as exc:
+        raise _ServerCheckError(INCOMPATIBLE, f"/api/server unusable: {exc}") from exc
+
+    logger.debug("Server at %s:%d is Vacuula v%s (gen4 port %d)", ip, port, version, gen4_port)
+    return _ServerDetails(ip=ip, cert=cert, port=port, gen4_port=gen4_port, version=version)
+
+
+def _parse_address(text: str) -> tuple[str, int]:
+    text = text.strip()
+    for prefix in ("http://", "https://"):
+        if text.lower().startswith(prefix):
+            text = text[len(prefix):]
+    text = text.split("/", 1)[0]
+
+    logger.debug("Parsing user-entered address: %r", text)
+
+    if text.count(":") == 1:  # host:port (more colons = bare IPv6)
+        host, port_text = text.split(":")
+        if port_text.isdigit():
+            return host, int(port_text)
+        return host, DEFAULT_SERVER_PORT
+
+    return text, DEFAULT_SERVER_PORT
+
+
+class _WorkerSignals(QObject):
+    found = Signal(str, str, int, int)  # ip, cert, vacuula_port, gen4_port
+    failed = Signal(str)
 
 
 class _ServiceListener(ServiceListener):
@@ -36,46 +124,23 @@ class _ServiceListener(ServiceListener):
         self.info: ServiceInfo | None = None
         self.event = threading.Event()
 
-    def add_service(
-        self,
-        zc: Zeroconf,
-        type_: str,
-        name: str,
-    ) -> None:
-        info = zc.get_service_info(
-            type_,
-            name,
-            timeout=1000,
-        )
-
+    def _resolve(self, zc: Zeroconf, type_: str, name: str, why: str) -> None:
+        logger.debug("Service %s: %s", why, name)
+        info = zc.get_service_info(type_, name, timeout=1000)
         if info is not None:
+            logger.debug("Resolved service %s: %s", why, info)
             self.info = info
             self.event.set()
 
-    def update_service(
-        self,
-        zc: Zeroconf,
-        type_: str,
-        name: str,
-    ) -> None:
+    def add_service(self, zc: Zeroconf, type_: str, name: str) -> None:
+        self._resolve(zc, type_, name, "added")
+
+    def update_service(self, zc: Zeroconf, type_: str, name: str) -> None:
         # A service can be updated after initially appearing.
-        info = zc.get_service_info(
-            type_,
-            name,
-            timeout=1000,
-        )
+        self._resolve(zc, type_, name, "updated")
 
-        if info is not None:
-            self.info = info
-            self.event.set()
-
-    def remove_service(
-        self,
-        zc: Zeroconf,
-        type_: str,
-        name: str,
-    ) -> None:
-        pass
+    def remove_service(self,zc: Zeroconf,type_: str,name: str,) -> None:
+        logger.debug("Service removed: %s", name)
 
 
 class _DetectionWorker(QRunnable):
@@ -84,79 +149,51 @@ class _DetectionWorker(QRunnable):
 
     def __init__(self) -> None:
         super().__init__()
-        self.signals = _DetectionWorkerSignals()
+        self.signals = _WorkerSignals()
 
     @Slot()
     def run(self) -> None:
         info = self._discover_vacuula()
-
         if info is None:
-            self.signals.not_found.emit()
+            self.signals.failed.emit(NOT_FOUND)
             return
 
         addresses = info.parsed_addresses()
-
         if not addresses:
             logger.warning("Vacuula service found but has no addresses")
-            self.signals.not_found.emit()
+            self.signals.failed.emit(NOT_FOUND)
             return
 
         # Prefer IPv4.
-        ip = next(
-            (addr for addr in addresses if ":" not in addr),
-            addresses[0],
-        )
+        ip = next((addr for addr in addresses if ":" not in addr), addresses[0])
 
         # DNS-SD TXT records are bytes -> bytes.
         properties = {
             self._decode_property(key): self._decode_property(value)
-            for key, value in info.properties.items() if value is not None
+            for key, value in info.properties.items()
+            if value is not None
         }
-
         cert_path = properties.get("cert-path")
-
         if not cert_path:
-            logger.warning(
-                "Vacuula service found but has no cert-path property"
-            )
-            self.signals.not_found.emit()
+            logger.warning("Vacuula service found but has no cert-path property")
+            self.signals.failed.emit(INCOMPATIBLE)
             return
-
-        port = info.port
-
-        url = f"http://{ip}:{port}{cert_path}"
-
-        logger.debug(
-            "Vacuula server discovered at %s",
-            url,
-        )
 
         try:
-            response = requests.get(
-                url,
-                timeout=3,
-            )
-            response.raise_for_status()
-        except requests.RequestException:
-            logger.warning(
-                "Resolved host but failed to fetch cert", exc_info=False
-            )
-            self.signals.not_found.emit()
+            details = _check_server(ip, info.port or DEFAULT_SERVER_PORT, cert_path)
+        except _ServerCheckError as exc:
+            logger.warning("mDNS server check failed (%s): %s", exc.kind, exc)
+            self.signals.failed.emit(exc.kind)
             return
 
-        self.signals.found.emit(ip, response.text)
+        logger.info("Vacuula server (v%s) found at %s:%d (gen4 port %d)", details.version, details.ip, details.port, details.gen4_port)
+        self.signals.found.emit(details.ip, details.cert, details.port, details.gen4_port)
 
     @staticmethod
     def _discover_vacuula() -> ServiceInfo | None:
         zeroconf = Zeroconf()
         listener = _ServiceListener()
-
-        browser = ServiceBrowser(
-            zeroconf,
-            M_DNS_SERVICE_TYPE,
-            listener,
-        )
-
+        browser = ServiceBrowser(zeroconf, M_DNS_SERVICE_TYPE, listener)
         try:
             # Wait until a service is discovered or timeout expires.
             listener.event.wait(3.0)
@@ -170,15 +207,42 @@ class _DetectionWorker(QRunnable):
     def _decode_property(value: bytes | str) -> str:
         if isinstance(value, bytes):
             return value.decode("utf-8", errors="replace")
-
         return value
 
 
+class _ManualCheckWorker(QRunnable):
+    """Same checks as _DetectionWorker, for one user-entered address."""
+
+    def __init__(self, address: str) -> None:
+        super().__init__()
+        self.signals = _WorkerSignals()
+        self._address = address
+
+    @Slot()
+    def run(self) -> None:
+        host, port = _parse_address(self._address)
+        if not host:
+            self.signals.failed.emit(NOT_FOUND)
+            return
+        try:
+            details = _check_server(host, port, MANUAL_CERT_PATH)
+        except _ServerCheckError as exc:
+            logger.warning("Manual server check failed (%s): %s", exc.kind, exc)
+            self.signals.failed.emit(exc.kind)
+            return
+
+        logger.info("Vacuula server (v%s) (manual) found at %s:%d (gen4 port %d)", details.version, details.ip, details.port, details.gen4_port)
+        self.signals.found.emit(details.ip, details.cert, details.port, details.gen4_port)
+
 
 class ServerDetector(QObject):
-    """Polls for M_DNS_HOSTNAME and emits its IP + cert once found."""
+    """Polls mDNS for M_DNS_SERVICE_TYPE, or checks a manual address, and
+    emits the server's IP + cert once found."""
 
-    serverDetected = Signal(str, str)  # ip, cert
+    # ip, cert, vacuula_port, gen4_port, manual (True = user-entered address)
+    serverDetected = Signal(str, str, int, int, bool)
+    # Manual check only: NOT_FOUND ("not_found") or INCOMPATIBLE ("incompatible")
+    manualCheckFailed = Signal(str)
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
@@ -187,37 +251,81 @@ class ServerDetector(QObject):
         self._timer.timeout.connect(self._detection_logic)
         self._pool = QThreadPool.globalInstance()
         self._busy = False
+        self._manual_busy = False
         self._active = False
-        self._workers: list[_DetectionWorker] = []
+        self._found = False
+        # keep refs alive until each worker finishes
+        self._workers: set[QRunnable] = set()
 
     def start(self, delay_ms: int) -> None:
         self._active = True
+        self._found = False
         self._timer.start(delay_ms)
 
     def stop(self) -> None:
-        self._active = False  # any in-flight worker result gets ignored
+        self._active = False  # any in-flight mDNS result gets ignored
         self._timer.stop()  # Needed for back button
+
+    def check_manual(self, address: str) -> None:
+        """Check a user-entered address ('ip', 'ip:port', or a URL)."""
+        if self._manual_busy:
+            return
+        self._manual_busy = True
+        worker = _ManualCheckWorker(address)
+        self._workers.add(worker)
+        worker.signals.found.connect(
+            lambda ip, cert, port, gen4, w=worker: self._on_manual_found(w, ip, cert, port, gen4)
+        )
+        worker.signals.failed.connect(
+            lambda kind, w=worker: self._on_manual_failed(w, kind)
+        )
+        self._pool.start(worker)
+
+    # -- mDNS --------------------------------------------------------------------
 
     def _detection_logic(self) -> None:
         if self._busy:
             return  # previous attempt still in flight; try again next tick
-
         self._busy = True
         worker = _DetectionWorker()
-        self._workers.append(worker)  # keep a ref alive until it finishes
-        worker.signals.found.connect(self._on_found)
-        worker.signals.not_found.connect(self._on_not_found)
+        self._workers.add(worker)
+        worker.signals.found.connect(
+            lambda ip, cert, port, gen4, w=worker: self._on_found(w, ip, cert, port, gen4)
+        )
+        worker.signals.failed.connect(lambda _kind, w=worker: self._on_not_found(w))
         self._pool.start(worker)
 
-    def _on_found(self, ip: str, cert: str) -> None:
+    def _on_found(self, worker: QRunnable, ip: str, cert: str, port: int, gen4_port: int) -> None:
         self._busy = False
-        self._workers.clear()
-        if not self._active:
-            return  # stop() was called while this was resolving
+        self._workers.discard(worker)
+        if not self._active or self._found:
+            return  # stopped, or a manual check already won
+        self._finish(ip, cert, port, gen4_port, manual=False)
+
+    def _on_not_found(self, worker: QRunnable) -> None:
+        self._busy = False
+        self._workers.discard(worker)
+
+    # -- manual ------------------------------------------------------------------
+
+    def _on_manual_found(self, worker: QRunnable, ip: str, cert: str, port: int, gen4_port: int) -> None:
+        self._manual_busy = False
+        self._workers.discard(worker)
+        if self._found:
+            return  # mDNS already found one in the meantime
+        self._finish(ip, cert, port, gen4_port, manual=True)
+
+    def _on_manual_failed(self, worker: QRunnable, kind: str) -> None:
+        self._manual_busy = False
+        self._workers.discard(worker)
+        if self._found:
+            return
+        self.manualCheckFailed.emit(kind)
+
+    # -- shared ------------------------------------------------------------------
+
+    def _finish(self, ip: str, cert: str, port: int, gen4_port: int, *, manual: bool) -> None:
+        self._found = True
         self._timer.stop()
         self._active = False
-        self.serverDetected.emit(ip, cert)
-
-    def _on_not_found(self) -> None:
-        self._busy = False
-        self._workers.clear()
+        self.serverDetected.emit(ip, cert, port, gen4_port, manual)

@@ -8,59 +8,100 @@ Goals for this is to:
 5. Be as much of "one click install" mantra as possible aka. KISS
 
 Goals are NOT:
-1. Server install walk-trough
-2. Un-rainbower
+1. Server install walk-trough, that can be found [here]()
+2. Un-rainbower, the [discord]() will serve that purpose
 
 ## Current TODO:s in random order
 
 ```mermaid
-flowchart LR
-    A["Welcome Screen</br>Språk, var man får hjälp"] -->|Frozen, compiled| B[Server search screen]
-    A -->|Not compiled| C[Dev screen]
-    C --> B
-    B --> D
-
-    subgraph D [Connect robot screen]
+flowchart TD
+    subgraph FU ["Firmware update screen"]
         direction TB
-        Da(Step 1: Please connect robot)
-        Db(Step 2: Firmware check)
-        Da --> Db
+        Fpick["Pick version<br/>gen3: factory-reset link + acknowledgement"]
+        Freset["gen3: factory-reset instructions"]
+        Fdl["Download"]
+        Fprompt["Install prompt"]
+        Finst["Install + robot reboot"]
+        Ffail["Download/install failed, retry"]
+        Fpick --> Fdl
+        Fdl --> Fprompt
+        Fprompt --> Finst
+        Fdl --> Ffail
+        Finst --> Ffail
+        Ffail -->|download retry| Fpick
+        Ffail -->|install retry| Fprompt
+        Fpick --> Freset
+        Freset --> Fpick
     end
 
-    Db -->|gen4| E
-    Db -->|gen2/3| F
-
-    subgraph WIFI [Wifi setup]
+    subgraph WIFI ["Wifi setup"]
         direction TB
-        E[Enter SSID/PW]
-        F[Connect to robot own Wifi]
-        Fb[Choose Wifi from drop-down]
-        F --> Fb
+        W4["gen4: enter SSID + password"]
+        W3pre["gen3: connect PC to robot's own access point"]
+        W3["gen3: pick scanned network, or type SSID manually"]
+        W3pre -->|connection succeeds| W3
     end
 
-    E --> G
-    Fb --> G
-
-    subgraph G [Install screen]
+    subgraph PROV ["Install"]
         direction TB
-        H[Fail page]
+        P4["gen4 instructions<br/>+ power-cycle instructions"]
+        P3["gen3 instructions<br/>+ serial log viewer"]
     end
 
-    G --> I[Success page]
+    A["Welcome screen<br/>language picker + find-help link"]
+    B["Disclaimer<br/>+ acknowledgements"]
+    C["Server search<br/>auto-detect server, or enter IP manually"]
+    D["Connect robot<br/>waiting for USB robot"]
+    E{"Firmware check"}
+    G{"Robot generation"}
+    FIN["Finished<br/>+ project links"]
+    ERR["Error screen"]
+
+    A -->|continue| B
+    B -->|understand| C
+    C -->|server found| D
+    D -->|robot detected| E
+    D -->|multiple robots| ERR
+
+    E -->|valid firmware| G
+    E -->|old or unsupported firmware, incl. gen2| Fpick
+    E -->|read error| ERR
+
+    G -->|gen4| W4
+    G -->|gen3| W3pre
+
+    W4 -->|SSID + password| P4
+    W3 -->|SSID + password| P3
+
+    FU -->|robot unplugged| ERR
+    WIFI -->|wifi fix failed or robot unplugged| ERR
+    P4 -->|finished, robot reboots| FIN
+    P3 -->|finished, robot reboots| FIN
+    P4 -->|failed| ERR
+    P3 -->|failed| W3
+
+    ERR -->|restart| A
 
     style A fill:#90EE90,stroke:#2e7d32,color:#000
     style B fill:#90EE90,stroke:#2e7d32,color:#000
-    style E fill:#90EE90,stroke:#2e7d32,color:#000
-    style Da fill:#90EE90,stroke:#2e7d32,color:#000
-    style Fb fill:#90EE90,stroke:#2e7d32,color:#000
+    style C fill:#90EE90,stroke:#2e7d32,color:#000
+    style D fill:#90EE90,stroke:#2e7d32,color:#000
+    style W4 fill:#90EE90,stroke:#2e7d32,color:#000
+    style W3pre fill:#90EE90,stroke:#2e7d32,color:#000
+    style W3 fill:#90EE90,stroke:#2e7d32,color:#000
+    style P4 fill:#90EE90,stroke:#2e7d32,color:#000
+    style P3 fill:#90EE90,stroke:#2e7d32,color:#000
+    style FIN fill:#90EE90,stroke:#2e7d32,color:#000
 ```
 
-- Prettify the connect vacuula svg, removing the WIP banner (robot->out with dustbin + robot<->computer)
+- Prettify the connect vacuula svg, removing the WIP banner (robot->out with dustbin + robot<->computer) __<-- prio!__
 - Fix a more direct link in error.firmware.help
 - Go trough the TODO:s that are sprinkled as comments in the code
-- Add translations (help wanted, what languages do yall speak?)
+- Add translations (help wanted, what languages do yall speak?) __<-- prio!__
 - Prettify and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
-- Test on osx
+- Test on osx __<-- prio!__
+- Show/hide passwordfield (eye) wifisection(s)
+- Clean up the firmware.install.done.disconnected. error page building to a ifstatement, removing the duplicate strings in the lang.json as well (same for firmware.genx-x.x.x.description)
 
 
 ## Run it as dev
@@ -69,11 +110,10 @@ flowchart LR
 uv run vacuula-installer
 ```
 
-To pass server detection screen without a server (using avahi-utils):
+To pass server detection screen without a server:
 ```bash
-avahi-publish -a vacuula-server.local <a-random-but-valid-ip>
+uv run fake-server.py
 ```
-You can also use that if the server mDNS does not reach the robot network (but the robot can connect to the ip)
 
 ## Adding a language
 
@@ -90,9 +130,5 @@ a language, update its strings-version to the same as the language it caught up 
 
 NOTE! While locale.json with the higest "Strings-version" is technically the translation to translate from, lets keep it to en.json.
 
-
-## Placeholders:
-- **`src/vacuula_installer/core/installer.py`** — `InstallerLauncher.launch(model_id)`
-  A placeholder draft, needs some refactoring but the working principle is there.
-  Real scripts go into `_SCRIPTS` (paths per model) and replace the `TODO` with
-  an actual (non-blocking) launch, e.g. `QProcess`.
+## Future ideas
+- Prettify and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.

@@ -3,10 +3,9 @@ from __future__ import annotations
 import tarfile
 import tempfile
 import threading
+from dataclasses import dataclass
 from pathlib import Path
 
-import shutil # temp
-import sys # temp
 import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, Signal
 
@@ -73,6 +72,10 @@ def reset_network_cmd(mac: str):
 def getversion_cmd():
     return "GetVerion"
 
+@dataclass(frozen=True)
+class File:
+    filename: str
+    sha256: str
 
 class Gen23WiFiFixer(QObject):
     """Uploads the install scripts over serial, then tells the robot to
@@ -103,6 +106,7 @@ class Gen23WiFiFixer(QObject):
             return serial
         return None
 
+    # TODO: resolve port here instead of later on in the code but meh for now, not in initial release
     def fix_robot(self, device: usb.core.Device, mac: str, session: SessionData) -> None:
         self._active = True
         threading.Thread(
@@ -141,21 +145,16 @@ class Gen23WiFiFixer(QObject):
         cert_path.write_bytes(session.server_certificate.encode())
 
         # additional info
-        ip_to_use = f"vacuula-local-{session.server_ip.replace('.', '-')}.nip.io"
-        ip_to_use_path = tmp_dir / "ip_to_use"
-        ip_to_use_path.write_bytes(ip_to_use.encode())
+        host = f"vacuula-local-{session.server_ip.replace('.', '-')}.nip.io"
+        config_path = tmp_dir / "config"
+        config_path.write_bytes(f"{host}\n".encode())
 
         # make tarball
         with tarfile.open(tarball, "w:gz") as tar:
             for p in (SCRIPTS_DIR / "gen3").iterdir():
                 tar.add(p, arcname=p.name)
             tar.add(cert_path, arcname="cert.pem")
-            tar.add(ip_to_use_path, arcname="ip_to_use")
-
-        # also save a copy next to the .exe, temporaryly just so we can easily debug...
-        exe_dir = Path(sys.executable).resolve().parent
-        shutil.copy2(tarball, exe_dir / tarball.name)
-        print("copy tar to ", exe_dir)
+            tar.add(config_path, arcname="config")
 
         return tarball
 

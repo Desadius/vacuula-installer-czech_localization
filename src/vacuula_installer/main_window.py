@@ -7,6 +7,7 @@ in ``app.core`` -- here are signals connecting ui and core.
 
 from __future__ import annotations
 
+import logging
 import sys
 from collections.abc import Callable
 
@@ -18,8 +19,10 @@ from PySide6.QtCore import (
     QRect,
     QTimer,
 )
+from PySide6.QtGui import Qt
 from PySide6.QtWidgets import (
     QGraphicsOpacityEffect,
+    QLabel,
     QMainWindow,
     QStackedLayout,
     QVBoxLayout,
@@ -27,6 +30,7 @@ from PySide6.QtWidgets import (
 )
 
 from vacuula_installer.constants import (
+    APP_VERSION,
     BACK_BUTTON_MARGIN,
     INTRO_DELAY_MS,
     LEFT_PANEL_RATIO,
@@ -41,27 +45,31 @@ from vacuula_installer.constants import (
     WINDOW_SIZE,
 )
 from vacuula_installer.core.firmware_detector import FirmwareDetector
+from vacuula_installer.core.firmware_updater import FirmwareUpdater
+from vacuula_installer.core.gen4_provisioner import Gen4Provisioner
 from vacuula_installer.core.gen23_ap_poller import Gen23ApPoller
 from vacuula_installer.core.gen23_prewifi_fix import Gen23WiFiFixer
 from vacuula_installer.core.gen23_provisioner import Gen23Provisioner
-from vacuula_installer.core.gen4_provisioner import Gen4Provisioner
 from vacuula_installer.core.robot_detector import RobotDetector
 from vacuula_installer.core.server_detector import ServerDetector
 from vacuula_installer.core.session import SessionData
 from vacuula_installer.i18n import Translator
+from vacuula_installer.logger import download_logs
 from vacuula_installer.screens.connect_robot import ConnectRobotScreen
+from vacuula_installer.screens.disclaimer import DisclaimerScreen
 from vacuula_installer.screens.error import ErrorScreen
 from vacuula_installer.screens.find_server import FindServerScreen
 from vacuula_installer.screens.finished import FinishedScreen
-from vacuula_installer.screens.firmware import FirmwareScreen
+from vacuula_installer.screens.firmware import FirmwareUpdateScreen
 from vacuula_installer.screens.gen4_provision import Gen4ProvisionScreen
 from vacuula_installer.screens.gen23_provision import Gen23ProvisionScreen
 from vacuula_installer.screens.welcome import WelcomeScreen
-from vacuula_installer.screens.disclaimer import DisclaimerScreen
 from vacuula_installer.screens.wifi import WifiScreen
 from vacuula_installer.widgets.back_button import BackButton
+from vacuula_installer.widgets.clickable_label import ClickableLabel
 from vacuula_installer.widgets.logo import LogoWidget
 
+logger = logging.getLogger(__name__)
 
 def _clear_graphics_effect(widget: QWidget) -> None:
     # Pyside has annoying stub, this gets rid of errors shown by linter
@@ -118,8 +126,8 @@ class MainWindow(QMainWindow):
         self._error_screen = ErrorScreen(self._translator, self._right_panel)
         self._screen_stack.addWidget(self._error_screen)
 
-        self._firmware_screen = FirmwareScreen(self._translator, self._right_panel)
-        self._screen_stack.addWidget(self._firmware_screen)
+        self._firmware_update_screen = FirmwareUpdateScreen(self._translator, self._right_panel)
+        self._screen_stack.addWidget(self._firmware_update_screen)
 
         self._server_search_screen = FindServerScreen(
             self._translator, self._right_panel
@@ -144,9 +152,25 @@ class MainWindow(QMainWindow):
         self._logo.setGeometry(self._logo_centered_rect())
         self._logo.raise_()
 
+        # Version label - TODO: expand later to include more status etc
+        logo_rect = self._logo_docked_rect()
+        self._version_label = QLabel(self._translator.tr("app.version", version=APP_VERSION), central)
+        self._version_label.setObjectName("statusLabel")
+        self._version_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._version_label.setGeometry(0, logo_rect.y() + logo_rect.height() + 8, self._left_panel_rect().width(), 24)
+        self._version_label.hide()
+
+        self._download_logs = ClickableLabel(self._translator.tr("app.download_logs"), central)
+        self._download_logs.clicked.connect(download_logs)
+        self._download_logs.setObjectName("statusLabel")
+        self._download_logs.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self._download_logs.setGeometry(0, self._version_label.y() + self._version_label.height(), self._left_panel_rect().width(), 24)
+        self._download_logs.hide()
+
         self._robot_detector = RobotDetector(self)
         self._server_detector = ServerDetector(self)
         self._firmware_detector = FirmwareDetector(self)
+        self._firmware_updater = FirmwareUpdater(self)
         self._gen23_wifi_fixer = Gen23WiFiFixer(self)
         self._ap_poller = Gen23ApPoller(self)
         self._provisioner = Gen23Provisioner(self)
@@ -195,6 +219,8 @@ class MainWindow(QMainWindow):
         self._run(animation)
 
     def _reveal_right_panel(self) -> None:
+        self._version_label.show()
+        self._download_logs.show()
         animation = QPropertyAnimation(self._right_panel_opacity, b"opacity", self)
         animation.setDuration(PANEL_FADE_DURATION_MS)
         animation.setStartValue(0.0)
@@ -263,7 +289,8 @@ class MainWindow(QMainWindow):
         )
         self._disclaimer_screen.understandRequested.connect(self._goto_server_search_screen)
 
-        self._server_detector.serverDetected.connect(self._goto_connect_robot_screen)
+        self._server_detector.serverDetected.connect(self._on_server_detected)
+        self._server_detector.manualCheckFailed.connect(self._on_manual_check_failed)
 
         self._error_screen.restartRequested.connect(self._restart_wizard)
 
@@ -299,20 +326,55 @@ class MainWindow(QMainWindow):
 
         self._gen23_wifi_fixer.fixFailed.connect(lambda msg: self._show_error(msg, detailed=f"error.generic.help"))
 
-        # self._connect_screen.startInstallRequested.connect(
-        #     self._goto_wifi_screen
-        # )  # TODO wrong name signal and order
-        # self._connect_to_wifi_screen.wifiAdded.connect(self._goto_install_screen)
+        self._firmware_update_screen.downloadRequested.connect(self._firmware_updater.download_firmware)
+        self._firmware_update_screen.installRequested.connect(self._on_firmware_install_requested)
+
+        self._firmware_updater.downloadProgress.connect(self._firmware_update_screen.set_download_progress)
+        self._firmware_updater.downloadFinished.connect(self._firmware_update_screen.set_download_finished)
+        self._firmware_updater.downloadFailed.connect(self._firmware_update_screen.set_download_failed)
+
+        self._firmware_updater.installStepChanged.connect(self._firmware_update_screen.set_install_step)
+        self._firmware_updater.installProgress.connect(self._firmware_update_screen.set_install_progress)
+        self._firmware_updater.installFailed.connect(self._firmware_update_screen.set_install_failed)
+        self._firmware_updater.installFinished.connect(self._on_firmware_install_finished)
+
+        self._server_search_screen.manualConnectionTestRequested.connect(
+            self._server_detector.check_manual
+        )
+
+    def _on_server_detected(self, ip: str, cert: str, port: int, gen4_port: int, manual: bool) -> None:
+        self._session.server_ip_manual = manual
+        if manual:
+            self._server_search_screen.set_manual_ip_test_result(True)
+        self._goto_connect_robot_screen(ip, cert, port, gen4_port)
+
+    def _on_manual_check_failed(self, kind: str) -> None:
+        self._server_search_screen.set_manual_ip_test_result(False, self._translator.tr(f"serversearch.manual.{kind}"))
+
+    def _on_firmware_install_finished(self, key: str) -> None:
+        self._firmware_update_screen.set_install_finished(key)
+
+    def _on_firmware_install_requested(self, key: str) -> None:
+        gen = key.split("-", 1)[0]
+        if gen == "gen3":
+            mac = self._gen23_wifi_fixer.gen23_get_mac_from_version(self._session.firmware_version)
+            if mac is None:
+                self._show_error("error.gen23.firmware", detailed="error.gen23.generic.detailed")
+                return
+            self._firmware_updater.start_gen3_update(self._session.robot_usb_device, key, mac)
+        else:
+            self._firmware_updater.start_gen4_update(self._session.robot_usb_device, key)
 
     def _show_error(self, message: str, *, detailed: bool | str = False) -> None:
-        print(f"Error: {message}")
+        logger.error(f"Error: {message}, detailed: {detailed}")
         self._robot_detector.stop()
         self._server_detector.stop()
         self._ap_poller.stop()
         self._provisioner.stop()
         self._gen23_wifi_fixer.stop()
         self._firmware_detector.stop()
-        # ...any other core worker you add later goes here too
+    
+        self._firmware_update_screen.page = "" # TODO: hack to not make disconnect, might not be needed actually? dont know, look into after initial release
 
         self._error_screen.show_error(message, detailed=detailed)
         self._crossfade_to(self._error_screen)
@@ -335,7 +397,6 @@ class MainWindow(QMainWindow):
         self._ap_poller.check_now()
 
     def _on_robot_ap_reached(self, info: dict) -> None:
-        print(f"Robot AP reachable: {info}")
         self._connect_to_wifi_screen.set_prewifi_checking(False)
         self._connect_to_wifi_screen.set_gen23_page()
         self._connect_to_wifi_screen.set_gen23_wifi_loading(True)
@@ -346,23 +407,23 @@ class MainWindow(QMainWindow):
         self._session.wifi_pass = password
 
         # TODO: clean up this to select generation
-        match self._session.robot_model_display_name:
-            case "Neato D10" | "Neato D9" | "Neato D8" | "Neato D800":
-                # gen4
+        match self.get_gen():
+            case "gen4":
                 self._start_gen4_provisioning()
-            case (
-                "Neato Botvac D7"
-                | "Neato Botvac D6"
-                | "Neato Botvac D5"
-                | "Neato Botvac D4"
-                | "Neato Botvac D3"
-                | "Neato Botvac Connected"
-            ):
-                # gen23
+            case "gen3":
                 self._provision_screen_gen23.reset()
                 self._crossfade_to(self._provision_screen_gen23)
                 self._set_back_action(None)
-                self._provisioner.start(self._session.robot_usb_device, ssid, password)
+                if not self._session.robot_usb_device:
+                    self._handle_robot_disconnected()
+                else:
+                    mac = self._gen23_wifi_fixer.gen23_get_mac_from_version(self._session.firmware_version)
+                    if mac is None:
+                        self._show_error("error.gen23.firmware", detailed="error.gen23.generic.detailed")
+                        return
+                    self._provisioner.start(self._session.robot_usb_device, ssid, password, mac)
+            case "gen2":
+                self._show_error("error.gen2.unsupported", detailed=True)
             case _:
                 self._show_error("error.generic.unexpected", detailed="error.generic.help")
 
@@ -373,22 +434,29 @@ class MainWindow(QMainWindow):
 
         self._gen4_provisioner = Gen4Provisioner(
             vacuula_server="vacuula.local",
+            vacuula_server_ip=self._session.server_ip or "",
             vacuula_cert=self._session.server_certificate or "",
             wifi_ssid=self._session.wifi_ssid,
             wifi_psk=self._session.wifi_pass,
+            gen4_port=self._session.gen4_port or 3443,
+            vacuula_port=self._session.vacuula_port or 80,
+            manual_ip=self._session.server_ip_manual,
             parent=self,
         )
         self._gen4_provisioner.stepChanged.connect(self._gen4_provision_screen.set_step)
-        self._gen4_provisioner.provisioningFailed.connect(lambda err: self._show_error(err, detailed=f"error.generic.help"))
+        self._gen4_provisioner.provisioningFailed.connect(lambda err: self._show_error(err, detailed="error.generic.help"))
         self._gen4_provisioner.provisioningFinished.connect(self._gen4_set_provision_finished)
-        self._gen4_provisioner.start(self._session.robot_usb_device)
+        if not self._session.robot_usb_device:
+            self._handle_robot_disconnected()
+        else:
+            self._gen4_provisioner.start(self._session.robot_usb_device)
 
     def _gen4_set_provision_finished(self) -> None:
         self._session.install_done = True
         self._gen4_provision_screen.set_finished()
 
     def _on_provision_failed(self, stage: str) -> None:
-        print(f"Provisioning failed at: {stage}")
+        logger.error(f"Provisioning failed at: {stage}")
         self._provision_screen_gen23.set_failed()
         self._set_back_action(self._back_to_wifi)
 
@@ -399,6 +467,9 @@ class MainWindow(QMainWindow):
     def _on_firmware(self, valid: bool, msg: str) -> None:
         if valid:
             self._goto_wifi_screen()
+        elif msg == "error.firmware.invalid":
+            self._crossfade_to(self._firmware_update_screen)
+            self._firmware_update_screen.set_generation(self.get_gen())
         else:
             #TODO: check if link is clickable here (error.firmware.help)
             self._show_error(msg, detailed="error.firmware.help" if msg == "error.firmware.invalid" else "error.generic.help")
@@ -406,9 +477,9 @@ class MainWindow(QMainWindow):
     def _select_dev_or_server_screen(self) -> None:
         if not getattr(sys, "frozen", False):
             self._goto_notice_screen()
-            #self._goto_dev_only_screen() # Temporary
+            # self._goto_dev_only_screen() # Temporary
+            # self._goto_connect_robot_screen('123', '123', 123, 123)  # Not implemented yet
             
-            # self._goto_connect_robot_screen('', '')  # Not implemented yet
             # self._goto_connect_robot_screen('', '')  # Not implemented yet
             # self._crossfade_to(self._connect_to_wifi_screen)
             # self._connect_to_wifi_screen.set_gen23_prewifi_page()
@@ -421,21 +492,21 @@ class MainWindow(QMainWindow):
         self._crossfade_to(self._disclaimer_screen)
 
     def _goto_dev_only_screen(self) -> None:
-        print("Not implemented yet")  # TODO
         # Shortcut place!
-        self._crossfade_to(self._firmware_screen)
-        self._connect_screen.reset_searching()
+        pass
 
     def _goto_server_search_screen(self) -> None:
         self._crossfade_to(self._server_search_screen)
         self._server_detector.start(NETWORK_POLLING_DELAY_MS)
         self._set_back_action(self._back_to_welcome)
 
-    def _goto_connect_robot_screen(self, ip: str, cert: str) -> None:
+    def _goto_connect_robot_screen(self, ip: str, cert: str, vacuula_port: int, gen4_port: int) -> None:
         anim = self._server_search_screen.show_server_detected(ip)
         self._active_animations.append(anim)
         self._session.server_ip = ip
         self._session.server_certificate = cert
+        self._session.vacuula_port = vacuula_port
+        self._session.gen4_port = gen4_port
         # Dont @ me
         anim.finished.connect(
             lambda: QTimer.singleShot(
@@ -464,21 +535,18 @@ class MainWindow(QMainWindow):
     def _handle_robot_disconnected(self) -> None:
         if self._session.install_done:
             self._goto_finished_screen()
+        elif self._firmware_update_screen.page == "factory_reset":
+            self._show_error("firmware.gen3.factory_reset.disconnected", detailed=True)
+        elif self._firmware_update_screen.page == "done":
+            self._show_error(f"firmware.install.done.disconnected.{self.get_gen()}", detailed=True)
         else:
             self._show_error("error.robot_disconnected", detailed=True)
 
     def _goto_wifi_screen(self) -> None:
-        match self._session.robot_model_display_name:
-            case "Neato D10" | "Neato D9" | "Neato D8" | "Neato D800":
+        match self.get_gen():
+            case "gen4":
                 self._crossfade_to(self._connect_to_wifi_screen)
-            case (
-                "Neato Botvac D7"
-                | "Neato Botvac D6"
-                | "Neato Botvac D5"
-                | "Neato Botvac D4"
-                | "Neato Botvac D3"
-                | "Neato Botvac Connected"
-            ):
+            case "gen3":
                 mac = self._gen23_wifi_fixer.gen23_get_mac_from_version(self._session.firmware_version)
                 if mac is None:
                     self._show_error("error.gen23.firmware", detailed="error.gen23.generic.detailed")
@@ -491,9 +559,28 @@ class MainWindow(QMainWindow):
                     return
                 self._gen23_wifi_fixer.fix_robot(self._session.robot_usb_device, mac, self._session)
                 self._ap_poller.start()
+            case "gen2":
+                self._show_error("error.gen2.unsupported", detailed=True)
             case _:
                 # this could never happen normally
                 self._show_error("error.generic.unexpected", detailed="error.generic.help")
+
+    def get_gen(self) -> "gen2" | "gen3" | "gen4" | None:
+        match self._session.robot_model_display_name:
+            case "Neato D10" | "Neato D9" | "Neato D8" | "Neato D800":
+                return "gen4"
+            case (
+                "Neato Botvac D7"
+                | "Neato Botvac D6"
+                | "Neato Botvac D5"
+                | "Neato Botvac D4"
+                | "Neato Botvac D3"
+            ):
+                return "gen3"
+            case "Neato Botvac Connected":
+                return "gen2"
+            case _:
+                return None
 
     def _goto_install_screen(self, ssid: str, password: str) -> None:
         self._session.wifi_ssid = ssid
