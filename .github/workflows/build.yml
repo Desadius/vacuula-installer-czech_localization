@@ -258,8 +258,8 @@ jobs:
           - **macOS, Intel:** \`-macos-intel.zip\`
           - **Linux:** \`-linux.AppImage\`
 
-          The macOS builds are unsigned. Open Settings -> Security & Privacy and click "Open Anyway" to run VacuulaInstaller
-          Windows builds are unsigned. When blue popup appears, click "More info" and then "Run anyway" to run VacuulaInstaller."
+          The macOS builds are unsigned. Open Settings -> Security & Privacy and click \"Open Anyway\" to run VacuulaInstaller
+          Windows builds are unsigned. When blue popup appears, click \"More info\" and then \"Run anyway\" to run VacuulaInstaller."
 
           gh release create "v$VERSION" release-assets/* \
             --target "$GITHUB_SHA" \
