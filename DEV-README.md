@@ -132,3 +132,4 @@ NOTE! While locale.json with the higest "Strings-version" is technically the tra
 
 ## Future ideas
 - Prettify and unify scripts, for example creating another MTP folder for wifi config, vacuula version textfile and for example allowing to drop vacuula extensions/language packs w/e 'n etc.
+
