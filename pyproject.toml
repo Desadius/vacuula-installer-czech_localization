@@ -34,3 +34,7 @@ dev = [
     "ruff>=0.16.8",
     "ty>=0.0.81",
 ]
+
+[tool.ruff]
+line-length = 127
+lint.select = ["E9", "F63", "F7", "F82", "E501", "C901"]
