@@ -22,3 +22,10 @@ systemctl restart systemd-networkd
 
 # Enable mDNS resolution
 ln -sf ../run/systemd/resolve/stub-resolv.conf /etc/resolv.conf
+
+# Remove arbitrary limitations from robots
+# NOTE: currently we add the same limit back via the app
+# Temporarly limit to what the app did until we have manually verified that the same hardware is used in all gen4 robots
+# this is to avoid burning out any motors or other components. Also, we have no idea of the D800 and so, so will need to be verified after
+# initial release!
+rm -f /user/databases/settings_D9

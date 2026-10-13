@@ -76,33 +76,6 @@ class Gen23ProvisionScreen(QWidget):
         outer.addWidget(steps_box, alignment=Qt.AlignmentFlag.AlignHCenter)
         outer.addSpacing(10)
 
-        self._milestone_list = QLabel(self)
-        self._milestone_list.setObjectName("serversearchDetailLabel")
-        self._milestone_list.setWordWrap(True)
-        self._milestone_list.hide()
-        outer.addWidget(self._milestone_list)
-        self._milestone_lines: list[str] = []
-
-        # Small terminal-icon button toggles the raw serial log, hidden by
-        # default so the checklist stays the focus.
-        self._log_toggle = QPushButton("⌨", self)
-        self._log_toggle.setObjectName("iconButton")
-        self._log_toggle.setFlat(True)
-        self._log_toggle.setFixedSize(28, 28)
-        self._log_toggle.setCursor(Qt.CursorShape.PointingHandCursor)
-        self._log_toggle.setCheckable(True)
-        self._log_toggle.toggled.connect(self._set_log_open)
-        self._log_toggle.raise_()  # float above everything else in `outer`
-        self._log_toggle_margin = QMargins(0, 0, 14, 14)
-
-        self._log_view = QPlainTextEdit(self)
-        self._log_view.setObjectName("provisionLogView")
-        self._log_view.setReadOnly(True)
-        self._log_view.setMaximumBlockCount(500)
-        self._log_view.setFixedHeight(120)
-        self._log_view.hide()
-        outer.addWidget(self._log_view)
-
         self._error = QLabel(self)
         self._error.setObjectName("serversearchDetailLabel")
         self._error.setAlignment(Qt.AlignmentFlag.AlignHCenter)
@@ -114,45 +87,9 @@ class Gen23ProvisionScreen(QWidget):
         self._retranslate()
         self.reset()
 
-    def resizeEvent(self, event) -> None:  # noqa: N802
-        super().resizeEvent(event)
-        self._reposition_log_toggle()
-
-    def _reposition_log_toggle(self) -> None:
-        m = self._log_toggle_margin
-        x = self.width() - self._log_toggle.width() - m.right()
-        y = self.height() - self._log_toggle.height() - m.bottom()
-        self._log_toggle.move(max(0, x), max(0, y))
-
-    def add_milestone_done(self, label_key: str) -> None:
-        self._milestone_lines.append(f"✔ {self._translator.tr(label_key)}")
-        self._milestone_list.setText("\n".join(self._milestone_lines))
-        self._milestone_list.show()
-
-    def append_log(self, line: str) -> None:
-        self._log_view.appendPlainText(line)
-        self._log_toggle.show()
-
-    def _set_log_open(self, open_: bool) -> None:
-        self._log_open = open_
-        self._log_view.setVisible(open_ and self._log_view.blockCount() > 0)
-        self._update_log_toggle_text()
-
-    def _update_log_toggle_text(self) -> None:
-        tip_key = "provision.gen23.log.hide" if self._log_open else "provision.gen23.log.show"
-        self._log_toggle.setToolTip(self._translator.tr(tip_key))
-
-    # reset() should also clear these:
     def reset(self) -> None:
         self._failed = False
         self._error.hide()
-        self._milestone_lines.clear()
-        self._milestone_list.clear()
-        self._milestone_list.hide()
-        self._log_view.clear()
-        self._log_view.hide()
-        self._log_toggle.hide()
-        self._log_toggle.setChecked(False)  # triggers _set_log_open(False)
         self.set_step(1)
 
     def set_step(self, step: int) -> None:
@@ -191,4 +128,3 @@ class Gen23ProvisionScreen(QWidget):
             text.setText(self._translator.tr(key))
         if self._error.isVisible():
             self._error.setText(self._translator.tr("provision.gen23.failed"))
-        self._update_log_toggle_text()

@@ -275,6 +275,15 @@ QComboBox#wifiInput QAbstractItemView {{
     selection-background-color: {PALETTE.accent_blue};
     selection-color: white;
     outline: none;
+    font-size: 18px;
+}}
+
+QComboBox#wifiInput QAbstractItemView::item {{
+    background-color: white;
+}}
+
+QComboBox#wifiInput QAbstractItemView::item:selected {{
+    background-color: {PALETTE.accent_blue};
 }}
 
 QMessageBox, QDialog {{

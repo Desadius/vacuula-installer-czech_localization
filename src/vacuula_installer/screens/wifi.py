@@ -15,11 +15,13 @@ TODO: A wifi core class that attempts to use the original robot selfdetection me
 from __future__ import annotations
 
 from PySide6.QtCore import QRect, Qt, Signal
+from PySide6.QtGui import QColor, QFont, QPalette
 from PySide6.QtWidgets import (
     QComboBox,
     QHBoxLayout,
     QLabel,
     QLineEdit,
+    QListView,
     QPushButton,
     QStackedLayout,
     QVBoxLayout,
@@ -142,6 +144,7 @@ class WifiScreen(QWidget):
         self._ssid_field_labelGen23.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         self._wifi_combo_boxGen23 = QComboBox(page)
+        self._wifi_combo_boxGen23.setView(QListView())
         self._wifi_combo_boxGen23.setObjectName("wifiInput")
         self._wifi_combo_boxGen23.currentIndexChanged.connect(
             self._update_gen23_continue_enabled

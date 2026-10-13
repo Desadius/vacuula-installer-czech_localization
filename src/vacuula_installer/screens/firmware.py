@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QMouseEvent
+from PySide6.QtSvgWidgets import QSvgWidget
 from PySide6.QtWidgets import (
     QButtonGroup,
     QCheckBox,
@@ -15,6 +16,7 @@ from PySide6.QtWidgets import (
     QWidget,
 )
 
+from vacuula_installer.constants import GEN23_FACTORY_RESET_SVG
 from vacuula_installer.core.firmware_updater import FirmwareAsset, assets_for_gen
 from vacuula_installer.i18n import Translator
 from vacuula_installer.widgets.clickable_label import ClickableLabel
@@ -172,7 +174,12 @@ class FirmwareUpdateScreen(QWidget):
         self._factory_reset_instructions.setAlignment(Qt.AlignmentFlag.AlignHCenter)
         self._factory_reset_instructions.setWordWrap(True)
         self._factory_reset_instructions.setOpenExternalLinks(True)
+
+        self._factory_reset_help_img = QSvgWidget(str(GEN23_FACTORY_RESET_SVG), self)
+        self._factory_reset_help_img.setFixedSize(*(150, 150))
+
         outer.addWidget(self._factory_reset_instructions)
+        outer.addWidget(self._factory_reset_help_img, alignment=Qt.AlignmentFlag.AlignHCenter)
 
         self._factory_reset_back_button = QPushButton(self)
         self._factory_reset_back_button.setObjectName("linkButton")
@@ -369,9 +376,11 @@ class FirmwareUpdateScreen(QWidget):
         self._factory_reset_ack_row.setVisible(page == "pick" and self._gen == "gen3")
         self._factory_reset_link_button.setVisible(page == "pick" and self._gen == "gen3")
         self._download_button.setVisible(page == "pick")
+        self._subtitle.setVisible(page == "pick")
 
         self._factory_reset_explanation.setVisible(page == "factory_reset")
         self._factory_reset_instructions.setVisible(page == "factory_reset")
+        self._factory_reset_help_img.setVisible(page == "factory_reset")
         self._factory_reset_back_button.setVisible(page == "factory_reset")
 
         self._progress_row.setVisible(page == "progress")

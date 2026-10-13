@@ -321,10 +321,7 @@ class MainWindow(QMainWindow):
         self._provisioner.provisioningFinished.connect(lambda: setattr(self._session, "install_done", True))
         self._connect_to_wifi_screen.rescanRequested.connect(self._rescan_networks)
 
-        self._provisioner.milestoneReached.connect(self._provision_screen_gen23.add_milestone_done)
-        self._provisioner.scriptLogLine.connect(self._provision_screen_gen23.append_log)
-
-        self._gen23_wifi_fixer.fixFailed.connect(lambda msg: self._show_error(msg, detailed=f"error.generic.help"))
+        self._gen23_wifi_fixer.fixFailed.connect(lambda msg: self._show_error(msg, detailed="error.generic.help"))
 
         self._firmware_update_screen.downloadRequested.connect(self._firmware_updater.download_firmware)
         self._firmware_update_screen.installRequested.connect(self._on_firmware_install_requested)
@@ -365,8 +362,8 @@ class MainWindow(QMainWindow):
         else:
             self._firmware_updater.start_gen4_update(self._session.robot_usb_device, key)
 
-    def _show_error(self, message: str, *, detailed: bool | str = False) -> None:
-        logger.error(f"Error: {message}, detailed: {detailed}")
+    def _show_error(self, message: str, *, detailed: bool | str = False, restart_btn: str | None = None) -> None:
+        logger.error(f"Error: {message}, detailed: {detailed}, restart_btn: {restart_btn}")
         self._robot_detector.stop()
         self._server_detector.stop()
         self._ap_poller.stop()
@@ -376,7 +373,7 @@ class MainWindow(QMainWindow):
     
         self._firmware_update_screen.page = "" # TODO: hack to not make disconnect, might not be needed actually? dont know, look into after initial release
 
-        self._error_screen.show_error(message, detailed=detailed)
+        self._error_screen.show_error(message, detailed=detailed, restart_btn=restart_btn)
         self._crossfade_to(self._error_screen)
         self._set_back_action(None)
 
@@ -456,9 +453,16 @@ class MainWindow(QMainWindow):
         self._gen4_provision_screen.set_finished()
 
     def _on_provision_failed(self, stage: str) -> None:
-        logger.error(f"Provisioning failed at: {stage}")
-        self._provision_screen_gen23.set_failed()
-        self._set_back_action(self._back_to_wifi)
+        logger.error(f"Provisioning failed at: {stage}, step: {self._provision_screen_gen23._step}")
+        # self._provision_screen_gen23.set_failed()
+        # TODO: clean this up
+        if (self._provision_screen_gen23._step == 1):
+            self._show_error("error.provision.gen23.wifi_password", detailed="error.generic.help")
+        elif (self._provision_screen_gen23._step == 2):
+            self._show_error("error.provision.gen23.no_internet", detailed="error.generic.help") # need ntp and 8.8.8.8 check
+        else:
+            self._show_error(f"error.provision.{stage}", detailed="error.generic.help")
+        # self._set_back_action(self._back_to_wifi)
 
     def _goto_finished_screen(self) -> None:
         self._robot_detector.stop()
@@ -478,6 +482,9 @@ class MainWindow(QMainWindow):
         if not getattr(sys, "frozen", False):
             self._goto_notice_screen()
             # self._goto_dev_only_screen() # Temporary
+            # self._crossfade_to(self._firmware_update_screen)
+            # self._firmware_update_screen.set_generation('gen3')
+            # self._show_error("firmware.gen3.factory_reset.disconnected", detailed=True, restart_btn="firmware.gen3.factory_reset.restart")
             # self._goto_connect_robot_screen('123', '123', 123, 123)  # Not implemented yet
             
             # self._goto_connect_robot_screen('', '')  # Not implemented yet
@@ -536,9 +543,9 @@ class MainWindow(QMainWindow):
         if self._session.install_done:
             self._goto_finished_screen()
         elif self._firmware_update_screen.page == "factory_reset":
-            self._show_error("firmware.gen3.factory_reset.disconnected", detailed=True)
+            self._show_error("firmware.gen3.factory_reset.disconnected", detailed=True, restart_btn="firmware.gen3.factory_reset.restart")
         elif self._firmware_update_screen.page == "done":
-            self._show_error(f"firmware.install.done.disconnected.{self.get_gen()}", detailed=True)
+            self._show_error(f"firmware.install.done.disconnected.{self.get_gen()}", detailed=True, restart_btn="firmware.install.done.restart")
         else:
             self._show_error("error.robot_disconnected", detailed=True)
 
@@ -605,3 +612,5 @@ class MainWindow(QMainWindow):
 
     def _retranslate(self) -> None:
         self.setWindowTitle(self._translator.tr("app.window_title"))
+        self._version_label.setText(self._translator.tr("app.version", version=APP_VERSION))
+        self._download_logs.setText(self._translator.tr("app.download_logs"))

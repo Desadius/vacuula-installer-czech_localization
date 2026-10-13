@@ -27,6 +27,7 @@ FLAGS_DIR: Path = ASSETS_DIR / "flags"
 
 LOGO_SVG: Path = ASSETS_DIR / "logo.svg"
 CONNECT_SVG: Path = ASSETS_DIR / "connect_instr.svg"
+GEN23_FACTORY_RESET_SVG: Path = ASSETS_DIR / "gen23_factory_reset.svg"
 
 COMPUTER_SVG: Path = ASSETS_DIR / "computer.svg"
 SERVER_SVG: Path = ASSETS_DIR / "server.svg"
@@ -83,6 +84,7 @@ LANGUAGES: dict[str, LanguageMeta] = {
     "sv": LanguageMeta(flag_svg=FLAGS_DIR / "se.svg", native_name="Svenska"),
     "en": LanguageMeta(flag_svg=FLAGS_DIR / "gb.svg", native_name="English"),
     "nl": LanguageMeta(flag_svg=FLAGS_DIR / "nl.svg", native_name="Nederlands"),
+    "pt": LanguageMeta(flag_svg=FLAGS_DIR / "pt.svg", native_name="Português"),
 }
 DEFAULT_LANGUAGE = "en" #might be replaced with system locale? I dunno how to fetch safely crossplatform
 

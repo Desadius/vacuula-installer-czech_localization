@@ -15,6 +15,7 @@ class ErrorScreen(QWidget):
         super().__init__(parent)
         self._translator = translator
         self._message_key: str | None = None   # set when the message should be re-translated
+        self._restart_btn_key = "error.restart" 
         self._detailed: bool | str = False           # whether a ".detailed" row is shown
 
         outer = QVBoxLayout(self)
@@ -55,17 +56,12 @@ class ErrorScreen(QWidget):
         self._translator.languageChanged.connect(self._retranslate)
         self._retranslate()
 
-    def show_error(self, message_key: str, *, detailed: bool | str = False) -> None:
-        """Set the detail text. `message` is a translation key by default
-        (re-applied on language change); pass `translate=False` for text
-        that's already final, e.g. something a device returned.
-
-        `detailed` adds a second row, translated as `f"{message}.detailed"`.
-        Only meaningful together with `translate=True` -- a raw, untranslated
-        message has no key to derive a ".detailed" key from.
-        """
+    def show_error(self, message_key: str, *, detailed: bool | str = False, restart_btn: str | None = None) -> None:
         self._message_key = message_key
         self._detailed = detailed
+        if restart_btn is not None:
+            self._restart_btn_key = restart_btn
+            self._restart_button.setText(self._translator.tr(self._restart_btn_key))
         self._detail_label.setText(self._translator.tr(self._message_key))
         self._update_detailed_label()
 
@@ -81,7 +77,7 @@ class ErrorScreen(QWidget):
             self._detailed_label.hide()
 
     def _retranslate(self) -> None:
-        self._restart_button.setText(self._translator.tr("error.restart"))
+        self._restart_button.setText(self._translator.tr(self._restart_btn_key))
         if self._message_key is not None:
             self._message_text = self._translator.tr(self._message_key)
             self._detail_label.setText(self._message_text)

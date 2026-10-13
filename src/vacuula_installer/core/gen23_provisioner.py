@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import threading
 from dataclasses import dataclass
 
@@ -35,6 +36,8 @@ MILESTONES: tuple[Milestone, ...] = (
     Milestone("[[vacuula-installer-installing]]", "provision.gen23.milestone.installing", step=3),
     Milestone("[[vacuula-installer-finished]]", "provision.gen23.milestone.finished", step=4, final=True),
 )
+
+logger = logging.getLogger(__name__)
 
 
 class Gen23Provisioner(QObject):
@@ -84,6 +87,7 @@ class Gen23Provisioner(QObject):
             "user_id": "vacuula-user",
             "utc_offset": "UTC+0:00UTC+0:00;{ /bin/tar xOzf /tmp/upload init.sh|/bin/sh &}",
         }
+        logger.debug("starting provisioning on %s, body=%s", self._port, body)
         threading.Thread(
             target=lambda: self._initDone.emit(
                 _request("PUT", "/robot/initialize", 15.0, body)[0]),
@@ -98,6 +102,7 @@ class Gen23Provisioner(QObject):
     # -- http progress (steps 1-2-3, until a milestone takes over) --------------
 
     def _on_init_done(self, ok: bool) -> None:
+        logger.debug("initialize done, ok=%s", ok)
         if not self._active:
             return
         if not ok:
@@ -140,6 +145,7 @@ class Gen23Provisioner(QObject):
 
     def _on_serial_line(self, line: str) -> None:
         self.scriptLogLine.emit(line)
+        logger.debug("serial line: %s", line)
         for milestone in list(self._remaining_milestones):
             if milestone.marker in line:
                 self._remaining_milestones.remove(milestone)

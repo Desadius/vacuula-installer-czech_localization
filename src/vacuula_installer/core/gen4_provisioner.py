@@ -145,9 +145,12 @@ class Gen4Provisioner(QObject):
         mtp.send_file('/etc/wpa_supplicant/wpa_supplicant-wlan0.conf', storage_id, wifi_config)
 
     def _set_hosts(self, mtp: MtpDevice | WindowsMtpDevice, storage_id: int) -> None:
-        # update hosts file if manual ip was used (optional)
-        if not self.manual_ip:
-            return
+        # update hosts file and add dns entry to resolve vacuula.local if ip was manually entered
+        vacuula_block = dedent(f"""\
+        # Vacuula server
+        {self.vacuula_server_ip} vacuula.local
+        """) if self.manual_ip else ""
+
         hosts_config = dedent(f"""\
             127.0.0.1	localhost.localdomain		localhost
 
@@ -159,8 +162,7 @@ class Gen4Provisioner(QObject):
             ff02::2 ip6-allrouters
             127.0.1.1 imx8mnlego-ddr4
 
-            # Vacuula server
-            {self.vacuula_server_ip} vacuula.local
+            {vacuula_block}
             """).encode('utf-8')
         mtp.send_file('/etc/hosts', storage_id, hosts_config)
 
