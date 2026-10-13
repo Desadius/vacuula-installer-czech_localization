@@ -1,5 +1,5 @@
 {
-  "String-version": "11",
+  "String-version": "13",
   "app.window_title": "Vacuula-ifiyer",
   "app.version": "Installatieprogramma v{version}",
   "app.download_logs": "Logboeken downloaden",
@@ -13,7 +13,7 @@
   "disclaimer.acknowledge": "Ik zal de <b>usb-kabel niet loskoppelen</b> voordat mij dat wordt gevraagd",
   "disclaimer.warning": "Ik heb Vacuula gedownload van github.com/vacuula, omdat andere bronnen kwaadaardige aanpassingen kunnen bevatten",
   "disclaimer.bullet1": "Je hebt een recent (her)startte robot nodig",
-  "disclaimer.bullet2": "Als je robot <i style='color:#A020F0'>r</i><i style='color:#9628F4'>e</i><i style='color:#8430F8'>g</i><i style='color:#6938FC'>e</i><i style='color:#3C40FE'>n</i><i style='color:#0047FF'>b</i><i style='color:#3C41E8'>o</i><i style='color:#823ECD'>g</i><i style='color:#C33EB8'>e</i><i style='color:#FF3FA4'>n</i>, neem dan contact op!",
+  "disclaimer.bullet2": "Als je robot vast zit in een  <i style='color:#A020F0'>r</i><i style='color:#9628F4'>e</i><i style='color:#8430F8'>g</i><i style='color:#6938FC'>e</i><i style='color:#3C40FE'>n</i><i style='color:#0047FF'>b</i><i style='color:#3C41E8'>o</i><i style='color:#823ECD'>o</i><i style='color:#FF3FA4'>g</i>, neem dan contact op!",
   "disclaimer.bullet3": "Je hebt een usb-<b>data</b>kabel nodig",
   "disclaimer.bullet4": "Vacuula is niet gelieerd aan Neato",
   "disclaimer.bullet5": "Vacuula past de software van je robot aan. Dit gebeurt uitsluitend om <i>jouw</i> vacuula-server de robot te laten besturen. Alle code; installatieprogramma, server en scripts zijn open source, neem er gerust een <a href='https://github.com/vacuula'>kijkje</a> naar!",
@@ -122,7 +122,17 @@
   "install.launching": "Vacuula installeren in {model}",
 
   "provision.title": "Je robot instellen",
-
+  "serversearch.manual.failed": "Kan met het opgegeven adres niet verbinden",
+  "error.gen23.firmware": "Niet ondersteunde firmware gedetecteerd",
+  "error.gen23.generic.detailed": "Het installatieprogramma had niet de mogelijkheid om de vereiste gegevens uit te lezen van de robot. Controleer of het apparaat aan staat en verbonden is, probeer het dan opnieuw.",
+  "firmware.download_failed": "Binnenhalen van de firmware mislukt: {reason}",
+  "firmware.install_failed": "Het installeren van de firmware is mislukt: {reason}",
+  "firmware.try_again": "Probeer opnieuw",
+  "firmware.install.step.waiting": "Wachten op de robot...",
+  "firmware.install.step.done": "Firmware-update successvol",
+  "firmware.install.step.unknown": "Installeren...",
+  "provision.failed": "Het instellen van de robot is mislukt",
+  "provision.gen23.failed": "Het instellen van de robot is mislukt",
   "provision.gen23.step1": "Verbinden met een WiFi-netwerk",
   "provision.gen23.step2": "Internetverbinding controleren",
   "provision.gen23.step3": "Vacuula neemt het over",
@@ -134,7 +144,7 @@
 
   "provision.gen4.step1": "Verbinden met robot",
   "provision.gen4.step2": "Vacuula uploaden",
-  "provision.gen4.instructions": "Om verbinding te maken met de server, houd je de aan/uit-knop ingedrukt totdat je robot uitgaat. Wacht een paar seconden en start de robot daarna opnieuw op.",
+  "provision.gen4.instructions": "Om verbinding te maken met de server, houd je de aan/uit-knop ingedrukt totdat je robot afsluit. Wacht een paar seconden en start de robot daarna opnieuw op.",
 
   "finished.title": "Robot <i>gebeten</i> door Vacuula",
   "finished.subtitle": "Je kunt de robot nu loskoppelen van de computer en aanzetten! De robot verschijnt na een aantal seconden in je <a href='http://vacuula.local'>Vacuula-server!</a>"
