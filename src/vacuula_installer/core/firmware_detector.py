@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import logging
 import threading
 
 import usb.core  # type: ignore[reportMissingTypeStubs]
@@ -20,6 +21,8 @@ VALID_GEN4_VERSIONS = [
 
 #TODO Nonblocking thread, see server detector
 
+logger = logging.getLogger(__name__)
+
 class FirmwareDetector(QObject):
     _done = Signal(bool, str)  # worker thread -> GUI thread
     firmwareDetected = Signal(bool, str)  # true if valid firmware detected, false if not | str is either the version string or an error message
@@ -33,11 +36,15 @@ class FirmwareDetector(QObject):
         "Pick gen23/gen4 based on if GetVersion was sent"
         self._active = True
 
+        logger.debug("Detecting firmware version for device %s", device)
+
         if gen23_version is not None:
             # gen23:
+            logger.debug("Detected gen23 version: %s", gen23_version)
             self._done.emit(*self._match_gen23(gen23_version))
             return
 
+        logger.debug("Detected gen4 device, reading version.txt")
         # gen4: 
         threading.Thread(
             target=lambda: self._done.emit(*self._detect_gen4(device)),

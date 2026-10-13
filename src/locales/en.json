@@ -129,10 +129,9 @@
   "provision.gen23.step2": "Checking connection to internet",
   "provision.gen23.step3": "Vacuula takes over",
   "provision.gen23.step4": "Shutting down for a restart",
-  "provision.gen23.milestone.started": "Vacuula script started",
-  "provision.gen23.milestone.reinstalling": "Vacuula reinstalling",
-  "provision.gen23.milestone.installing": "Vacuula installing",
-  "provision.gen23.milestone.finished": "Vacuula script finished",
+
+  "error.provision.gen23.wifi_password": "Robot failed to connect to WiFi, please check your password and try again",
+  "error.provision.gen23.no_internet": "Robot connected to WiFi but failed to reach the internet (8.8.8.8 and pool.ntp.org), please check your network and try again",
 
   "provision.gen4.step1": "Connecting to robot",
   "provision.gen4.step2": "Uploading Vacuula",
