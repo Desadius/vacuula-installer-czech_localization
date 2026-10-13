@@ -125,6 +125,18 @@
 
   "provision.title": "Setting up your robot",
 
+  "serversearch.manual.failed": "Could not connect to this address",
+  "error.gen23.firmware": "Unsupported firmware detected",
+  "error.gen23.generic.detailed": "The installer could not read the required information from the robot. Make sure it is powered on and connected via USB, then try again.",
+  "firmware.download_failed": "Firmware download failed: {reason}",
+  "firmware.install_failed": "Firmware installation failed: {reason}",
+  "firmware.try_again": "Try again",
+  "firmware.install.step.waiting": "Waiting for the robot...",
+  "firmware.install.step.done": "Firmware update finished",
+  "firmware.install.step.unknown": "Working...",
+  "provision.failed": "Failed to set up the robot",
+  "provision.gen23.failed": "Failed to set up the robot",
+
   "provision.gen23.step1": "Connecting to WiFi",
   "provision.gen23.step2": "Checking connection to internet",
   "provision.gen23.step3": "Vacuula takes over",
