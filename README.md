@@ -72,12 +72,12 @@ Also it has been fun to try to do a clean UI that still handles the rather exten
 
 Special thanks to:
 - Philip for the Vacuula project itself and for helping to add handling of quirks of the vacuum cleaners I don't have at home, getting it over the finish line.
-- nescio007, BK, "Your royal highness Sarcast the 3rd, duke of Holland", Leander and everyone else in core team who have provided methods to root the different Neatos and/or helped test the installer
+- nescio007, BK, "*Your royal highness* Sarcast *the 3rd, duke of Holland*", Leander and everyone else in core team who have provided methods to root the different Neatos and/or helped test the installer
 - Fjalar for getting it to modern build tooling, so we did not have to play with venvs forever.
 - Me myself, Rinkana, for most of the app and UX direction. I take no credit for the amazing exploits that enable this (and the entire Vacuula project).
 
 Translations:
 - English: Rinkana, Philip, BK
 - Swedish: Rinkana, Philip
-- Dutch: Leander, "Your royal highness Sarcast the 3rd, duke of Holland"
+- Dutch: Leander, "*Your royal highness* Sarcast *the 3rd, duke of Holland*"
 - Portuguese: BK 
