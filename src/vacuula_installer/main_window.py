@@ -480,13 +480,13 @@ class MainWindow(QMainWindow):
 
     def _select_dev_or_server_screen(self) -> None:
         if not getattr(sys, "frozen", False):
-            #self._goto_notice_screen()
+            self._goto_notice_screen()
             #self._crossfade_to(self._connect_to_wifi_screen)
             #self._connect_to_wifi_screen.set_gen23_page()
             
             # self._goto_dev_only_screen() # Temporary
-            self._crossfade_to(self._firmware_update_screen)
-            self._firmware_update_screen.set_generation('gen3')
+            #self._crossfade_to(self._firmware_update_screen)
+            #self._firmware_update_screen.set_generation('gen3')
             # self._show_error("firmware.gen3.factory_reset.disconnected", detailed=True, restart_btn="firmware.gen3.factory_reset.restart")
             # self._goto_connect_robot_screen('123', '123', 123, 123)  # Not implemented yet
             
