@@ -30,7 +30,6 @@ class FirmwareAsset:
 
 
 GITHUB_REPO = "vacuula/neato-firmware"
-GITHUB_TOKEN = "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" # temp
 
 FIRMWARE_ASSETS: dict[str, FirmwareAsset] = {
     "gen4-1.7.0": FirmwareAsset(
@@ -72,7 +71,6 @@ def _resolve_download(asset: FirmwareAsset) -> tuple[str, dict[str, str]]:
     if asset.asset_id is not None:
         url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/assets/{asset.asset_id}"
         headers = {
-            "Authorization": f"Bearer {GITHUB_TOKEN}",
             "Accept": "application/octet-stream",
         }
         return url, headers
