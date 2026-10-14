@@ -7,6 +7,7 @@ chmod a+r /lib/systemd/system/usb-gadgets.service
 chmod a+r /etc/systemd/resolved.conf
 chmod a+r /etc/systemd/network/wireless.network
 chmod a+r /home/root/tron/config/vendors.ini
+chmod a+r /user/tron/local.ini
 chmod a+r /home/root/tron/config/ssl/vacuula.crt
 chmod a+r /etc/wpa_supplicant/wpa_supplicant-wlan0.conf
 chmod a+r /etc/hosts

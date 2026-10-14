@@ -21,6 +21,7 @@ FILES = {
     '/lib/systemd/system/usb-gadgets.service': 'usb-gadgets.service',
     '/etc/systemd/resolved.conf': 'resolved.conf',
     '/etc/nsswitch.conf': 'nsswitch.conf',
+    '/user/tron/local.ini': 'local.ini',
     '/etc/systemd/network/wireless.network': 'wireless.network',
 }
 
