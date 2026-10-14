@@ -1,0 +1,172 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>en</title>
+<style>
+ body{margin:0;font:13px/1.45 ui-monospace,Consolas,monospace}
+ table{border-collapse:collapse;width:100%}
+ td{border:1px solid #dcdcdc;padding:2px 6px;vertical-align:top;white-space:pre-wrap}
+ td.k{width:1px;color:#666;white-space:pre}
+ td.b{color:#999}
+ .q{color:#999}
+ .v{display:inline-block;min-width:14ch;min-height:1.2em;white-space:pre-wrap}
+ .v:focus{background:#eef6ff;outline:2px solid #79b8ff;outline-offset:-2px}
+ tr.gap td{height:1.2em;border:none}
+</style>
+<table><tr><td class="b" colspan="2">{</td></tr>
+<tr><td class="k">  "String-version":</td><td>"<span class="v" contenteditable spellcheck="false">14</span>",</td></tr>
+<tr><td class="k">  "app.window_title":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula-ifiyer</span>",</td></tr>
+<tr><td class="k">  "app.version":</td><td>"<span class="v" contenteditable spellcheck="false">Installer v{version}</span>",</td></tr>
+<tr><td class="k">  "app.download_logs":</td><td>"<span class="v" contenteditable spellcheck="false">Download logs</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "welcome.tagline":</td><td>"<span class="v" contenteditable spellcheck="false">Let's get your robot vacuum a new &lt;i&gt;life&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "welcome.continue":</td><td>"<span class="v" contenteditable spellcheck="false">Continue</span>",</td></tr>
+<tr><td class="k">  "welcome.language_tooltip":</td><td>"<span class="v" contenteditable spellcheck="false">Change language</span>",</td></tr>
+<tr><td class="k">  "welcome.find_help":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;If you encounter any issues during installation, don't hesitate to get in touch on &lt;a href='https://github.com/vacuula/installer'&gt;GitHub&lt;/a&gt;, &lt;a href='https://discord.gg/PAgwhWvyD8'&gt;Discord&lt;/a&gt; or ask your closest technical friend!&lt;br&gt;&lt;br&gt;Missing a language? You can help! (see GitHub)&lt;/i&gt;</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "disclaimer.title":</td><td>"<span class="v" contenteditable spellcheck="false">~ The disclaimer ~</span>",</td></tr>
+<tr><td class="k">  "disclaimer.acknowledge":</td><td>"<span class="v" contenteditable spellcheck="false">I will &lt;b&gt;not disconnect the USB cable&lt;/b&gt; before instructed to do so</span>",</td></tr>
+<tr><td class="k">  "disclaimer.warning":</td><td>"<span class="v" contenteditable spellcheck="false">I have downloaded Vacuula from github.com/vacuula, as other sources could contain nefarious modifications</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet1":</td><td>"<span class="v" contenteditable spellcheck="false">You need a recently (re)started robot</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet2":</td><td>"<span class="v" contenteditable spellcheck="false">If your robot is &lt;i style='color:#A020F0'&gt;r&lt;/i&gt;&lt;i style='color:#9628F4'&gt;a&lt;/i&gt;&lt;i style='color:#8430F8'&gt;i&lt;/i&gt;&lt;i style='color:#6938FC'&gt;n&lt;/i&gt;&lt;i style='color:#3C40FE'&gt;b&lt;/i&gt;&lt;i style='color:#0047FF'&gt;o&lt;/i&gt;&lt;i style='color:#3C41E8'&gt;w&lt;/i&gt;&lt;i style='color:#823ECD'&gt;i&lt;/i&gt;&lt;i style='color:#C33EB8'&gt;n&lt;/i&gt;&lt;i style='color:#FF3FA4'&gt;g&lt;/i&gt;, get in touch!</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet3":</td><td>"<span class="v" contenteditable spellcheck="false">You will need a USB &lt;b&gt;data&lt;/b&gt; cable</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet4":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula is not affiliated with Neato</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet5":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula modifies your robot software. It does so for the sole reason of allowing &lt;i&gt;your&lt;/i&gt; Vacuula server to control it. All code; installer, server and scripts are open source, take a &lt;a href='https://github.com/vacuula'&gt;look&lt;/a&gt;!</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet6":</td><td>"<span class="v" contenteditable spellcheck="false">Make sure your robot is fully charged &lt;b&gt;and&lt;/b&gt; connected to the charger!</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet7":</td><td>"<span class="v" contenteditable spellcheck="false">If you have previously done an ESP32 mod you &lt;b&gt;have to remove the device&lt;/b&gt; prior to installing Vacuula</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet8":</td><td>"<span class="v" contenteditable spellcheck="false">You proceed at your own risk</span>",</td></tr>
+<tr><td class="k">  "disclaimer.understand":</td><td>"<span class="v" contenteditable spellcheck="false">I understand, let's continue!</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "serversearch.title":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula needs a server</span>",</td></tr>
+<tr><td class="k">  "serversearch.body":</td><td>"<span class="v" contenteditable spellcheck="false">Before &lt;i&gt;biting&lt;/i&gt; your robot a server needs to be set up. Follow instructions &lt;a href='https://github.com/vacuula/vacuula'&gt;here&lt;/a&gt; if not done already</span>",</td></tr>
+<tr><td class="k">  "serversearch.detailinfo":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt;The server needs to be accessible on both the network the robot will be connected to and on the network controlling devices will be - if separate&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "serversearch.status.searching":</td><td>"<span class="v" contenteditable spellcheck="false">Searching for a server</span>",</td></tr>
+<tr><td class="k">  "serversearch.status.found":</td><td>"<span class="v" contenteditable spellcheck="false">Server found at {ip}!</span>",</td></tr>
+<tr><td class="k">  "serversearch.enter_ip_manually":</td><td>"<span class="v" contenteditable spellcheck="false">Enter IP manually</span>",</td></tr>
+<tr><td class="k">  "serversearch.manual.placeholder":</td><td>"<span class="v" contenteditable spellcheck="false">Enter IP address</span>",</td></tr>
+<tr><td class="k">  "serversearch.manual.try_connection":</td><td>"<span class="v" contenteditable spellcheck="false">Try connection</span>",</td></tr>
+<tr><td class="k">  "serversearch.manual.incompatible":</td><td>"<span class="v" contenteditable spellcheck="false">Not a Vacuula server</span>",</td></tr>
+<tr><td class="k">  "serversearch.manual.not_found":</td><td>"<span class="v" contenteditable spellcheck="false">No server found at this address</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.title":</td><td>"<span class="v" contenteditable spellcheck="false">An error occurred</span>",</td></tr>
+<tr><td class="k">  "error.restart":</td><td>"<span class="v" contenteditable spellcheck="false">Try installing again</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.multiple_robots":</td><td>"<span class="v" contenteditable spellcheck="false">Multiple robots detected, please only connect one</span>",</td></tr>
+<tr><td class="k">  "error.multiple_robots.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Currently the installer only supports one robot at a time, future versions might support selecting amongst the connected.</span>",</td></tr>
+<tr><td class="k">  "error.robot_disconnected":</td><td>"<span class="v" contenteditable spellcheck="false">Robot disconnected</span>",</td></tr>
+<tr><td class="k">  "error.robot_disconnected.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">The robot was disconnected during the installation process, please reconnect and try again</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.firmware.invalid":</td><td>"<span class="v" contenteditable spellcheck="false">Invalid firmware detected</span>",</td></tr>
+<tr><td class="k">  "error.generic.connect":</td><td>"<span class="v" contenteditable spellcheck="false">Failed to connect to the robot</span>",</td></tr>
+<tr><td class="k">  "error.generic.upload":</td><td>"<span class="v" contenteditable spellcheck="false">Failed to upload Vacuula to robot</span>",</td></tr>
+<tr><td class="k">  "error.gen4.unreadable":</td><td>"<span class="v" contenteditable spellcheck="false">Unable to read firmware version</span>",</td></tr>
+<tr><td class="k">  "error.gen23.reset":</td><td>"<span class="v" contenteditable spellcheck="false">Network reset failed</span>",</td></tr>
+<tr><td class="k">  "error.generic.unexpected":</td><td>"<span class="v" contenteditable spellcheck="false">An unexpected error occurred</span>",</td></tr>
+<tr><td class="k">  "error.generic.help":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt; Make sure the robot is powered on and connected to your computer via USB. If the problem persists, try restarting the installer and the robot. If it refuses to work, ask for help in the Discord!&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "error.firmware.help":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt; Follow the guide on &lt;a href='https://github.com/vacuula/installer'&gt;GitHub&lt;/a&gt; on how to update your robot to a supported firmware version or ask for help in the Discord. &lt;/i&gt;</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.gen2.unsupported":</td><td>"<span class="v" contenteditable spellcheck="false">Botvac Connected is not yet supported</span>",</td></tr>
+<tr><td class="k">  "error.gen2.unsupported.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Unfortunately Vacuula does not yet support the second generation Botvac Connected, but in due time we might manage to add support for it as well! Please get in touch so we can gauge interest between features people want!</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "connect.title":</td><td>"<span class="v" contenteditable spellcheck="false">Connect a robot to your computer with a USB cable</span>",</td></tr>
+<tr><td class="k">  "connect.howto":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt;There is a USB contact under the dustbin, the green &amp;quot;cable&amp;quot; in the illustration ends at its approximate location&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "connect.status.waiting":</td><td>"<span class="v" contenteditable spellcheck="false">No robot detected yet</span>",</td></tr>
+<tr><td class="k">  "connect.status.detected":</td><td>"<span class="v" contenteditable spellcheck="false">{model} detected</span>",</td></tr>
+<tr><td class="k">  "connect.start_install":</td><td>"<span class="v" contenteditable spellcheck="false">Start install</span>",</td></tr>
+<tr><td class="k">  "connect.installing":</td><td>"<span class="v" contenteditable spellcheck="false">Starting...</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "wifi.title":</td><td>"<span class="v" contenteditable spellcheck="false">Connect your robot to Wi-Fi</span>",</td></tr>
+<tr><td class="k">  "wifi.explanation":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula needs to reach your server!</span>",</td></tr>
+<tr><td class="k">  "wifi.ssid.title":</td><td>"<span class="v" contenteditable spellcheck="false">Name of Wi-Fi network (SSID)</span>",</td></tr>
+<tr><td class="k">  "wifi.ssid.gen23.title":</td><td>"<span class="v" contenteditable spellcheck="false">Select from available networks</span>",</td></tr>
+<tr><td class="k">  "wifi.pass.title":</td><td>"<span class="v" contenteditable spellcheck="false">Password, can be blank</span>",</td></tr>
+<tr><td class="k">  "wifi.disclaimer":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt;Note that the Neato devices supported by Vacuula do &lt;b&gt;not support&lt;/b&gt; WPA3, make sure your network uses WPA2 or WPA2/WPA3 mixed mode. The robots also only support 2.4 GHz Wi-Fi&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.button":</td><td>"<span class="v" contenteditable spellcheck="false">Continue</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "wifi.gen23.pre.title":</td><td>"<span class="v" contenteditable spellcheck="false">Connect to the robot's Wi-Fi</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.pre.explanation":</td><td>"<span class="v" contenteditable spellcheck="false">Connect this computer to the Wi-Fi network \"&lt;b&gt;Neato-{mac}&lt;/b&gt;\"</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.pre.disclaimer":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Just like with the original app, your robot needs to be set up via its own Wi-Fi connection. A network with the above name should show up soon! If it does not appear within a couple minutes, try restarting your computer's Wi-Fi, then the installer and lastly the robot&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.pre.try_connection":</td><td>"<span class="v" contenteditable spellcheck="false">I have connected!</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "wifi.gen23.disclaimer":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt;Only networks visible to the robot can be selected. The Neato devices supported by Vacuula do &lt;b&gt;not support&lt;/b&gt; WPA3, make sure your network uses WPA2 or WPA2/WPA3 mixed mode. The robots also only support 2.4 GHz Wi-Fi&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.scan_failed":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i style='color:red'&gt;Failed to scan for networks&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.none_found":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i style='color:yellow'&gt;Failed to find any networks&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.loading":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Scanning for networks via robot&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.use_list":</td><td>"<span class="v" contenteditable spellcheck="false">Select from available networks</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.use_manual":</td><td>"<span class="v" contenteditable spellcheck="false">Enter network manually</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.rescan":</td><td>"<span class="v" contenteditable spellcheck="false">Rescan networks</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.scan":</td><td>"<span class="v" contenteditable spellcheck="false">Checking if your robot's firmware is up-to-date</span>",</td></tr>
+<tr><td class="k">  "firmware.title":</td><td>"<span class="v" contenteditable spellcheck="false">Firmware update</span>",</td></tr>
+<tr><td class="k">  "firmware.flair":</td><td>"<span class="v" contenteditable spellcheck="false">Your robot is feeling a bit out of the loop</span>",</td></tr>
+<tr><td class="k">  "firmware.subtitle":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula only supports the latest versions of the Neato firmware. Here we will help you update to a supported version!</span>",</td></tr>
+<tr><td class="k">  "firmware.version":</td><td>"<span class="v" contenteditable spellcheck="false">Version {version}</span>",</td></tr>
+<tr><td class="k">  "firmware.recommended":</td><td>"<span class="v" contenteditable spellcheck="false">(Recommended version)</span>",</td></tr>
+<tr><td class="k">  "firmware.download":</td><td>"<span class="v" contenteditable spellcheck="false">Download firmware</span>",</td></tr>
+<tr><td class="k">  "firmware.downloading":</td><td>"<span class="v" contenteditable spellcheck="false">Downloading firmware</span>",</td></tr>
+<tr><td class="k">  "firmware.install":</td><td>"<span class="v" contenteditable spellcheck="false">Install firmware</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.install.step.starting":</td><td>"<span class="v" contenteditable spellcheck="false">Starting firmware update...</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.reset_network":</td><td>"<span class="v" contenteditable spellcheck="false">Resetting network settings...</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.handshake":</td><td>"<span class="v" contenteditable spellcheck="false">Connecting to robot</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.sending":</td><td>"<span class="v" contenteditable spellcheck="false">Sending firmware to robot</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.awaiting_ack":</td><td>"<span class="v" contenteditable spellcheck="false">Waiting for robot to acknowledge received firmware</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.verifying":</td><td>"<span class="v" contenteditable spellcheck="false">Robot is verifying the firmware</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.rebooting":</td><td>"<span class="v" contenteditable spellcheck="false">Rebooting robot</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.done.gen3":</td><td>"<span class="v" contenteditable spellcheck="false">Uploaded to robot! If everything went well the robot should restart by itself within 30 seconds and you will be automatically presented with the next step.</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.done.gen4":</td><td>"<span class="v" contenteditable spellcheck="false">Uploaded to robot! It will continue flashing yellow during its update procedure which may take up to 15-20 minutes. Keep the robot connected to your computer and let it finish, we recommend some tea or coffee!</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.install.done.disconnected.gen3":</td><td>"<span class="v" contenteditable spellcheck="false">Robot disconnected after firmware update which most likely means the update was successful</span>",</td></tr>
+<tr><td class="k">  "firmware.install.done.disconnected.gen3.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Please wait for the robot to start up; the red error light will start flashing (as the dustbin is not in place) which is expected and can be ignored. You will have to start over with some steps to continue the installation of Vacuula</span>",</td></tr>
+<tr><td class="k">  "firmware.install.done.disconnected.gen4":</td><td>"<span class="v" contenteditable spellcheck="false">Robot disconnected after firmware update which most likely means the update was successful</span>",</td></tr>
+<tr><td class="k">  "firmware.install.done.disconnected.gen4.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Please wait for the robot to start up, typically indicated by a sound. Once that happens you will have to start over with some steps to continue the installation of Vacuula</span>",</td></tr>
+<tr><td class="k">  "firmware.install.done.restart":</td><td>"<span class="v" contenteditable spellcheck="false">Start-over install with new firmware</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset_ack":</td><td>"<span class="v" contenteditable spellcheck="false">For the firmware update to be a guaranteed success, your robot needs to be factory reset. Please confirm that you have done so recently, or see below instructions.</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset_link":</td><td>"<span class="v" contenteditable spellcheck="false">How to factory reset</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.explanation":</td><td>"<span class="v" contenteditable spellcheck="false">Factory reset your Neato to guarantee a successful update. Do not disconnect the robot from the computer and follow these steps:</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.instructions":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;(blue dot shows power button)&lt;/i&gt;&lt;br&gt;&lt;br&gt;1. Remove dustbin, this should already be the case &lt;br&gt; 2. Press in the two bumper switches as the red arrows show &lt;br&gt; 3. Hold down power button until robot turns off, 10s &lt;br&gt; 4. Release ONLY the power button when lights are off &lt;br&gt; 5. Press power button once (while still holding the bumper switches) &lt;br&gt; 6. Only release bumper when blue light stops flashing</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.disconnected":</td><td>"<span class="v" contenteditable spellcheck="false">You are making progress! Robot disconnected, continue holding bumper switches and press power button once!</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.disconnected.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">When you have pressed the power button the robot will start flashing with a blue light, you may release the bumper when the blue light stops. When the robot is fully started (red error will flash because of no dustbin), click below to restart the installer and flash the latest firmware!</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.back":</td><td>"<span class="v" contenteditable spellcheck="false">Back to versions</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.restart":</td><td>"<span class="v" contenteditable spellcheck="false">Once started, click here to restart installer and install latest firmware</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.gen3-4.5.3.description":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;The latest firmware publicly released by Neato.&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3-4.6.0.description":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;If your robot is having lidar issues, this firmware was made by Neato for robots brought in for repair. Only choose this one if you are having problems with the lidar.&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "firmware.gen4-1.7.0.description":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;The latest firmware publicly released by Neato.&lt;/i&gt;</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "install.launching":</td><td>"<span class="v" contenteditable spellcheck="false">Installing Vacuula in {model}</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "provision.title":</td><td>"<span class="v" contenteditable spellcheck="false">Setting up your robot</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "serversearch.manual.failed":</td><td>"<span class="v" contenteditable spellcheck="false">Could not connect to this address</span>",</td></tr>
+<tr><td class="k">  "error.gen23.firmware":</td><td>"<span class="v" contenteditable spellcheck="false">Unsupported firmware detected</span>",</td></tr>
+<tr><td class="k">  "error.gen23.generic.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">The installer could not read the required information from the robot. Make sure it is powered on and connected via USB, then try again.</span>",</td></tr>
+<tr><td class="k">  "firmware.download_failed":</td><td>"<span class="v" contenteditable spellcheck="false">Firmware download failed: {reason}</span>",</td></tr>
+<tr><td class="k">  "firmware.install_failed":</td><td>"<span class="v" contenteditable spellcheck="false">Firmware installation failed: {reason}</span>",</td></tr>
+<tr><td class="k">  "firmware.try_again":</td><td>"<span class="v" contenteditable spellcheck="false">Try again</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.waiting":</td><td>"<span class="v" contenteditable spellcheck="false">Waiting for the robot...</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.done":</td><td>"<span class="v" contenteditable spellcheck="false">Firmware update finished</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.unknown":</td><td>"<span class="v" contenteditable spellcheck="false">Working...</span>",</td></tr>
+<tr><td class="k">  "provision.failed":</td><td>"<span class="v" contenteditable spellcheck="false">Failed to set up the robot</span>",</td></tr>
+<tr><td class="k">  "provision.gen23.failed":</td><td>"<span class="v" contenteditable spellcheck="false">Failed to set up the robot</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "provision.gen23.step1":</td><td>"<span class="v" contenteditable spellcheck="false">Connecting to Wi-Fi</span>",</td></tr>
+<tr><td class="k">  "provision.gen23.step2":</td><td>"<span class="v" contenteditable spellcheck="false">Checking connection to internet</span>",</td></tr>
+<tr><td class="k">  "provision.gen23.step3":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula takes over</span>",</td></tr>
+<tr><td class="k">  "provision.gen23.step4":</td><td>"<span class="v" contenteditable spellcheck="false">Shutting down for a restart</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.provision.gen23.wifi_password":</td><td>"<span class="v" contenteditable spellcheck="false">Robot failed to connect to network, check settings and please try again</span>",</td></tr>
+<tr><td class="k">  "error.provision.gen23.no_internet":</td><td>"<span class="v" contenteditable spellcheck="false">Robot connected to Wi-Fi but failed to reach the internet (8.8.8.8 and pool.ntp.org), please check your network and try again</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.provision.initialize":</td><td>"<span class="v" contenteditable spellcheck="false">Failed to initialise the robot. Keep connected via USB and Wi-Fi</span>",</td></tr>
+<tr><td class="k">  "error.provision.progress":</td><td>"<span class="v" contenteditable spellcheck="false">Unable to get progress status from robot. Keep connected via USB and Wi-Fi</span>",</td></tr>
+<tr><td class="k">  "error.provision.script":</td><td>"<span class="v" contenteditable spellcheck="false">The Vacuula script has failed to run. Please download the logs and report this issue on GitHub or in the Discord!</span>",</td></tr>
+<tr><td class="k">  "error.provision.lock_exit":</td><td>"<span class="v" contenteditable spellcheck="false">The Vacuula script has ended unexpectedly, probably because robot was not restarted before starting. Please restart the robot and try again!</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "provision.gen4.step1":</td><td>"<span class="v" contenteditable spellcheck="false">Connecting to robot</span>",</td></tr>
+<tr><td class="k">  "provision.gen4.step2":</td><td>"<span class="v" contenteditable spellcheck="false">Uploading Vacuula</span>",</td></tr>
+<tr><td class="k">  "provision.gen4.instructions":</td><td>"<span class="v" contenteditable spellcheck="false">To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until it has fully started.</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "finished.title":</td><td>"<span class="v" contenteditable spellcheck="false">Robot &lt;i&gt;bitten&lt;/i&gt; by Vacuula</span>",</td></tr>
+<tr><td class="k">  "finished.subtitle":</td><td>"<span class="v" contenteditable spellcheck="false">You may now disconnect the robot from your computer and turn the robot on! Then please wait for the robot to show up in your &lt;a href='http://vacuula.local'&gt;Vacuula server!&lt;/a&gt;</span>"</td></tr>
+<tr><td class="b" colspan="2">}</td></tr></table>

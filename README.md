@@ -6,7 +6,7 @@ Welcome to the Vacuula installer, a cross-platform application that turns your a
 
 <br />
 
-[![Latest release](https://img.shields.io/github/v/release/OWNER/REPO?style=for-the-badge&label=download&color=brightgreen)](https://github.com/vacuula/installer/releases/latest) [![Discord](https://img.shields.io/badge/chat-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/PAgwhWvyD8/)
+[![Latest release](https://img.shields.io/github/v/release/vacuula/installer?style=for-the-badge&label=download&color=brightgreen)](https://github.com/vacuula/installer/releases/latest) [![Discord](https://img.shields.io/badge/chat-Discord-5865F2?style=for-the-badge&logo=discord&logoColor=white)](https://discord.gg/PAgwhWvyD8/)
 
 <br clear="left" />
 
@@ -36,15 +36,17 @@ Do not download from anywhere else, this is an app that modifies your robot, whi
 
 ## Help us translate the app!
 
-Are you missing a language? Take a look at one of the lang.json here and either make a edit trough git(hub) or send a translated version to some dev in discord for example (you will be credited whichever way)!
+Are you missing a language? You can help!
 
-Basically: __Copy en.json (or another language that you prefer with an equal "strings.version" compared to the en.json)__ and translate to a language you speak fluently.
+You can translate either from [en.html](https://github.com/vacuula/installer/blob/main/en-v14.html) or [sv.html](https://github.com/vacuula/installer/blob/main/sv-v14.html) (open in browser or word/writer..). If you open in browser save the file often as it does not save for you (keep the .html).
+
+When you are done send the file to preferably Rinkana but any of the devs is fine! Discord, download link whatever you fancy! Make sure to convey the name you want to be credited by!
 
 Do not translate literally, make it sound natural; as you would say in person speaking that language!
 
-Do not use AI for the translation, that we could have done ourselves - do a language you are fluent in so you can detect what sounds awkward!
+**Do not use AI for the translation**, that we could have done ourselves - do a language you are fluent in so you can detect what sounds awkward!
 
-If you want to fully integrate the language yourself, there are instructions in the DEV-README on how to add the language to the menu!
+If you want to fully integrate the language yourself, there are instructions in the DEV-README on how to translate without a dev being the middle man!
 
 ## Disclaimer
 
@@ -55,7 +57,8 @@ We offer no guarantee, __you try to revive your robot on your own risk__ - we ar
 
 ## Frequently asked questions
 
-- None so far (just released?)
+- Robot not detected on Linux and you have a gen3 device? You need to add yourself to the group dialout `sudo usermod -aG dialout <username>` and reboot your computer
+- READ THE DISCLAIMER, it has important information!
 - Yes *bitten* is used as a synonym to *installed* (or hacked/freed)
 
 ## I want to help with the development! (yes there are things to improve)
@@ -72,6 +75,12 @@ Also it has been fun to try to do a clean UI that still handles the rather exten
 
 Special thanks to:
 - Philip for the Vacuula project itself and for helping to add handling of quirks of the vacuum cleaners I don't have at home, getting it over the finish line.
+- nescio007, BK, "*Your royal highness* Sarcast *the 3rd, duke of Holland*", Leander and everyone else in core team who have provided methods to root the different Neatos and/or helped test the installer
 - Fjalar for getting it to modern build tooling, so we did not have to play with venvs forever.
-- nescio007, BK and everyone else in core team who have provided methods to root the different Neatos and/or helped test the installer
 - Me myself, Rinkana, for most of the app and UX direction. I take no credit for the amazing exploits that enable this (and the entire Vacuula project).
+
+Translations:
+- English: Rinkana, Philip, BK
+- Swedish: Rinkana, Philip
+- Dutch: Leander, "*Your royal highness* Sarcast *the 3rd, duke of Holland*"
+- Portuguese: BK 

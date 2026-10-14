@@ -1,0 +1,172 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>sv</title>
+<style>
+ body{margin:0;font:13px/1.45 ui-monospace,Consolas,monospace}
+ table{border-collapse:collapse;width:100%}
+ td{border:1px solid #dcdcdc;padding:2px 6px;vertical-align:top;white-space:pre-wrap}
+ td.k{width:1px;color:#666;white-space:pre}
+ td.b{color:#999}
+ .q{color:#999}
+ .v{display:inline-block;min-width:14ch;min-height:1.2em;white-space:pre-wrap}
+ .v:focus{background:#eef6ff;outline:2px solid #79b8ff;outline-offset:-2px}
+ tr.gap td{height:1.2em;border:none}
+</style>
+<table><tr><td class="b" colspan="2">{</td></tr>
+<tr><td class="k">  "String-version":</td><td>"<span class="v" contenteditable spellcheck="false">14</span>",</td></tr>
+<tr><td class="k">  "app.window_title":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula-ifierare</span>",</td></tr>
+<tr><td class="k">  "app.version":</td><td>"<span class="v" contenteditable spellcheck="false">Programversion v{version}</span>",</td></tr>
+<tr><td class="k">  "app.download_logs":</td><td>"<span class="v" contenteditable spellcheck="false">Spara loggarna</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "welcome.tagline":</td><td>"<span class="v" contenteditable spellcheck="false">Dags att ge din robot nytt &lt;i&gt;liv&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "welcome.continue":</td><td>"<span class="v" contenteditable spellcheck="false">Fortsätt</span>",</td></tr>
+<tr><td class="k">  "welcome.language_tooltip":</td><td>"<span class="v" contenteditable spellcheck="false">Byt språk</span>",</td></tr>
+<tr><td class="k">  "welcome.find_help":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Tveka inte att höra av dig på &lt;a href='https://github.com/vacuula/installer'&gt;GitHub&lt;/a&gt; eller &lt;a href='https://discord.gg/PAgwhWvyD8'&gt;Discord&lt;/a&gt; om du möter problem under installationen (eller fråga närmsta tekniskt-lagda vän)!&lt;br&gt;&lt;br&gt;Saknar du ett språk? Du kan hjälpa ändra på saken (sväng förbi på Github)!&lt;/i&gt;</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "disclaimer.title":</td><td>"<span class="v" contenteditable spellcheck="false">~ Det små&lt;i&gt;(stor?)&lt;/i&gt;stilta ~</span>",</td></tr>
+<tr><td class="k">  "disclaimer.acknowledge":</td><td>"<span class="v" contenteditable spellcheck="false">Jag kommer &lt;b&gt;inte koppla loss USB-kabeln&lt;/b&gt; innan jag meddelas att det är o.k</span>",</td></tr>
+<tr><td class="k">  "disclaimer.warning":</td><td>"<span class="v" contenteditable spellcheck="false">Jag har hämtat Vacuula från github.com/vacuula, då andra ställen kan vara besudlade med illa-menande modifikationer</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet1":</td><td>"<span class="v" contenteditable spellcheck="false">Din robot bör vara nyligen startad</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet2":</td><td>"<span class="v" contenteditable spellcheck="false">Om din robot istället för att starta visar &lt;i&gt;(några)&lt;/i&gt; av &lt;i style='color:#A020F0'&gt;r&lt;/i&gt;&lt;i style='color:#9628F4'&gt;e&lt;/i&gt;&lt;i style='color:#8430F8'&gt;g&lt;/i&gt;&lt;i style='color:#6938FC'&gt;n&lt;/i&gt;&lt;i style='color:#3C40FE'&gt;b&lt;/i&gt;&lt;i style='color:#0047FF'&gt;å&lt;/i&gt;&lt;i style='color:#3C41E8'&gt;g&lt;/i&gt;&lt;i style='color:#823ECD'&gt;e&lt;/i&gt;&lt;i style='color:#C33EB8'&gt;n&lt;/i&gt;&lt;i style='color:#FF3FA4'&gt;s&lt;/i&gt; färger; hör av dig!</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet3":</td><td>"<span class="v" contenteditable spellcheck="false">Du kommer behöva en USB-&lt;b&gt;data&lt;/b&gt; kabel</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet4":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula har ingen anknytning till Neato</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet5":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula modifierar din robots mjukvara. Ändringarna ägnar sig endast åt att låta den styras av &lt;i&gt;din&lt;/i&gt; server. All kod: detta installationsprogram, server och skript har öppen källkod, ta en &lt;a href='https://github.com/vacuula'&gt;titt&lt;/a&gt;!</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet6":</td><td>"<span class="v" contenteditable spellcheck="false">Se till att din robot är fulladdad &lt;b&gt;och&lt;/b&gt; ansluten till laddaren!</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet7":</td><td>"<span class="v" contenteditable spellcheck="false">Om du tidigare har modifierad din robot med en ESP32 &lt;b&gt;måste du avlägsna den&lt;/b&gt; innan du fortsätter!</span>",</td></tr>
+<tr><td class="k">  "disclaimer.bullet8":</td><td>"<span class="v" contenteditable spellcheck="false">Du går vidare på egen risk</span>",</td></tr>
+<tr><td class="k">  "disclaimer.understand":</td><td>"<span class="v" contenteditable spellcheck="false">Jag förstår, låt oss fortsätta!</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "serversearch.title":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula behöver en server</span>",</td></tr>
+<tr><td class="k">  "serversearch.body":</td><td>"<span class="v" contenteditable spellcheck="false">Innan din robot kan bli&lt;i&gt;biten&lt;/i&gt; måste en server vara uppsatt. Följ instruktionerna &lt;a href='https://github.com/vacuula/vacuula'&gt;här&lt;/a&gt; om du inte redan gjort det</span>",</td></tr>
+<tr><td class="k">  "serversearch.detailinfo":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt;Servern måste vara tillgänglig på både nätverket robotdammsugaren kommer ansluta till och nätverket styrenheter (mobil, dator) är anslutna till - ifall det skiljer sig&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "serversearch.status.searching":</td><td>"<span class="v" contenteditable spellcheck="false">Letar efter en server</span>",</td></tr>
+<tr><td class="k">  "serversearch.status.found":</td><td>"<span class="v" contenteditable spellcheck="false">Fann en server på {ip}!</span>",</td></tr>
+<tr><td class="k">  "serversearch.enter_ip_manually":</td><td>"<span class="v" contenteditable spellcheck="false">Ange IP-adress manuellt</span>",</td></tr>
+<tr><td class="k">  "serversearch.manual.placeholder":</td><td>"<span class="v" contenteditable spellcheck="false">Ange IP-adress</span>",</td></tr>
+<tr><td class="k">  "serversearch.manual.try_connection":</td><td>"<span class="v" contenteditable spellcheck="false">Prova anslutning</span>",</td></tr>
+<tr><td class="k">  "serversearch.manual.incompatible":</td><td>"<span class="v" contenteditable spellcheck="false">Ej en Vacuula-server</span>",</td></tr>
+<tr><td class="k">  "serversearch.manual.not_found":</td><td>"<span class="v" contenteditable spellcheck="false">Ingen server hittades på denna adress</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.title":</td><td>"<span class="v" contenteditable spellcheck="false">Ett fel har inträffat</span>",</td></tr>
+<tr><td class="k">  "error.restart":</td><td>"<span class="v" contenteditable spellcheck="false">Prova köra installationsprogrammet på nytt</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.multiple_robots":</td><td>"<span class="v" contenteditable spellcheck="false">Flera robotar har detekterats, var god och anslut endast en</span>",</td></tr>
+<tr><td class="k">  "error.multiple_robots.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">För tillfället stödjer installationsprogrammet endast en robotdammsugare åt gången.</span>",</td></tr>
+<tr><td class="k">  "error.robot_disconnected":</td><td>"<span class="v" contenteditable spellcheck="false">Robot frånkopplad</span>",</td></tr>
+<tr><td class="k">  "error.robot_disconnected.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Robotdammsugaren kopplades loss under installationen, anslut den på nytt och prova igen</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.firmware.invalid":</td><td>"<span class="v" contenteditable spellcheck="false">Roboten rapporterar en ogiltig fast programvara</span>",</td></tr>
+<tr><td class="k">  "error.generic.connect":</td><td>"<span class="v" contenteditable spellcheck="false">Misslyckades ansluta till robotdammsugaren</span>",</td></tr>
+<tr><td class="k">  "error.generic.upload":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula misslyckades &lt;i&gt;bita&lt;/i&gt;(installera sig på) roboten</span>",</td></tr>
+<tr><td class="k">  "error.gen4.unreadable":</td><td>"<span class="v" contenteditable spellcheck="false">Kan inte läsa den fasta programvarans version</span>",</td></tr>
+<tr><td class="k">  "error.gen23.reset":</td><td>"<span class="v" contenteditable spellcheck="false">Lyckades inte återställa robotens nätverk</span>",</td></tr>
+<tr><td class="k">  "error.generic.unexpected":</td><td>"<span class="v" contenteditable spellcheck="false">Ett oväntat fel har inträffat</span>",</td></tr>
+<tr><td class="k">  "error.generic.help":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt; Se till att robotdammsugaren är påslagen och ansluten till datorn med USB-kabel. Om problemet kvarstår, prova starta om både installationsprogrammet och roboten. Om det fortfarande vägrar fungera, fråga i Discord:en!&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "error.firmware.help":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt; Följ instruktionerna i &lt;a href='https://github.com/vacuula/installer'&gt;Github&lt;/a&gt; om hur man uppdaterar din dammsugare till en version av den fasta programvaran som stöds, eller be om hjälp i Discord:en.&lt;/i&gt;</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.gen2.unsupported":</td><td>"<span class="v" contenteditable spellcheck="false">Botvac Connected stöds inte än</span>",</td></tr>
+<tr><td class="k">  "error.gen2.unsupported.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Tyvärr stödjer Vacuula inte generation 2 roboten Botvac Connected än, men det kan komma ändras på i framtiden! Hör gärna av dig så vi kan bättre prioritera mellan förbättringar till kommande versioner av Vacuula!</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "connect.title":</td><td>"<span class="v" contenteditable spellcheck="false">Anslut din robotdammsugare med en USB kabel</span>",</td></tr>
+<tr><td class="k">  "connect.howto":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt;Det finns en USB-anslutning under dammuppsamlaren, den gröna streckade &amp;quot;kabeln&amp;quot; går till dess ungefärliga position&lt;/i&gt;.</span>",</td></tr>
+<tr><td class="k">  "connect.status.waiting":</td><td>"<span class="v" contenteditable spellcheck="false">Ingen robotdammsugare detekterad än</span>",</td></tr>
+<tr><td class="k">  "connect.status.detected":</td><td>"<span class="v" contenteditable spellcheck="false">Fann en {model}</span>",</td></tr>
+<tr><td class="k">  "connect.start_install":</td><td>"<span class="v" contenteditable spellcheck="false">Starta installation</span>",</td></tr>
+<tr><td class="k">  "connect.installing":</td><td>"<span class="v" contenteditable spellcheck="false">Börjar...</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "wifi.title":</td><td>"<span class="v" contenteditable spellcheck="false">Anslut din robot till WiFi</span>",</td></tr>
+<tr><td class="k">  "wifi.explanation":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula behöver ju ansluta till din server!</span>",</td></tr>
+<tr><td class="k">  "wifi.ssid.title":</td><td>"<span class="v" contenteditable spellcheck="false">WiFi-nätverkets namn (SSID)</span>",</td></tr>
+<tr><td class="k">  "wifi.ssid.gen23.title":</td><td>"<span class="v" contenteditable spellcheck="false">Välj bland tillgängliga nätverk</span>",</td></tr>
+<tr><td class="k">  "wifi.pass.title":</td><td>"<span class="v" contenteditable spellcheck="false">Lösenord, kan vara tomt</span>",</td></tr>
+<tr><td class="k">  "wifi.disclaimer":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt;Notera att Neato-robotarna som stöds av Vacuula &lt;b&gt;inte stödjer&lt;/b&gt; WPA3, se till att nätverket den ansluter till använder WPA2 eller blandat WPA2/WPA3 läge. De stödjer även endast 2,4Ghz WiFi.&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.button":</td><td>"<span class="v" contenteditable spellcheck="false">Fortsätt</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "wifi.gen23.pre.title":</td><td>"<span class="v" contenteditable spellcheck="false">Anslut till din robots WiFi</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.pre.explanation":</td><td>"<span class="v" contenteditable spellcheck="false">Anslut denna dator till WiFi-nätverket \"&lt;b&gt;Neato-{mac}&lt;/b&gt;\"</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.pre.disclaimer":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Precis som med original-appen behöver din robot konfigureras genom dess egna WiFi-nätverk. Ett nätverk med ovan namn bör snart dyka upp i din dators lista på tillgängliga anslutningar! Om det inte syns till efter några minuter, prova först starta om din dators WiFi, sen installationsprogrammet och till sist roboten.&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.pre.try_connection":</td><td>"<span class="v" contenteditable spellcheck="false">Jag har anslutit!</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "wifi.gen23.disclaimer":</td><td>"<span class="v" contenteditable spellcheck="false">🛈 &lt;i&gt;Man kan endast välja bland nätverk som roboten själv ser. Neato-robotarna som stöds av Vacuula &lt;b&gt;stödjer inte&lt;/b&gt; WPA3, se till att nätverket den ansluter till använder WPA2 eller blandat WPA2/WPA3 läge. De stödjer även endast 2,4Ghz WiFi.&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.scan_failed":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i style='color:red'&gt;Kunde inte söka efter nätverk&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.none_found":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i style='color:yellow'&gt;Hittade inga nätverk&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.loading":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Roboten söker efter nätverk&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.use_list":</td><td>"<span class="v" contenteditable spellcheck="false">Välj bland de tillgängliga nätverken</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.use_manual":</td><td>"<span class="v" contenteditable spellcheck="false">Ange nätverk manuellt</span>",</td></tr>
+<tr><td class="k">  "wifi.gen23.rescan":</td><td>"<span class="v" contenteditable spellcheck="false">Sök igen</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.scan":</td><td>"<span class="v" contenteditable spellcheck="false">Kontrollerar om din robots fasta programvara är den senaste versionen</span>",</td></tr>
+<tr><td class="k">  "firmware.title":</td><td>"<span class="v" contenteditable spellcheck="false">Uppdatera fast programvara</span>",</td></tr>
+<tr><td class="k">  "firmware.flair":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Din robot känner att den inte hängt med på de senaste nymodigheterna&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "firmware.subtitle":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula stödjer endast de senaste versionerna av den fasta programvaran. Här hjälper vi dig uppdatera till en version som stöds!</span>",</td></tr>
+<tr><td class="k">  "firmware.version":</td><td>"<span class="v" contenteditable spellcheck="false">Version {version}</span>",</td></tr>
+<tr><td class="k">  "firmware.recommended":</td><td>"<span class="v" contenteditable spellcheck="false">(Rekommenderad version)</span>",</td></tr>
+<tr><td class="k">  "firmware.download":</td><td>"<span class="v" contenteditable spellcheck="false">Ladda ner den fasta programvaran</span>",</td></tr>
+<tr><td class="k">  "firmware.downloading":</td><td>"<span class="v" contenteditable spellcheck="false">Hämtar fast programvara</span>",</td></tr>
+<tr><td class="k">  "firmware.install":</td><td>"<span class="v" contenteditable spellcheck="false">Installera fast programvara</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.install.step.starting":</td><td>"<span class="v" contenteditable spellcheck="false">Påbörjar uppdatering av fast programvara...</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.reset_network":</td><td>"<span class="v" contenteditable spellcheck="false">Återställer nätverksinställningar...</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.handshake":</td><td>"<span class="v" contenteditable spellcheck="false">Ansluter till roboten</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.sending":</td><td>"<span class="v" contenteditable spellcheck="false">Skickar uppdateringen till roboten</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.awaiting_ack":</td><td>"<span class="v" contenteditable spellcheck="false">Väntar på att roboten ska bekräfta att den mottagit den fasta mjukvaran</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.verifying":</td><td>"<span class="v" contenteditable spellcheck="false">Robotdammsugaren kontrollerar den mottagna filen</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.rebooting":</td><td>"<span class="v" contenteditable spellcheck="false">Startar om robotdammsugaren</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.done.gen3":</td><td>"<span class="v" contenteditable spellcheck="false">Uppdateringen har skickats till roboten! Om allt gick bra kommer den starta om av sig själv inom 30 sekunder varpå du blir presenterad nästa steg.</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.done.gen4":</td><td>"<span class="v" contenteditable spellcheck="false">Uppdateringen har skickats till roboten! Den kommer att fortsätta blinka gult medan den uppdaterar. Roboten kommer automatiskt starta om när den är klar varvid du erbjuds fortsätta installationen av Vacuula. En kopp te eller kaffe rekommenderas då proceduren kan ta upp till 20 minuter.</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.install.done.disconnected.gen3":</td><td>"<span class="v" contenteditable spellcheck="false">Robotdammsugaren har kopplat bort sig, vilket höst troligt betyder uppdateringen gick bra!</span>",</td></tr>
+<tr><td class="k">  "firmware.install.done.disconnected.gen3.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Vänligen vänta på att dammsugaren startar upp, den röda varningslampan kommer börja lysa då dammuppsamlaren inte är på plats vilket är förväntat och kan ignoreras. För att fortsätta med installationen av Vacuula kommer du behöva göra om några av stegen i installationsproceduren.</span>",</td></tr>
+<tr><td class="k">  "firmware.install.done.disconnected.gen4":</td><td>"<span class="v" contenteditable spellcheck="false">Robotdammsugaren har kopplat bort sig, vilket höst troligt betyder uppdateringen gick bra!</span>",</td></tr>
+<tr><td class="k">  "firmware.install.done.disconnected.gen4.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Vänligen vänta på att dammsugaren startar upp, vilket den brukar fira med en kort melodi. När det skett kommer du behöva göra om några av stegen i installationsproceduren för att fortsätta installera Vacuula.</span>",</td></tr>
+<tr><td class="k">  "firmware.install.done.restart":</td><td>"<span class="v" contenteditable spellcheck="false">Börja om installationen med den nya versionen</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset_ack":</td><td>"<span class="v" contenteditable spellcheck="false">För att uppdateringen av den fasta programvaran ska vara garanterad att lyckas måste robotdammsugaren fabriksåterställas. Bekräfta att du gjort så nyligen eller se nedan instruktioner.</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset_link":</td><td>"<span class="v" contenteditable spellcheck="false">Hur man fabriksåterställer sin robotdammsugare</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.explanation":</td><td>"<span class="v" contenteditable spellcheck="false">Fabriksåterställ din robot för att garantera lyckad uppdatering. Koppla &lt;b&gt;inte&lt;/b&gt; ur USB-kabeln och följ nedan instruktioner:</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.instructions":</td><td>"<span class="v" contenteditable spellcheck="false">(den blå pricken markerar på/av knappen)&lt;br&gt;&lt;br&gt;1. Plocka först bort dammuppsamlaren (vilket redan borde vara fallet)&lt;br&gt;2. Tryck sedan där de två röda pilarna visar (på stötfångaren) och fortsätt hålla de två underliggande knapparna nedtryckta.&lt;br&gt;3. Håll ner start-knappen tills roboten stängs av.&lt;br&gt;4. Släpp ENDAST startknappen när lamporna släckts.&lt;br&gt;5. Fortsätt trycka på stötfångaren, och tryck sedan en gång på start-knappen.&lt;br&gt;6. Släpp endast stötfångaren när den blå lampan slutar blinka.</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.disconnected":</td><td>"<span class="v" contenteditable spellcheck="false">Robotdammsugaren har kopplat bort sig, fortsätt trycka på stötfångaren som tidigare beskrivet och tryck på start-knappen för att starta roboten på nytt</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.disconnected.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Roboten kommer nu börja blinka med en blå lampa, du kan släppa stötfångaren när den slutar blinka och endast den gröna batteri-indikatorn kvarstår. När roboten startat helt kan du trycka på knappen nedan för att installera den senaste fasta programvaran! Varningslampan informerar att dammuppsamlaren saknas och kan således ignoreras</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.back":</td><td>"<span class="v" contenteditable spellcheck="false">Tillbaka till överblicken av versioner</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3.factory_reset.restart":</td><td>"<span class="v" contenteditable spellcheck="false">Tryck här när den startat för att installera den senaste fasta programvaran</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "firmware.gen3-4.5.3.description":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Den senaste versionen av den fasta programvaran som offentligt släppts av Neato.&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "firmware.gen3-4.6.0.description":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Om din robot har problem med sin lidar; Neato gjorde en version för robotar som lämnades in på service. Välj denna endast om du har problem med lidar:n.&lt;/i&gt;</span>",</td></tr>
+<tr><td class="k">  "firmware.gen4-1.7.0.description":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Den senaste versionen av den fasta programvaran som offentligt släppts av Neato.&lt;/i&gt;</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "install.launching":</td><td>"<span class="v" contenteditable spellcheck="false">Installerar Vacuula i {model}</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "provision.title":</td><td>"<span class="v" contenteditable spellcheck="false">Konfigurerar din robotdammsugare</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "serversearch.manual.failed":</td><td>"<span class="v" contenteditable spellcheck="false">Kunde inte ansluta till den adressen</span>",</td></tr>
+<tr><td class="k">  "error.gen23.firmware":</td><td>"<span class="v" contenteditable spellcheck="false">Den detekterade fasta programvaran stöds inte</span>",</td></tr>
+<tr><td class="k">  "error.gen23.generic.detailed":</td><td>"<span class="v" contenteditable spellcheck="false">Installationsprogrammet kunde inte läsa nödvändig information från robotdammsugaren. Se till att den är påslagen och ansluten till datorn med en USB-data kabel och försök igen.</span>",</td></tr>
+<tr><td class="k">  "firmware.download_failed":</td><td>"<span class="v" contenteditable spellcheck="false">Nedladdningen av den fasta programvaran misslyckades: {reason}</span>",</td></tr>
+<tr><td class="k">  "firmware.install_failed":</td><td>"<span class="v" contenteditable spellcheck="false">Uppdateringen av den fasta programvaran misslyckades: {reason}</span>",</td></tr>
+<tr><td class="k">  "firmware.try_again":</td><td>"<span class="v" contenteditable spellcheck="false">Försök igen</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.waiting":</td><td>"<span class="v" contenteditable spellcheck="false">Väntar på robotdammsugaren...</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.done":</td><td>"<span class="v" contenteditable spellcheck="false">Uppdatering av den fasta programvaran slutfördes</span>",</td></tr>
+<tr><td class="k">  "firmware.install.step.unknown":</td><td>"<span class="v" contenteditable spellcheck="false">Arbetar...</span>",</td></tr>
+<tr><td class="k">  "provision.failed":</td><td>"<span class="v" contenteditable spellcheck="false">Misslyckades konfigurera robotdammsugaren</span>",</td></tr>
+<tr><td class="k">  "provision.gen23.failed":</td><td>"<span class="v" contenteditable spellcheck="false">Misslyckades konfigurera robotdammsugaren</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "provision.gen23.step1":</td><td>"<span class="v" contenteditable spellcheck="false">Ansluter till WiFi</span>",</td></tr>
+<tr><td class="k">  "provision.gen23.step2":</td><td>"<span class="v" contenteditable spellcheck="false">Kontrollerar anslutning till internet</span>",</td></tr>
+<tr><td class="k">  "provision.gen23.step3":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula tar över</span>",</td></tr>
+<tr><td class="k">  "provision.gen23.step4":</td><td>"<span class="v" contenteditable spellcheck="false">Stänger av roboten för en omstart</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.provision.gen23.wifi_password":</td><td>"<span class="v" contenteditable spellcheck="false">Roboten misslyckades ansluta till WiFi, kontrollera inställningarna och försök igen</span>",</td></tr>
+<tr><td class="k">  "error.provision.gen23.no_internet":</td><td>"<span class="v" contenteditable spellcheck="false">Roboten lyckades inte nå internet (8.8.8.8 och pool.ntp.org), kontrollera ditt nätverk och försök igen</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "error.provision.initialize":</td><td>"<span class="v" contenteditable spellcheck="false">Misslyckades konfigurera roboten. Se till att den är ansluten via USB och WiFi</span>",</td></tr>
+<tr><td class="k">  "error.provision.progress":</td><td>"<span class="v" contenteditable spellcheck="false">Misslyckades hämta status från roboten. Se till att den är ansluten via USB och WiFi</span>",</td></tr>
+<tr><td class="k">  "error.provision.script":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula-skriptet misslyckades köra. Spara loggarna och rapportera detta fel på Github eller i Discord!</span>",</td></tr>
+<tr><td class="k">  "error.provision.lock_exit":</td><td>"<span class="v" contenteditable spellcheck="false">Vacuula-skriptet avslutades oväntat, det är viktigt att starta om roboten mellan installationsförsök! Vänligen starta om och försöka igen.</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "provision.gen4.step1":</td><td>"<span class="v" contenteditable spellcheck="false">Ansluter till robotdammsugaren</span>",</td></tr>
+<tr><td class="k">  "provision.gen4.step2":</td><td>"<span class="v" contenteditable spellcheck="false">Laddar upp Vacuula</span>",</td></tr>
+<tr><td class="k">  "provision.gen4.instructions":</td><td>"<span class="v" contenteditable spellcheck="false">Klar! För att ansluta till servern, håll först startknappen nertryckt tills roboten stängs av.</span>",</td></tr>
+<tr class="gap"><td colspan="2"></td></tr>
+<tr><td class="k">  "finished.title":</td><td>"<span class="v" contenteditable spellcheck="false">&lt;i&gt;Biten&lt;/i&gt; av Vacuula</span>",</td></tr>
+<tr><td class="k">  "finished.subtitle":</td><td>"<span class="v" contenteditable spellcheck="false">Du kan nu koppla loss din robotdammsugare från datorn och starta upp den! Den bör snart därefter dyka upp i din &lt;a href='http://vacuula.local'&gt;Vacuula server&lt;/a&gt;!</span>"</td></tr>
+<tr><td class="b" colspan="2">}</td></tr></table>
