@@ -58,6 +58,7 @@ We offer no guarantee, __you try to revive your robot on your own risk__ - we ar
 ## Frequently asked questions
 
 - None so far (just released!)
+- READ THE DISCLAIMER, it has important information!
 - Yes *bitten* is used as a synonym to *installed* (or hacked/freed)
 
 ## I want to help with the development! (yes there are things to improve)
