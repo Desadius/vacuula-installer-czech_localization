@@ -91,9 +91,9 @@ class WifiScreen(QWidget):
         self._prewifi_disclaimerGen23.setWordWrap(True)
 
         layout.addWidget(self._prewifi_title_labelGen23)
-        layout.addSpacing(24)
+        layout.addSpacing(32)
         layout.addWidget(self._prewifi_conn_explGen23)
-        layout.addSpacing(24)
+        layout.addSpacing(32)
         layout.addWidget(self._prewifi_disclaimerGen23)
         layout.addSpacing(30)
 
@@ -205,6 +205,7 @@ class WifiScreen(QWidget):
             self._handle_wifi_continue_clicked
         )
 
+        # TODO: Something is wrong with the spacings
         layout.addWidget(self._wifi_title_labelGen23)
         layout.addSpacing(24)
         layout.addWidget(self._wifi_conn_explGen23)

@@ -1,5 +1,5 @@
 {
-  "String-version": "13",
+  "String-version": "14",
   "app.window_title": "Vacuula-ifiyer",
   "app.version": "Installer v{version}",
   "app.download_logs": "Download logs",
@@ -7,7 +7,7 @@
   "welcome.tagline": "Let's get your robot vacuum a new <i>life</i>",
   "welcome.continue": "Continue",
   "welcome.language_tooltip": "Change language",
-  "welcome.find_help": "?¿ <i>If you encounter any issues during installation, don't hesitate to get in touch on <a href='https://github.com/vacuula/installer'>GitHub</a>, <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> or ask your closest technical friend!<br><br>Missing a language? You can help! (see the github)</i>",
+  "welcome.find_help": "<i>If you encounter any issues during installation, don't hesitate to get in touch on <a href='https://github.com/vacuula/installer'>GitHub</a>, <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> or ask your closest technical friend!<br><br>Missing a language? You can help! (see the github)</i>",
 
   "disclaimer.title": "~ The disclaimer ~",
   "disclaimer.acknowledge": "I will <b>not disconnect the usb cable</b> before instructed to do so",
@@ -65,17 +65,15 @@
   "wifi.ssid.title": "Name of wifi network (SSID)",
   "wifi.ssid.gen23.title": "Select from available networks",
   "wifi.pass.title": "Password, can be blank",
-  "wifi.disclaimer": "🛈 <i>Note that the Neato devices supported by Vacuula do <b>not support</b> WPA3, make sure your network uses WPA2 or WPA2/WPA3 mixed mode. It is also advisable to connect the robot to 2.4GHz if available</i>",
+  "wifi.disclaimer": "🛈 <i>Note that the Neato devices supported by Vacuula do <b>not support</b> WPA3, make sure your network uses WPA2 or WPA2/WPA3 mixed mode. The robots also only support 2.4GHz WiFi</i>",
   "wifi.button": "Continue",
 
   "wifi.gen23.pre.title": "Connect to the robot's WiFi",
-  "wifi.gen23.pre.explanation": "Connect to WiFi network \"<b>Neato-{mac}</b>\" on this computer",
-  "wifi.gen23.pre.disclaimer": "Just like the original app, the Gen2/Gen3 robots need a setup via their own WiFi connection. The installer has automatically reset the network settings on the robot, so the robot wifi should show up soon! It may take up to a couple minutes, if you don't see it even after rescanning, try restarting the installer, the robot or reset network settings manually.",
+  "wifi.gen23.pre.explanation": "Connect this computer to the WiFi network \"<b>Neato-{mac}</b>\"",
+  "wifi.gen23.pre.disclaimer": "<i>Just like with the original app, your robot needs to be set-up via its own WiFi connection. A network with the above name should show up soon! If it does not appear within a couple minutes, try restarting your computers wifi, then the installer and lastly the robot</i>",
   "wifi.gen23.pre.try_connection": "I have connected!",
 
-  "wifi.gen23.explanation.title": "Your computer needs to connect to your robots WiFi for the installation procedure",
-  "wifi.gen23.explanation.body": "Please switch your computers WiFi connection to \"{robot-wifi-ssid}\". This is only needed during installation",
-  "wifi.gen23.disclaimer": "🛈 <i>Only networks visible to the robot can be selected. The Neato devices supported by Vacuula do <b>not support</b> WPA3, make sure your network uses WPA2 or WPA2/WPA3 mixed mode. It is also advisable to connect the robot to 2.4GHz if available</i>",
+  "wifi.gen23.disclaimer": "🛈 <i>Only networks visible to the robot can be selected. The Neato devices supported by Vacuula do <b>not support</b> WPA3, make sure your network uses WPA2 or WPA2/WPA3 mixed mode. The robots also only support 2.4GHz WiFi</i>",
   "wifi.gen23.scan_failed": "<i style='color:red'>Failed to scan for networks</i>",
   "wifi.gen23.none_found": "<i style='color:yellow'>Failed to find any networks</i>",
   "wifi.gen23.loading": "<i>Scanning for networks via robot</i>",
@@ -85,7 +83,8 @@
 
   "firmware.scan": "Checking if your robot's firmware is up-to-date",
   "firmware.title": "Firmware update",
-  "firmware.subtitle": "Vacuula supports the latest versions of the Neato firmware, this is what has been tested and is known to work. Here we will help you update to an supported version!",
+  "firmware.flair":"Your robot is feeling a bit out of the loop",
+  "firmware.subtitle": "Vacuula only supports the latest versions of the Neato firmware. Here we will help you update to a supported version!",
   "firmware.version": "Version {version}",
   "firmware.recommended": "(Recommended version)",
   "firmware.download": "Download firmware",
@@ -99,27 +98,27 @@
   "firmware.install.step.awaiting_ack": "Waiting for robot to acknowledge received firmware",
   "firmware.install.step.verifying": "Robot is verifying the firmware",
   "firmware.install.step.rebooting": "Rebooting robot",
-  "firmware.install.step.done.gen3": "Uploaded to robot, unfortunately we cannot verify at this stage if it worked, but if it did, the robot should reboot within 30 seconds (we will detect that), and then you can rerun the installer to continue the installation of Vacuula",
-  "firmware.install.step.done.gen4": "Uploaded to robot, it will continue flashing yellow, this means it is working. It may take up to 15-20 minutes. Keep the robot connected. Let it finish, the robot will automatically reboot when ready and then you can continue with the installation of Vacuula",
+  "firmware.install.step.done.gen3": "Uploaded to robot! If everything went well the robot should restart by itself within 30 seconds and you will be automatically presented with the next step.",
+  "firmware.install.step.done.gen4": "Uploaded to robot! It will continue flashing yellow during its update procedure which may take up to 15-20 minutes. Keep the robot connected to your computer and let it finish, we recommend some tea or coffe!",
 
-  "firmware.install.done.disconnected.gen3": "Robot disconnected after firmware update, that most likely means the update was successful",
-  "firmware.install.done.disconnected.gen3.detailed": "Please wait for the robot to reboot, the red error light will start flashing (as the dustbin is not in place), and then you can click below to restart the installation with supported firmware!",
-  "firmware.install.done.disconnected.gen4": "Robot disconnected after firmware update, that most likely means the update was successful",
-  "firmware.install.done.disconnected.gen4.detailed": "Please wait for the robot to reboot, it will do a rainbow of colours, play a sound and then show battery status and white buttons. Once that happens you can click below to restart the installation with supported firmware!",
-  "firmware.install.done.restart": "Restart installer to install Vacuula",
+  "firmware.install.done.disconnected.gen3": "Robot disconnected after firmware update which most likely means the update was successful",
+  "firmware.install.done.disconnected.gen3.detailed": "Please wait for the robot to start up; the red error light will start flashing (as the dustbin is not in place) which is expected and can be ignored. You will have to start over with some steps to continue the installation of Vacuula",
+  "firmware.install.done.disconnected.gen4": "Robot disconnected after firmware update which most likely means the update was successful",
+  "firmware.install.done.disconnected.gen4.detailed": "Please wait for the robot to start up, typically indicated by a sound. Once that happens you will have to start over with some steps to continue the installation of Vacuula",
+  "firmware.install.done.restart": "Start-over install with new firmware",
 
   "firmware.gen3.factory_reset_ack": "For the firmware update to be a guaranteed success, your robot needs to be factory reset. Please confirm that you have done so recently, or see below instructions.",
   "firmware.gen3.factory_reset_link": "How to factory reset",
-  "firmware.gen3.factory_reset.explanation": "Factory reset your Neato to garentee a successful update. Saying on this page will guide you though the process, do not disconnect the robot. Do the following to reset:",
-  "firmware.gen3.factory_reset.instructions": "1. Remove dustbin (blue dot shows powerbutton) \n 2. Press in the two bumper switches as the red arrows show \n 3. Hold down powerbutton until robot turns off, 10s \n 4. Release ONLY the powerbutton when lights are off \n 5. Press powerbutton once (while holding bumper switches) \n 6. Only release bumper when blue light stops flashing",
+  "firmware.gen3.factory_reset.explanation": "Factory reset your Neato to guarantee a successful update. Do not disconnect the robot from the computer and follow these steps:",
+  "firmware.gen3.factory_reset.instructions": "<i>(blue dot shows powerbutton)</i><br><br>1. Remove dustbin, this should already be the case <br> 2. Press in the two bumper switches as the red arrows show <br> 3. Hold down powerbutton until robot turns off, 10s <br> 4. Release ONLY the powerbutton when lights are off <br> 5. Press powerbutton once (while still holding the bumper switches) <br> 6. Only release bumper when blue light stops flashing",
   "firmware.gen3.factory_reset.disconnected": "You are making progress! Robot disconnected, continue holding bumper switches and press powerbutton once!",
   "firmware.gen3.factory_reset.disconnected.detailed": "When you have pressed the powerbutton the robot will start flashing with a blue light, you may release the bumper when the blue light stops. When the robot is fully started (red error will flash because of no dustbin), click below to restart the installer and flash the latest firmware!",
   "firmware.gen3.factory_reset.back": "Back to versions",
   "firmware.gen3.factory_reset.restart": "Once started, click here to restart installer and install latest firmware",
   
-  "firmware.gen3-4.5.3.description": "The latest firmware publicly released by Neato. This is the recommended version for Vacuula.",
-  "firmware.gen3-4.6.0.description": "If your robot is having lidar issues, this firmware was made by Neato for robots brought in for repair. Only choose this one if you are having problems with the lidar, from our testing and analysis it is pretty much identical to 4.5.3.",
-  "firmware.gen4-1.7.0.description": "The latest firmware publicly released by Neato. This is the recommended version for Vacuula.",
+  "firmware.gen3-4.5.3.description": "<i>The latest firmware publicly released by Neato.</i>",
+  "firmware.gen3-4.6.0.description": "<i>If your robot is having lidar issues, this firmware was made by Neato for robots brought in for repair. Only choose this one if you are having problems with the lidar.</i>",
+  "firmware.gen4-1.7.0.description": "<i>The latest firmware publicly released by Neato.</i>",
 
   "install.launching": "Installing Vacuula in {model}",
 
@@ -152,7 +151,7 @@
 
   "provision.gen4.step1": "Connecting to robot",
   "provision.gen4.step2": "Uploading Vacuula",
-  "provision.gen4.instructions": "To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until is has fully booted up.",
+  "provision.gen4.instructions": "To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until is has fully started.",
 
   "finished.title": "Robot <i>bitten</i> by Vacuula",
   "finished.subtitle": "You may now disconnect the robot from your computer and turn the robot on! Then please wait for the robot to show up in your <a href='http://vacuula.local'>Vacuula server!</a>"
