@@ -47,8 +47,8 @@
   "error.gen4.unreadable": "Unable to read firmware version",
   "error.gen23.reset": "Network reset failed",
   "error.generic.unexpected": "An unexpected error occurred",
-  "error.generic.help": "🛈 <i> Make sure the robot is powered on and connected to your computer via USB. If the problem persists, try restarting the installer and the robot. If it refuses to work, ask for help on Discord!</i>",
-  "error.firmware.help": "🛈 <i> Follow the guide on <a href='https://github.com/vacuula/installer'>GitHub</a> on how to update your robot to a supported firmware version or ask for help on Discord. </i>",
+  "error.generic.help": "🛈 <i> Make sure the robot is powered on and connected to your computer via USB. If the problem persists, try restarting the installer and the robot. If it refuses to work, ask for help in the Discord!</i>",
+  "error.firmware.help": "🛈 <i> Follow the guide on <a href='https://github.com/vacuula/installer'>GitHub</a> on how to update your robot to a supported firmware version or ask for help in the Discord. </i>",
 
   "error.gen2.unsupported": "Botvac Connected is not yet supported",
   "error.gen2.unsupported.detailed": "Unfortunately Vacuula does not yet support the second generation Botvac Connected, but in due time we might manage to add support for it as well! Please get in touch so we can gauge interest between features people want!",
@@ -146,7 +146,7 @@
 
   "error.provision.initialize": "Failed to initialise the robot. Keep connected via USB and Wi-Fi",
   "error.provision.progress": "Unable to get progress status from robot. Keep connected via USB and Wi-Fi",
-  "error.provision.script": "The Vacuula script has failed to run. Please download the logs and report this issue on GitHub or on Discord!",
+  "error.provision.script": "The Vacuula script has failed to run. Please download the logs and report this issue on GitHub or in the Discord!",
   "error.provision.lock_exit": "The Vacuula script has ended unexpectedly, probably because robot was not restarted before starting. Please restart the robot and try again!",
 
   "provision.gen4.step1": "Connecting to robot",
