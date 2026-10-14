@@ -1,5 +1,5 @@
 {
-  "String-version": "11",
+  "String-version": "14",
   "app.window_title": "Vacuula-ifierare",
   "app.version": "Programversion v{version}",
   "app.download_logs": "Spara loggarna",
@@ -7,7 +7,7 @@
   "welcome.tagline": "Dags att ge din robot nytt <i>liv</i>",
   "welcome.continue": "Fortsätt",
   "welcome.language_tooltip": "Byt språk",
-  "welcome.find_help": "?¿ <i>Tveka inte att höra av dig på <a href='https://github.com/vacuula/installer'>GitHub</a> eller <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> om du möter problem under installationen (eller fråga närmsta tekniskt-lagda vän)!<br><br>Saknar du ett språk? Du kan hjälpa ändra på saken (sväng förbi på github)!</i>",
+  "welcome.find_help": "<i>Tveka inte att höra av dig på <a href='https://github.com/vacuula/installer'>GitHub</a> eller <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> om du möter problem under installationen (eller fråga närmsta tekniskt-lagda vän)!<br><br>Saknar du ett språk? Du kan hjälpa ändra på saken (sväng förbi på github)!</i>",
 
   "disclaimer.title": "~ Det små<i>(stor?)</i>stilta ~",
   "disclaimer.acknowledge": "Jag kommer <b>inte koppla loss usb-kabeln</b> innan jag meddelas att det är o.k",
@@ -65,17 +65,15 @@
   "wifi.ssid.title": "WiFi-nätverkets namn (SSID)",
   "wifi.ssid.gen23.title": "Välj bland tillgängliga nätverk",
   "wifi.pass.title": "Lösenord, kan vara tomt",
-  "wifi.disclaimer": "🛈 <i>Notera att Neato-robotarna som stöds av Vacuula <b>inte stödjer</b> WPA3, se till att nätverket den ansluter till använder WPA2 eller blandat WPA2/WPA3 läge. Det är även klokt att ansluta roboten till 2,4GHz om tillgängligt.</i>",
+  "wifi.disclaimer": "🛈 <i>Notera att Neato-robotarna som stöds av Vacuula <b>inte stödjer</b> WPA3, se till att nätverket den ansluter till använder WPA2 eller blandat WPA2/WPA3 läge. De stödjer även endast 2,4Ghz WiFi.</i>",
   "wifi.button": "Fortsätt",
 
   "wifi.gen23.pre.title": "Anslut till din robots WiFi",
-  "wifi.gen23.pre.explanation": "Anslut denna dator till \"<b>Neato-{mac}</b>\" WiFi-nätverket",
-  "wifi.gen23.pre.disclaimer": "Precis som original-appen behöver generation 2 & 3 robotar konfigureras genom deras egna WiFi-nätverk. Installationsprogrammet har automatiskt återställt dess nätverk, så det borde snart dyka upp i din dators lista på tillgängliga anslutningar! Om det inte syns till efter några minuter, prova starta om programmet, roboten eller återställ nätverket manuellt om du har manualen kvar.",
+  "wifi.gen23.pre.explanation": "Anslut denna dator till WiFi-nätverket \"<b>Neato-{mac}</b>\"",
+  "wifi.gen23.pre.disclaimer": "<i>Precis som med original-appen behöver din robot konfigureras genom dess egna WiFi-nätverk. Ett nätverk med ovan namn bör snart dyka upp i din dators lista på tillgängliga anslutningar! Om det inte syns till efter några minuter, prova först starta om din dators WiFi, sen installationsprogrammet och till sist roboten.</i>",
   "wifi.gen23.pre.try_connection": "Jag har anslutit!",
 
-  "wifi.gen23.explanation.title": "Din dator måste anslutas till robotens egna WiFi-nätverk för installations-proceduren",
-  "wifi.gen23.explanation.body": "Vänligen byt din dators WiFi-anslutning till robotdammsugarens egna nätverk: \"{robot-wifi-ssid}\". Detta är endast nödvändigt under installations-proceduren",
-  "wifi.gen23.disclaimer": "🛈 <i>Man kan endast välja bland nätverk som roboten själv ser. Neato-robotarna som stöds av Vacuula <b>stödjer inte</b> WPA3, se till att nätverket den ansluter till använder WPA2 eller blandat WPA2/WPA3 läge. Det är även klokt att ansluta roboten till 2,4GHz om tillgängligt.</i>",
+  "wifi.gen23.disclaimer": "🛈 <i>Man kan endast välja bland nätverk som roboten själv ser. Neato-robotarna som stöds av Vacuula <b>stödjer inte</b> WPA3, se till att nätverket den ansluter till använder WPA2 eller blandat WPA2/WPA3 läge. De stödjer även endast 2,4Ghz WiFi.</i>",
   "wifi.gen23.scan_failed": "<i style='color:red'>Kunde inte söka efter nätverk</i>",
   "wifi.gen23.none_found": "<i style='color:yellow'>Hittade inga nätverk</i>",
   "wifi.gen23.loading": "<i>Roboten söker efter nätverk</i>",
@@ -85,6 +83,7 @@
 
   "firmware.scan": "Kontrollerar om din robots fasta programvara är den senaste versionen",
   "firmware.title": "Uppdatera fast programvara",
+  "firmware.flair":"Din robot känner att den inte är med på det senaste",
   "firmware.subtitle": "Vacuula stödjer de senaste versionerna av den fasta programvaran, endast de har testats fungera. Här hjälper vi dig uppdatera till en version som stöds!",
   "firmware.version": "Version {version}",
   "firmware.recommended": "(Rekommenderad version)",

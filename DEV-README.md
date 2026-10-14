@@ -109,6 +109,7 @@ flowchart TD
 - Radio buttons larger in firmware selector
 - When restarting after firmware update, skip welcome and disclaimer pages __<-- prio!__
 - finished text should show vacuula.local OR the manually given ip
+- Set up webplate or tolgee translation is a mess otherwise
 
 
 ## Run it as dev
