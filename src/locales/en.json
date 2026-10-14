@@ -110,9 +110,9 @@
   "firmware.gen3.factory_reset_ack": "For the firmware update to be a guaranteed success, your robot needs to be factory reset. Please confirm that you have done so recently, or see below instructions.",
   "firmware.gen3.factory_reset_link": "How to factory reset",
   "firmware.gen3.factory_reset.explanation": "Factory reset your Neato to guarantee a successful update. Do not disconnect the robot from the computer and follow these steps:",
-  "firmware.gen3.factory_reset.instructions": "<i>(blue dot shows powerbutton)</i><br><br>1. Remove dustbin, this should already be the case <br> 2. Press in the two bumper switches as the red arrows show <br> 3. Hold down powerbutton until robot turns off, 10s <br> 4. Release ONLY the powerbutton when lights are off <br> 5. Press powerbutton once (while still holding the bumper switches) <br> 6. Only release bumper when blue light stops flashing",
-  "firmware.gen3.factory_reset.disconnected": "You are making progress! Robot disconnected, continue holding bumper switches and press powerbutton once!",
-  "firmware.gen3.factory_reset.disconnected.detailed": "When you have pressed the powerbutton the robot will start flashing with a blue light, you may release the bumper when the blue light stops. When the robot is fully started (red error will flash because of no dustbin), click below to restart the installer and flash the latest firmware!",
+  "firmware.gen3.factory_reset.instructions": "<i>(blue dot shows power button)</i><br><br>1. Remove dustbin, this should already be the case <br> 2. Press in the two bumper switches as the red arrows show <br> 3. Hold down power button until robot turns off, 10s <br> 4. Release ONLY the power button when lights are off <br> 5. Press power button once (while still holding the bumper switches) <br> 6. Only release bumper when blue light stops flashing",
+  "firmware.gen3.factory_reset.disconnected": "You are making progress! Robot disconnected, continue holding bumper switches and press power button once!",
+  "firmware.gen3.factory_reset.disconnected.detailed": "When you have pressed the power button the robot will start flashing with a blue light, you may release the bumper when the blue light stops. When the robot is fully started (red error will flash because of no dustbin), click below to restart the installer and flash the latest firmware!",
   "firmware.gen3.factory_reset.back": "Back to versions",
   "firmware.gen3.factory_reset.restart": "Once started, click here to restart installer and install latest firmware",
   
@@ -141,10 +141,10 @@
   "provision.gen23.step3": "Vacuula takes over",
   "provision.gen23.step4": "Shutting down for a restart",
 
-  "error.provision.gen23.wifi_password": "Robot failed to connect to WiFi, please check your password and try again",
+  "error.provision.gen23.wifi_password": "Robot failed to connect to network, check settings and please try again",
   "error.provision.gen23.no_internet": "Robot connected to WiFi but failed to reach the internet (8.8.8.8 and pool.ntp.org), please check your network and try again",
 
-  "error.provision.initialize": "Failed to initialize the robot. Keep connected via USB and WiFi",
+  "error.provision.initialize": "Failed to initialise the robot. Keep connected via USB and WiFi",
   "error.provision.progress": "Unable to get progress status from robot. Keep connected via USB and WiFi",
   "error.provision.script": "The Vacuula script has failed to run. Please download the logs and report this issue on github or in the discord!",
   "error.provision.lock_exit": "The vacuula script has ended unexpectedly, probably because robot was not restarted before starting. Please restart the robot and try again!",
