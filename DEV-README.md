@@ -102,6 +102,12 @@ flowchart TD
 - Figure out why gen4 does not work on mac __<-- prio!__
 - Show/hide passwordfield (eye) wifisection(s)
 - Clean up the firmware.install.done.disconnected. error page building to a ifstatement, removing the duplicate strings in the lang.json as well (same for firmware.genx-x.x.x.description)
+- gen23 feedback if people click "i have connected" when they havent on prewifi page
+- "🛈" ruins rowspacing in details texts
+- Skip firmware seelction if only one option
+- Preselect recommended firmware
+- Radio buttons larger in firmware selector
+- When restarting after firmware update, skip welcome and disclaimer pages __<-- prio!__
 
 
 ## Run it as dev

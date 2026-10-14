@@ -109,6 +109,12 @@ class FirmwareUpdateScreen(QWidget):
         self._title.setWordWrap(True)
         outer.addWidget(self._title)
 
+        self._flair_comment = QLabel(self)
+        self._flair_comment.setObjectName("wifiExplanationLabel")
+        self._flair_comment.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        self._flair_comment.setWordWrap(True)
+        outer.addWidget(self._flair_comment)
+
         self._subtitle = QLabel(self)
         self._subtitle.setObjectName("serversearchBodyLabel")
         self._subtitle.setAlignment(Qt.AlignmentFlag.AlignHCenter)
@@ -246,7 +252,7 @@ class FirmwareUpdateScreen(QWidget):
         self._retry_kind = None
         self._progress_bar.setValue(0)
         self._progress_bar.setRange(0, 100)
-        self._button_group.setExclusive(False)
+        self._button_group.setExclusive(False) #TODO why this?
         for option in self._options:
             option.radio.setChecked(False)
         self._button_group.setExclusive(True)
@@ -390,6 +396,7 @@ class FirmwareUpdateScreen(QWidget):
 
     def _retranslate(self) -> None:
         self._title.setText(self._translator.tr("firmware.title"))
+        self._flair_comment.setText(self._translator.tr("firmware.flair"))
         self._subtitle.setText(self._translator.tr("firmware.subtitle"))
         self._factory_reset_ack_caption.setText(self._translator.tr("firmware.gen3.factory_reset_ack"))
         self._factory_reset_link_button.setText(self._translator.tr("firmware.gen3.factory_reset_link"))

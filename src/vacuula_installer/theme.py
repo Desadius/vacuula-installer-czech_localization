@@ -110,6 +110,10 @@ QRadioButton::indicator, QCheckBox::indicator {{
     background: rgba(255, 255, 255, 14);
 }}
 
+QRadioButton::indicator#firmwareOptionRadio  {{
+    border-radius: 8px; 
+}}
+
 QRadioButton::indicator {{
     border-radius: 6px;   /* half of 18 */
 }}
@@ -148,6 +152,7 @@ QRadioButton::indicator:disabled, QCheckBox::indicator:disabled {{
 QRadioButton#firmwareOptionRadio {{
     font-size: 16px;
     font-weight: 600;
+    spacing: 8px;
 }}
 
 QToolButton#flagButton {{
