@@ -108,6 +108,7 @@ flowchart TD
 - Preselect recommended firmware
 - Radio buttons larger in firmware selector
 - When restarting after firmware update, skip welcome and disclaimer pages __<-- prio!__
+- finished text should show vacuula.local OR the manually given ip
 
 
 ## Run it as dev

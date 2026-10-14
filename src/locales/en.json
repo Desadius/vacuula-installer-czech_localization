@@ -83,7 +83,7 @@
 
   "firmware.scan": "Checking if your robot's firmware is up-to-date",
   "firmware.title": "Firmware update",
-  "firmware.flair":"Your robot is feeling a bit old",
+  "firmware.flair":"Your robot is feeling a bit out of the loop",
   "firmware.subtitle": "Vacuula only supports the latest versions of the Neato firmware. Here we will help you update to a supported version!",
   "firmware.version": "Version {version}",
   "firmware.recommended": "(Recommended version)",
@@ -99,18 +99,18 @@
   "firmware.install.step.verifying": "Robot is verifying the firmware",
   "firmware.install.step.rebooting": "Rebooting robot",
   "firmware.install.step.done.gen3": "Uploaded to robot! If everything went well the robot should restart by itself within 30 seconds and you will be automatically presented with the next step.",
-  "firmware.install.step.done.gen4": "Uploaded to robot! It will continue flashing yellow during its update procedure which may take up to 15-20 minutes. Keep the robot connected and let it finish, the robot will automatically restart when ready at which point you will be presented with the next step",
+  "firmware.install.step.done.gen4": "Uploaded to robot! It will continue flashing yellow during its update procedure which may take up to 15-20 minutes. Keep the robot connected to your computer and let it finish, we recommend some tea or coffe!",
 
-  "firmware.install.done.disconnected.gen3": "Robot disconnected after firmware update, that most likely means the update was successful",
-  "firmware.install.done.disconnected.gen3.detailed": "Please wait for the robot to restart, the red error light will start flashing (as the dustbin is not in place) which is expected and can be ignored. You will have to start over with some steps to continue the installation of Vacuula",
-  "firmware.install.done.disconnected.gen4": "Robot disconnected after firmware update, that most likely means the update was successful",
-  "firmware.install.done.disconnected.gen4.detailed": "Please wait for the robot to reboot, it will do a rainbow of colours, play a sound and then show battery status and white buttons. Once that happens you will have to start over with some steps to continue the installation of Vacuula",
+  "firmware.install.done.disconnected.gen3": "Robot disconnected after firmware update which most likely means the update was successful",
+  "firmware.install.done.disconnected.gen3.detailed": "Please wait for the robot to start up; the red error light will start flashing (as the dustbin is not in place) which is expected and can be ignored. You will have to start over with some steps to continue the installation of Vacuula",
+  "firmware.install.done.disconnected.gen4": "Robot disconnected after firmware update which most likely means the update was successful",
+  "firmware.install.done.disconnected.gen4.detailed": "Please wait for the robot to start up, typically indicated by a sound. Once that happens you will have to start over with some steps to continue the installation of Vacuula",
   "firmware.install.done.restart": "Start-over install with new firmware",
 
   "firmware.gen3.factory_reset_ack": "For the firmware update to be a guaranteed success, your robot needs to be factory reset. Please confirm that you have done so recently, or see below instructions.",
   "firmware.gen3.factory_reset_link": "How to factory reset",
-  "firmware.gen3.factory_reset.explanation": "Factory reset your Neato to garentee a successful update. Saying on this page will guide you though the process, do not disconnect the robot. Do the following to reset:",
-  "firmware.gen3.factory_reset.instructions": "1. Remove dustbin (blue dot shows powerbutton) \n 2. Press in the two bumper switches as the red arrows show \n 3. Hold down powerbutton until robot turns off, 10s \n 4. Release ONLY the powerbutton when lights are off \n 5. Press powerbutton once (while holding bumper switches) \n 6. Only release bumper when blue light stops flashing",
+  "firmware.gen3.factory_reset.explanation": "Factory reset your Neato to guarantee a successful update. Do not disconnect the robot from the computer and follow these steps:",
+  "firmware.gen3.factory_reset.instructions": "<i>(blue dot shows powerbutton)</i><br><br>1. Remove dustbin, this should already be the case <br> 2. Press in the two bumper switches as the red arrows show <br> 3. Hold down powerbutton until robot turns off, 10s <br> 4. Release ONLY the powerbutton when lights are off <br> 5. Press powerbutton once (while still holding the bumper switches) <br> 6. Only release bumper when blue light stops flashing",
   "firmware.gen3.factory_reset.disconnected": "You are making progress! Robot disconnected, continue holding bumper switches and press powerbutton once!",
   "firmware.gen3.factory_reset.disconnected.detailed": "When you have pressed the powerbutton the robot will start flashing with a blue light, you may release the bumper when the blue light stops. When the robot is fully started (red error will flash because of no dustbin), click below to restart the installer and flash the latest firmware!",
   "firmware.gen3.factory_reset.back": "Back to versions",
@@ -146,7 +146,7 @@
 
   "provision.gen4.step1": "Connecting to robot",
   "provision.gen4.step2": "Uploading Vacuula",
-  "provision.gen4.instructions": "To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until is has fully booted up.",
+  "provision.gen4.instructions": "To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until is has fully started.",
 
   "finished.title": "Robot <i>bitten</i> by Vacuula",
   "finished.subtitle": "You may now disconnect the robot from your computer and turn the robot on! Then please wait for the robot to show up in your <a href='http://vacuula.local'>Vacuula server!</a>"
