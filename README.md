@@ -57,7 +57,7 @@ We offer no guarantee, __you try to revive your robot on your own risk__ - we ar
 
 ## Frequently asked questions
 
-- Robot not detected on Linux and you have a gen3 device? You need to add yourself to the group dialout `sudo usermod -aG dialout <username>` then log in and out
+- Robot not detected on Linux and you have a gen3 device? You need to add yourself to the group dialout `sudo usermod -aG dialout <username>` and reboot your computer
 - READ THE DISCLAIMER, it has important information!
 - Yes *bitten* is used as a synonym to *installed* (or hacked/freed)
 
