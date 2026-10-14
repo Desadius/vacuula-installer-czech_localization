@@ -145,6 +145,11 @@
   "error.provision.gen23.wifi_password": "Robot failed to connect to WiFi, please check your password and try again",
   "error.provision.gen23.no_internet": "Robot connected to WiFi but failed to reach the internet (8.8.8.8 and pool.ntp.org), please check your network and try again",
 
+  "error.provision.initialize": "Failed to initialize the robot. Keep connected via USB and WiFi",
+  "error.provision.progress": "Unable to get progress status from robot. Keep connected via USB and WiFi",
+  "error.provision.script": "The Vacuula script has failed to run. Please download the logs and report this issue on github or in the discord!",
+  "error.provision.lock_exit": "The vacuula script has ended unexpectedly, probably because robot was not restarted before starting. Please restart the robot and try again!",
+
   "provision.gen4.step1": "Connecting to robot",
   "provision.gen4.step2": "Uploading Vacuula",
   "provision.gen4.instructions": "To connect to the server, hold down the power button until your robot turns off and wait a few seconds. Then restart the robot and wait until is has fully booted up.",

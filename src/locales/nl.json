@@ -142,6 +142,14 @@
   "provision.gen23.milestone.installing": "Vacuula wordt geïnstalleerd",
   "provision.gen23.milestone.finished": "Vacuula-script voltooid",
 
+  "error.provision.gen23.wifi_password": "De robot kon geen verbinding maken met WiFi, controleer je wachtwoord en probeer het opnieuw",
+  "error.provision.gen23.no_internet": "De robot is verbonden met WiFi, maar kon het internet niet bereiken (8.8.8.8 en pool.ntp.org), controleer je netwerk en probeer het opnieuw",
+  
+  "error.provision.initialize": "Het initialiseren van de robot is mislukt, blijf verbonden via USB en WiFi",
+  "error.provision.progress": "Kan de voortgangsstatus van de robot niet ophalen, blijf verbonden via USB en WiFi",
+  "error.provision.script": "Het Vacuula-script kon niet worden uitgevoerd, download de logbestanden en meld dit probleem op GitHub of in de Discord!",
+  "error.provision.lock_exit": "Het Vacuula-script is onverwacht gestopt, waarschijnlijk omdat de robot niet opnieuw was opgestart voordat je begon. Start de robot opnieuw op en probeer het nog eens!",
+
   "provision.gen4.step1": "Verbinden met robot",
   "provision.gen4.step2": "Vacuula uploaden",
   "provision.gen4.instructions": "Om verbinding te maken met de server, houd je de aan/uit-knop ingedrukt totdat je robot afsluit. Wacht een paar seconden en start de robot daarna opnieuw op.",

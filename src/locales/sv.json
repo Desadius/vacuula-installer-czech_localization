@@ -132,6 +132,14 @@
   "provision.gen23.milestone.installing": "Vacuula installeras",
   "provision.gen23.milestone.finished": "Vacuula har <i>bitit</i> färdigt",
 
+  "error.provision.gen23.wifi_password": "Roboten misslyckades ansluta till WiFi, kontrollera ditt lösenord och försök igen",
+  "error.provision.gen23.no_internet": "Roboten lyckades inte nå internet (8.8.8.8 och pool.ntp.org), kontrollera ditt nätverk och försök igen",
+
+  "error.provision.initialize": "Misslyckades konfigurera roboten. Se till att den är ansluten via USB och WiFi",
+  "error.provision.progress": "Misslyckades hämta status från roboten. Se till att den är ansluten via USB och WiFi",
+  "error.provision.script": "Vacuula-skriptet misslyckades köra. Spara loggarna och rapportera detta fel på github eller i discord!",
+  "error.provision.lock_exit": "Vacuula-skriptet avslutades oväntat, det är viktigt att starta om roboten mellan installationsförsök! Vänligen starta om och försöka igen.",
+
   "provision.gen4.step1": "Ansluter till robotdammsugaren",
   "provision.gen4.step2": "Laddar upp Vacuula",
   "provision.gen4.instructions": "Klar! För att ansluta till servern, håll först startknappen nertryckt tills roboten stängs av.",

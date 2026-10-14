@@ -136,6 +136,14 @@
   "provision.gen4.step2": "A fazer o upload do Vacuula",
   "provision.gen4.instructions": "Para ligar ao servidor, mantém carregado o botão de ligar até o robot se desligar e espera alguns segundos. Depois volta a ligar o robot e espera até ele arrancar por completo.",
 
+  "error.provision.gen23.wifi_password": "O robot não se conseguiu ligar ao Wi-Fi. Verifique a sua palavra-passe e tente novamente",
+  "error.provision.gen23.no_internet": "O robot está ligado ao Wi-Fi, mas não conseguiu aceder à internet (8.8.8.8 e pool.ntp.org). Verifique a sua rede e tente novamente",
+
+  "error.provision.initialize": "Falha ao reiniciar o robot. Mantenha as ligações USB e Wi-Fi ativas",
+  "error.provision.progress": "Não foi possível obter o estado de progresso do robot. Mantenha as ligações USB e Wi-Fi ativas",
+  "error.provision.script": "A execução do script Vacuula falhou. Por favor, descarregue os logs e comunique o problema no GitHub ou no Discord!",
+  "error.provision.lock_exit": "O script Vacuula foi terminado inesperadamente, provavelmente porque o robot não foi reiniciado antes da execução. Por favor, reinicie o robot e tente novamente!",
+
   "finished.title": "Robot <i>mordido</i> pelo Vacuula",
   "finished.subtitle": "Já podes desligar o cabo USB e ligar o robot! Depois espera que o robot apareça no teu <a href='http://vacuula.local'>servidor Vacuula!</a>",
 

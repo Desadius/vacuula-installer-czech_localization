@@ -37,6 +37,10 @@ MILESTONES: tuple[Milestone, ...] = (
     Milestone("[[vacuula-installer-finished]]", "provision.gen23.milestone.finished", step=4, final=True),
 )
 
+SCRIPT_FAILED = "[[vacuula-installer-failed]]" # detect when fail
+LOCK_EXIT = "[[vacuula-installer-lock-exit]]" # script should not run multiple times
+MAX_LOCK_EXIT_BEFORE_FAIL = 5 # if more then this many lock exit, then user never rebooted their robot like they were asked...
+
 logger = logging.getLogger(__name__)
 
 
@@ -59,6 +63,7 @@ class Gen23Provisioner(QObject):
         self._active = False
         self._busy = False
         self._failures = 0
+        self._lock_exit_count = 0
         self._serial_driven = False          # True once a milestone has taken over
         self._remaining_milestones = list(MILESTONES)
 
@@ -73,6 +78,7 @@ class Gen23Provisioner(QObject):
         self._active = True
         self._busy = False
         self._failures = 0
+        self._lock_exit_count = 0
         self._serial_driven = False
         self._remaining_milestones = list(MILESTONES)
 
@@ -146,6 +152,16 @@ class Gen23Provisioner(QObject):
     def _on_serial_line(self, line: str) -> None:
         self.scriptLogLine.emit(line)
         logger.debug("serial line: %s", line)
+        if SCRIPT_FAILED in line:
+            self.stop()
+            self.provisioningFailed.emit("script")
+            return
+        if LOCK_EXIT in line:
+            self._lock_exit_count += 1
+            if self._lock_exit_count > MAX_LOCK_EXIT_BEFORE_FAIL:
+                self.stop()
+                self.provisioningFailed.emit("lock_exit")
+                return
         for milestone in list(self._remaining_milestones):
             if milestone.marker in line:
                 self._remaining_milestones.remove(milestone)

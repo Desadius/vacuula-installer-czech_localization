@@ -5,16 +5,12 @@ set -eux
 echo "[[vacuula-installer-started]]" > /dev/serusb1
 
 # Trap errors and log failures
-trap 'log "FAILED: Script error occurred"' ERR
-
-# Create timestamp
-TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-MARKER=/tmp/vacuula_init_started
+trap 'log "[[vacuula-installer-failed]]: Script error occurred"' ERR
 
 log () {
     echo "[vacuula-init] $1" >> /emmc/vacuula-init.log
     echo "[vacuula-init] $1" > /dev/ser1
-    echo "[vacuula-init] $1" > /dev/serusb1 # should the installer try to read the logs?
+    echo "[vacuula-init] $1" > /dev/serusb1
 }
 
 # run once
@@ -25,6 +21,7 @@ if echo $$ > /tmp/vacuula_init_lock 2>/dev/null; then
     set +C  # Disable noclobber
 else
     log "Lock already held, exiting"
+    echo "[[vacuula-installer-lock-exit]]" > /dev/serusb1
     set +C  # Disable noclobber
     exit 0
 fi
@@ -62,6 +59,7 @@ qdbc -d /dev/qdb/systemdb "INSERT OR REPLACE INTO StringSettings( Name, Value ) 
 NEW_VALUE=$(qdbc -f data -d /dev/qdb/systemdb "SELECT Value FROM StringSettings WHERE Name='UTCOFFSET';")
 if [ "$NEW_VALUE" != "STD-0:00DST-0:00;{ /emmc/vacuula/vacuula.sh start_mod &}" ]; then
     log "Failed to set UTCOFFSET, got: $NEW_VALUE"
+    echo "[[vacuula-installer-failed]]" > /dev/serusb1
     exit 1
 else
     log "UTCOFFSET set successfully to: $NEW_VALUE"
@@ -73,6 +71,7 @@ qdbc -d /dev/qdb/systemdb "INSERT OR REPLACE INTO IntegerSettings( Name, Value )
 NEW_VALUE=$(qdbc -f data -d /dev/qdb/systemdb "SELECT Value FROM IntegerSettings WHERE Name='BEEHIVELINKED';")
 if [ "$NEW_VALUE" != "1" ]; then
     log "Failed to set BEEHIVELINKED, got: $NEW_VALUE"
+    echo "[[vacuula-installer-failed]]" > /dev/serusb1
     exit 1
 else
     log "BEEHIVELINKED set successfully to: $NEW_VALUE"
@@ -84,6 +83,7 @@ qdbc -d /dev/qdb/systemdb "INSERT OR REPLACE INTO IntegerSettings( Name, Value )
 NEW_VALUE=$(qdbc -f data -d /dev/qdb/systemdb "SELECT Value FROM IntegerSettings WHERE Name='APDESIRED';")
 if [ "$NEW_VALUE" != "0" ]; then
     log "Failed to set APDESIRED, got: $NEW_VALUE"
+    echo "[[vacuula-installer-failed]]" > /dev/serusb1
     exit 1
 else
     log "APDESIRED set successfully to: $NEW_VALUE"
@@ -97,6 +97,7 @@ qdbc -d /dev/qdb/systemdb "INSERT OR REPLACE INTO StringSettings( Name, Value ) 
 NEW_VALUE=$(qdbc -f data -d /dev/qdb/systemdb "SELECT Value FROM StringSettings WHERE Name='BEEHIVESERVER';")
 if [ "$NEW_VALUE" != "$IP_TO_USE" ]; then
     log "Failed to set BEEHIVESERVER, got: $NEW_VALUE"
+    echo "[[vacuula-installer-failed]]" > /dev/serusb1
     exit 1
 else
     log "BEEHIVESERVER set successfully to: $NEW_VALUE"
@@ -107,6 +108,7 @@ qdbc -d /dev/qdb/systemdb "INSERT OR REPLACE INTO StringSettings( Name, Value ) 
 NEW_VALUE=$(qdbc -f data -d /dev/qdb/systemdb "SELECT Value FROM StringSettings WHERE Name='NUCLEOSERVER';")
 if [ "$NEW_VALUE" != "$IP_TO_USE" ]; then
     log "Failed to set NUCLEOSERVER, got: $NEW_VALUE"
+    echo "[[vacuula-installer-failed]]" > /dev/serusb1
     exit 1
 else
     log "NUCLEOSERVER set successfully to: $NEW_VALUE"
@@ -126,8 +128,8 @@ log "make the mod"
 # check if keys exist and delete them to force regeneration
 if [ -f /emmc/keys/robot_keys/robot_rsa ]; then
     log "delete recently genereted keys to they get regenerated"
-    rm /emmc/keys/robot_keys/robot_rsa
-    rm /emmc/keys/robot_keys/robot_rsa.pub.pem
+    rm -f /emmc/keys/robot_keys/robot_rsa
+    rm -f /emmc/keys/robot_keys/robot_rsa.pub.pem
     log "keys deleted, they should be regenerated on next boot"
 else
     log "No existing keys found, skipping deletion"
