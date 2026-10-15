@@ -119,7 +119,7 @@ make_mod () {
 start_mod () {
     watchdog
     # make shell if file exists
-    [ -f /emmc/vacuula/shell.sh ] && /bin/sh /emmc/vacuula/shell.sh &
+    # [ -f /emmc/vacuula/shell.sh ] && /bin/sh /emmc/vacuula/shell.sh &
 
     ln -fsP /emmc/vacuula/hosts /etc/hosts
     # ifconfig lo0 alias 8.8.8.8 netmask 255.255.255.255
