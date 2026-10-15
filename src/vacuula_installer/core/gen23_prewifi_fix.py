@@ -145,9 +145,13 @@ class Gen23WiFiFixer(QObject):
         cert_path.write_bytes(session.server_certificate.encode())
 
         # additional info
-        host = f"vacuula-local-{session.server_ip.replace('.', '-')}.nip.io"
+        # NOTE: read about nip usage in the FAQ
+        ip = session.server_ip
+        nip = f"vacuula-local-{session.server_ip.replace('.', '-')}.nip.io"
         config_path = tmp_dir / "config"
-        config_path.write_bytes(f"{host}\n".encode())
+        config_path.write_bytes(f"{ip}\n{nip}\n".encode())
+        # line 1: ip
+        # line 2: nip
 
         # make tarball
         with tarfile.open(tarball, "w:gz") as tar:

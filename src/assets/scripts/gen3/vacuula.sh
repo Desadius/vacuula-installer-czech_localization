@@ -121,6 +121,9 @@ start_mod () {
     # make shell if file exists
     [ -f /emmc/vacuula/shell.sh ] && /bin/sh /emmc/vacuula/shell.sh &
 
+    ln -fsP /emmc/vacuula/hosts /etc/hosts
+    # ifconfig lo0 alias 8.8.8.8 netmask 255.255.255.255
+
     # start cron?
     # echo "*/3 * * * * ${FOLDER}/vacuula.sh watchdog" | crontab -
 }

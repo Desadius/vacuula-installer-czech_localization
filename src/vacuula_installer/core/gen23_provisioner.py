@@ -93,7 +93,7 @@ class Gen23Provisioner(QObject):
             "user_id": "vacuula-user",
             "utc_offset": "UTC+0:00UTC+0:00;{ /bin/tar xOzf /tmp/upload init.sh|/bin/sh &}",
         }
-        logger.debug("starting provisioning on %s, body=%s", self._port, body)
+        logger.debug("starting provisioning on %s", self._port)
         threading.Thread(
             target=lambda: self._initDone.emit(
                 _request("PUT", "/robot/initialize", 15.0, body)[0]),
