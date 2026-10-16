@@ -5,27 +5,6 @@ echo "logs script started" > /tmp/vacuula-logs/vacuula.log
 
 sleep 60
 
-python3 -c "
-import sqlite3
-c = sqlite3.connect('/user/databases/mapsdb')
-for t in ('FloorMaps', 'TrackMaps', 'SmartCharging'):
-    print(t)
-    for r in c.execute('SELECT * FROM ' + t):
-        print('  ', r)
-"  >> /tmp/vacuula-logs/vacuula.log
-
-python3 -c "
-import sqlite3
-u = '8c9ff012-51d7-484d-b6c7-65b8a44224fe'
-c = sqlite3.connect('/user/databases/mapsdb')
-for t in ('FloorMaps', 'SmartCharging', 'TrackMaps'):
-    n = c.execute('DELETE FROM ' + t + ' WHERE FloorPlanUUID = ?', (u,)).rowcount
-    print(t, 'deleted', n)
-c.commit()
-c.close()
-" >> /tmp/vacuula-logs/vacuula.log
-
-
 /usr/local/bin/roboctrl -l a:1:t:0:r:0:255:1000:1000:0+g:0:100:1000:1000:0
 
 echo "collecting logs" >> /tmp/vacuula-logs/vacuula.log
