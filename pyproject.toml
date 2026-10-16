@@ -1,6 +1,6 @@
 [project]
 name = "vacuula-installer"
-version = "1.0.0"
+version = "1.0.2"
 description = "Install Vacuula on your Neato robot"
 readme = "README.md"
 authors = [
