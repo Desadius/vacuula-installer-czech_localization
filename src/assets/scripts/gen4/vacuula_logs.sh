@@ -5,6 +5,8 @@ echo "logs script started" > /tmp/vacuula-logs/vacuula.log
 
 sleep 60
 
+/usr/local/bin/roboctrl -l a:1:t:0:r:0:255:1000:1000:0+g:0:100:1000:1000:0
+
 echo "collecting logs" >> /tmp/vacuula-logs/vacuula.log
 
 chmod 1777 /tmp/vacuula-logs
@@ -23,9 +25,9 @@ echo "logs collected" >> /tmp/vacuula-logs/vacuula.log
 echo "trying traceroute" >> /tmp/vacuula-logs/vacuula.log
 IP="$(sed -n '1p' /user/tron/vacuula.ini)"
 
-traceroute $IP > /tmp/vacuula-logs/traceroute-ip.log 2>&1
+traceroute $IP > /tmp/vacuula-logs/traceroute.log 2>&1
 
-if ! traceroute vacuula.local > /tmp/vacuula-logs/traceroute.log 2>&1; then
+if ! traceroute vacuula.local >> /tmp/vacuula-logs/traceroute.log 2>&1; then
     echo "traceroute to vacuula.local failed, replacing entry in /etc/hosts" > /tmp/vacuula-logs/vacuula.log
 
     if [ -n "$IP" ]; then
