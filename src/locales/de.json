@@ -10,8 +10,8 @@
   "welcome.find_help": "<i>Falls bei der Installation Probleme auftreten, kannst du dich gerne auf <a href='https://github.com/vacuula/installer'>GitHub</a> oder <a href='https://discord.gg/PAgwhWvyD8'>Discord</a> melden oder eine technisch versierte Person fragen!<br><br>Fehlt eine Sprache? Du kannst helfen! (siehe GitHub)</i>",
 
   "disclaimer.title": "~ Haftungsausschluss ~",
-  "disclaimer.acknowledge": "Ich werde das <b>USB-Kabel erst trennen</b>, wenn ich dazu aufgefordert werde.",
-  "disclaimer.warning": "Ich habe Vacuula von github.com/vacuula heruntergeladen, da andere Quellen schädliche Änderungen enthalten könnten.",
+  "disclaimer.acknowledge": "Ich werde das <b>USB-Kabel nicht abziehen</b>, bevor ich dazu aufgefordert werde.",
+  "disclaimer.warning": "Ich habe Vacuula von <b>github.com/vacuula</b> heruntergeladen, da andere Quellen schädliche Änderungen enthalten könnten.",
   "disclaimer.bullet1": "Du benötigst einen vor Kurzem (neu) gestarteten Roboter.",
   "disclaimer.bullet2": "Falls dein Roboter in <i style='color:#A020F0'>R</i><i style='color:#9628F4'>e</i><i style='color:#8430F8'>g</i><i style='color:#6938FC'>e</i><i style='color:#3C40FE'>n</i><i style='color:#0047FF'>b</i><i style='color:#3C41E8'>o</i><i style='color:#823ECD'>g</i><i style='color:#C33EB8'>e</i><i style='color:#FF3FA4'>n</i>farben leuchtet, melde dich bei uns!",
   "disclaimer.bullet3": "Du benötigst ein USB-<b>Daten</b>kabel.",
