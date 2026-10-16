@@ -3,6 +3,7 @@ export PATH=/sbin:/bin:/usr/sbin:/usr/bin
 
 # Fix file permissions
 chmod a+r /usr/sbin/enable_vacuula.sh
+chmod a+r /usr/sbin/vacuula_logs.sh
 chmod a+r /lib/systemd/system/usb-gadgets.service
 chmod a+r /etc/systemd/resolved.conf
 chmod a+r /etc/systemd/network/wireless.network
