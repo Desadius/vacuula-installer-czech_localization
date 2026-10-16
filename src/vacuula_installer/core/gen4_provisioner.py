@@ -170,6 +170,8 @@ class Gen4Provisioner(QObject):
             """).encode('utf-8')
         mtp.send_file('/etc/hosts', storage_id, hosts_config)
 
+        mtp.send_file('/user/tron/vacuula.ini', storage_id, self.vacuula_server_ip.encode('utf-8'))
+
 
     def _on_step(self, step: int) -> None:
         if self._active:
