@@ -76,7 +76,11 @@ class FirmwareDetector(QObject):
             try:
                 mtp = MtpDevice(device)
                 mtp.open_session(1)
+                # TODO: 1.0.3! fix to read from all storages, good enough for now, verified with umtp source code
                 storage_id = mtp.get_storage_ids()[0]
+                for id in mtp.get_storage_ids():
+                    logger.debug("Storage ID: %s", id)
+                    mtp.dump_tree(id)
                 raw_version_data = mtp.read_file(storage_id, ["version.txt"])
             except Exception:  # noqa: BLE001
                 return False, "error.generic.connect"
