@@ -66,7 +66,10 @@ watchdog () {
     if [ -n "$original_pid" ]; then
         log "Original astro is running with PID ${original_pid}, killing it"
         slay ${original_pid}
+
+        # if modded was running, make sure it cannot restart and start our cron
         crontab -r
+        crontab /emmc/vacuula/vacuula.cron
     fi
 
     if [ -n "$modded_pid" ]; then
@@ -124,8 +127,9 @@ start_mod () {
     ln -fsP /emmc/vacuula/hosts /etc/hosts
     # ifconfig lo0 alias 8.8.8.8 netmask 255.255.255.255
 
-    # start cron?
-    # echo "*/3 * * * * ${FOLDER}/vacuula.sh watchdog" | crontab -
+    # initially, our cron has to run!
+    crontab -r
+    crontab /emmc/vacuula/vacuula.cron
 }
 
 
