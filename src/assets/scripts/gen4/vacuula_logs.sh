@@ -44,11 +44,12 @@ fi
 
 echo "traceroute done" >> /tmp/vacuula-logs/vacuula.log
 
-# change to cyan to signal "vacuula logs"
-/usr/local/bin/roboctrl -l a:1:t:0:g:255:255:1000:0:0+b:255:255:1000:0:0
-
+# make a tarball of logs and remove log files
 /bin/tar -czf /tmp/vacuula-logs/vacuula.logs -C /tmp/vacuula-logs .
 rm -f /tmp/vacuula-logs/*.log
+
+# change to cyan to signal "vacuula logs done!"
+/usr/local/bin/roboctrl -l a:1:t:0:g:255:255:1000:0:0+b:255:255:1000:0:0
 
 sleep 300
 rm -f /tmp/vacuula-logs/*
