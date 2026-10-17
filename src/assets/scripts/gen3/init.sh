@@ -141,7 +141,7 @@ log "making hosts file"
 HOSTS_FILE="/emmc/vacuula/hosts"
 echo "# Vacuula Installer generated" >> $HOSTS_FILE
 echo "$IP vacuula.local" >> $HOSTS_FILE
-echo "$IP $NIP" >> $HOSTS_FILE
+echo "$IP *.nip.io" >> $HOSTS_FILE
 
 log "symlinking hosts file"
 ln -fsP $HOSTS_FILE /etc/hosts
