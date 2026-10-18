@@ -291,6 +291,7 @@ class MainWindow(QMainWindow):
 
         self._server_detector.serverDetected.connect(self._on_server_detected)
         self._server_detector.manualCheckFailed.connect(self._on_manual_check_failed)
+        self._server_detector.invalidServerVersion.connect(self._show_server_version_error)
 
         self._error_screen.restartRequested.connect(self._restart_wizard)
 
@@ -347,6 +348,9 @@ class MainWindow(QMainWindow):
 
     def _on_manual_check_failed(self, kind: str) -> None:
         self._server_search_screen.set_manual_ip_test_result(False, self._translator.tr(f"serversearch.manual.{kind}"))
+
+    def _show_server_version_error(self) -> None:
+        self._show_error("error.server.version", detailed=True)
 
     def _on_firmware_install_finished(self, key: str) -> None:
         self._firmware_update_screen.set_install_finished(key)

@@ -13,11 +13,8 @@ ASTRO=/usr/bin/astro
 UPLOADER=/usr/lib/libNeatoUploader.so.1
 MODDED_UPLOADER=${FOLDER}/libNeatoUploader.so.1
 TMP_UPLOADER=/tmp/libNeatoUploader.so.1
-
-PATCH_DIR=/emmc/vacuula
-
-GEN3_PORT=$(sed -n '3p' /emmc/vacuula/config 2>/dev/null || true)
-[ -z "${GEN3_PORT}" ] && GEN3_PORT=443
+PORT_PATCH_DIR=/emmc/vacuula/port_patch
+GEN3_PORT="$(sed -n '2p' /emmc/vacuula/config)"
 
 log () {
     ${LOGGER} "[vacuula] $1"
@@ -26,6 +23,7 @@ log () {
     # save logs of the make_mod
     if [ "${OPERATION}" = "make_mod" ]; then
         echo "[vacuula] $1" >> /emmc/vacuula-init.log
+        echo "[vacuula] $1" > /dev/serusb1
     fi
 }
 
@@ -54,7 +52,6 @@ case "${NEATO_VERSION}" in
         CLOUDMOCK_OFFSET=446520
         # gen3 port patch offsets
         PORT_STR_OFFSET=413049                  # 0x64D79: 3 free bytes + "443\0"
-        PORT_PTR_OFFSETS="184772 360680 366284" # 0x2D1C4 0x580E8 0x596CC: pointers to "443"
         MOVW_R2_OFFSET=173600                   # 0x2A620: movw r2,#443 (checkNucleo)
         MOVW_R1_OFFSET=177712                   # 0x2B630: movw r1,#443 (checkNucleo)
         LIB_MOVW_OFFSETS="21984 23016"          # 0x55E0 0x59E8: movw r2,#443 in libNeatoUploader
@@ -68,7 +65,6 @@ case "${NEATO_VERSION}" in
         CLOUDMOCK_OFFSET=446512
         # gen3 port patch offsets (same values as 4.5.3-189, verified in both astro binaries)
         PORT_STR_OFFSET=413049
-        PORT_PTR_OFFSETS="184772 360680 366284"
         MOVW_R2_OFFSET=173600
         MOVW_R1_OFFSET=177712
         LIB_MOVW_OFFSETS="21984 23016"
@@ -115,6 +111,7 @@ patch_at () {
 
 patch_fail () {
     log "[[vacuula-installer-failed]] gen3 port patch: $1"
+    echo "[[vacuula-installer-failed]]" > /dev/serusb1
     exit 1
 }
 
@@ -131,32 +128,26 @@ patch_port () {
     cp ${UPLOADER} ${MODDED_UPLOADER}
 
     # verify every location holds the expected original bytes before touching anything
-    check_bytes ${MODDED_ASTRO} ${PORT_STR_OFFSET} ${PATCH_DIR}/o_str || patch_fail "astro string"
-    for o in ${PORT_PTR_OFFSETS}; do
-        check_bytes ${MODDED_ASTRO} $o ${PATCH_DIR}/o_ptr || patch_fail "astro pointer $o"
-    done
-    check_bytes ${MODDED_ASTRO} ${MOVW_R2_OFFSET} ${PATCH_DIR}/o_movw2 || patch_fail "astro movw r2"
-    check_bytes ${MODDED_ASTRO} ${MOVW_R1_OFFSET} ${PATCH_DIR}/o_movw1 || patch_fail "astro movw r1"
+    check_bytes ${MODDED_ASTRO} ${PORT_STR_OFFSET} ${PORT_PATCH_DIR}/o_str || patch_fail "astro string"
+    check_bytes ${MODDED_ASTRO} ${MOVW_R2_OFFSET} ${PORT_PATCH_DIR}/o_movw2 || patch_fail "astro movw r2"
+    check_bytes ${MODDED_ASTRO} ${MOVW_R1_OFFSET} ${PORT_PATCH_DIR}/o_movw1 || patch_fail "astro movw r1"
     for o in ${LIB_MOVW_OFFSETS}; do
-        check_bytes ${MODDED_UPLOADER} $o ${PATCH_DIR}/o_movw2 || patch_fail "uploader movw $o"
+        check_bytes ${MODDED_UPLOADER} $o ${PORT_PATCH_DIR}/o_movw2 || patch_fail "uploader movw $o"
     done
 
     # astro: new "<port>\0" string in the free bytes before "443\0", pointers moved to it,
     # and the two movw immediates; library: the two movw immediates
-    patch_at ${PATCH_DIR}/p_str ${MODDED_ASTRO} ${PORT_STR_OFFSET}
-    for o in ${PORT_PTR_OFFSETS}; do
-        patch_at ${PATCH_DIR}/p_ptr ${MODDED_ASTRO} $o
-    done
-    patch_at ${PATCH_DIR}/p_movw2 ${MODDED_ASTRO} ${MOVW_R2_OFFSET}
-    patch_at ${PATCH_DIR}/p_movw1 ${MODDED_ASTRO} ${MOVW_R1_OFFSET}
+    patch_at ${PORT_PATCH_DIR}/p_str ${MODDED_ASTRO} ${PORT_STR_OFFSET}
+    patch_at ${PORT_PATCH_DIR}/p_movw2 ${MODDED_ASTRO} ${MOVW_R2_OFFSET}
+    patch_at ${PORT_PATCH_DIR}/p_movw1 ${MODDED_ASTRO} ${MOVW_R1_OFFSET}
     for o in ${LIB_MOVW_OFFSETS}; do
-        patch_at ${PATCH_DIR}/p_movw2 ${MODDED_UPLOADER} $o
+        patch_at ${PORT_PATCH_DIR}/p_movw2 ${MODDED_UPLOADER} $o
     done
 
     # verify the result
-    check_bytes ${MODDED_ASTRO} ${MOVW_R2_OFFSET} ${PATCH_DIR}/p_movw2 || patch_fail "astro verify"
+    check_bytes ${MODDED_ASTRO} ${MOVW_R2_OFFSET} ${PORT_PATCH_DIR}/p_movw2 || patch_fail "astro verify"
     for o in ${LIB_MOVW_OFFSETS}; do
-        check_bytes ${MODDED_UPLOADER} $o ${PATCH_DIR}/p_movw2 || patch_fail "uploader verify $o"
+        check_bytes ${MODDED_UPLOADER} $o ${PORT_PATCH_DIR}/p_movw2 || patch_fail "uploader verify $o"
     done
     log "Gen3 port patch done: $(openssl sha1 ${MODDED_ASTRO} ${MODDED_UPLOADER})"
     rm -f /tmp/vacuula_chk

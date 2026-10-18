@@ -1,23 +1,3 @@
-"""Server detector
-
-    Server detector uses zeroconf python package that should be cross,
-    compatible with all OS.
-
-If a IP is returned it will fetch the cert from the server.
-
-If both succeed the information is sent as signals, main_windows saves it
-in the session.
-
-A server can also be checked manually (user-entered address) with
-ServerDetector.check_manual(). It runs the exact same checks as mDNS
-discovery and reports why it failed: "not_found" if nothing answered,
-"incompatible" if something answered but isn't a (compatible) Vacuula server.
-
-NOTE: Does NOT support self-signed certs if server, proxy or w/e redirects to https!
-For that we would have to a. disable verification or b. use same selfsigned on all
-server deployments and preprogram its public part here - none are desirable.
-"""
-
 from __future__ import annotations
 
 import logging
@@ -29,6 +9,7 @@ from PySide6.QtCore import QObject, QRunnable, QThreadPool, QTimer, Signal, Slot
 from zeroconf import ServiceBrowser, ServiceInfo, ServiceListener, Zeroconf
 
 from vacuula_installer.constants import M_DNS_SERVICE_TYPE
+from vacuula_installer.version import validate_version
 
 logger = logging.getLogger(__name__)
 
@@ -37,9 +18,9 @@ MANUAL_CERT_PATH = "/api/cert"
 
 REQUEST_TIMEOUT_S = 3
 
-NOT_FOUND = "not_found"          # nothing answered at that address
-INCOMPATIBLE = "incompatible"    # something answered, but not a usable Vacuula server
-
+NOT_FOUND = "not_found"                         # nothing answered at that address
+NOT_VACUULA = "not_vacuula"                     # something answered, but not a usable Vacuula server
+VERSION_INCOMPATIBLE = "version_incompatible"   # user needs to update server to newer version
 
 class _ServerCheckError(Exception):
     def __init__(self, kind: str, detail: str = "") -> None:
@@ -70,11 +51,11 @@ def _check_server(ip: str, port: int, cert_path: str) -> _ServerDetails:
 
     if not cert_response.ok:
         raise _ServerCheckError(
-            INCOMPATIBLE, f"{cert_path} returned HTTP {cert_response.status_code}"
+            NOT_VACUULA, f"{cert_path} returned HTTP {cert_response.status_code}"
         )
     cert = cert_response.text
     if "BEGIN CERTIFICATE" not in cert:
-        raise _ServerCheckError(INCOMPATIBLE, f"{cert_path} did not return a certificate")
+        raise _ServerCheckError(NOT_VACUULA, f"{cert_path} did not return a certificate")
 
     logger.debug("Certificate looks valid, fetching server info from /api/server")
     try:
@@ -86,14 +67,24 @@ def _check_server(ip: str, port: int, cert_path: str) -> _ServerDetails:
         server_response.raise_for_status()
         server_info = server_response.json()
         logger.debug("/api/server JSON: %s", server_info)
-        version = str(server_info["version"])
-        gen4_port = int(server_info["gen4_port"])
-        gen3_port = int(server_info.get("gen3_port", 443))
     except (requests.RequestException, ValueError, KeyError, TypeError) as exc:
-        raise _ServerCheckError(INCOMPATIBLE, f"/api/server unusable: {exc}") from exc
+        raise _ServerCheckError(NOT_VACUULA, f"/api/server unusable: {exc}") from exc
 
-    logger.debug("Server at %s:%d is Vacuula v%s (gen3 port %d, gen4 port %d)", ip, port, version, gen3_port, gen4_port)
-    return _ServerDetails(ip=ip, cert=cert, port=port, gen3_port=gen3_port, gen4_port=gen4_port, version=version)
+    try:
+        # validate version before reading other data
+        server_version = str(server_info["version"])
+        min_installer_version = str(server_info["min_installer_version"])
+        valid, errmsg = validate_version(min_installer_version, server_version)
+        if not valid:
+            raise _ServerCheckError(VERSION_INCOMPATIBLE, f"server version {server_version} is incompatible: {errmsg}")
+
+        gen4_port = int(server_info["gen4_port"])
+        gen3_port = int(server_info["gen3_port"])
+    except (KeyError, TypeError, ValueError) as exc:
+        raise _ServerCheckError(VERSION_INCOMPATIBLE, f"failed to parse server values: {exc}") from exc
+
+    logger.debug("Server at %s:%d is Vacuula v%s (gen3 port %d, gen4 port %d)", ip, port, server_version, gen3_port, gen4_port)
+    return _ServerDetails(ip=ip, cert=cert, port=port, gen3_port=gen3_port, gen4_port=gen4_port, version=server_version)
 
 
 def _parse_address(text: str) -> tuple[str, int]:
@@ -178,7 +169,7 @@ class _DetectionWorker(QRunnable):
         cert_path = properties.get("cert-path")
         if not cert_path:
             logger.warning("Vacuula service found but has no cert-path property")
-            self.signals.failed.emit(INCOMPATIBLE)
+            self.signals.failed.emit(NOT_VACUULA)
             return
 
         try:
@@ -233,7 +224,10 @@ class _ManualCheckWorker(QRunnable):
             self.signals.failed.emit(exc.kind)
             return
 
-        logger.info("Vacuula server (v%s) (manual) found at %s:%d (gen4 port %d)", details.version, details.ip, details.port, details.gen4_port)
+        logger.info(
+            "Vacuula server (v%s) (manual) found at %s:%d (gen3 port %d, gen4 port %d)", 
+            details.version, details.ip, details.port, details.gen3_port, details.gen4_port
+        )
         self.signals.found.emit(details.ip, details.cert, details.port, details.gen3_port, details.gen4_port)
 
 
@@ -243,8 +237,8 @@ class ServerDetector(QObject):
 
     # ip, cert, vacuula_port, gen3_port, gen4_port, manual (True = user-entered address)
     serverDetected = Signal(str, str, int, int, int, bool)
-    # Manual check only: NOT_FOUND ("not_found") or INCOMPATIBLE ("incompatible")
     manualCheckFailed = Signal(str)
+    invalidServerVersion = Signal()
 
     def __init__(self, parent: QObject | None = None) -> None:
         super().__init__(parent)
@@ -294,7 +288,7 @@ class ServerDetector(QObject):
         worker.signals.found.connect(
             lambda ip, cert, port, gen3, gen4, w=worker: self._on_found(w, ip, cert, port, gen3, gen4)
         )
-        worker.signals.failed.connect(lambda _kind, w=worker: self._on_not_found(w))
+        worker.signals.failed.connect(lambda kind, w=worker: self._on_not_found(w, kind))
         self._pool.start(worker)
 
     def _on_found(self, worker: QRunnable, ip: str, cert: str, port: int, gen3_port: int, gen4_port: int) -> None:
@@ -304,9 +298,11 @@ class ServerDetector(QObject):
             return  # stopped, or a manual check already won
         self._finish(ip, cert, port, gen3_port, gen4_port, manual=False)
 
-    def _on_not_found(self, worker: QRunnable) -> None:
+    def _on_not_found(self, worker: QRunnable, kind: str) -> None:
         self._busy = False
         self._workers.discard(worker)
+        if kind == VERSION_INCOMPATIBLE:
+            self.invalidServerVersion.emit()
 
     # -- manual ------------------------------------------------------------------
 
@@ -322,7 +318,10 @@ class ServerDetector(QObject):
         self._workers.discard(worker)
         if self._found:
             return
-        self.manualCheckFailed.emit(kind)
+        if kind == VERSION_INCOMPATIBLE:
+            self.invalidServerVersion.emit()
+        else:
+            self.manualCheckFailed.emit(kind)
 
     # -- shared ------------------------------------------------------------------
 
