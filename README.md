@@ -83,5 +83,6 @@ Translations:
 - English: Rinkana, Philip, BK
 - Swedish: Rinkana, Philip
 - Dutch: Leander, "*Your royal highness* Sarcast *the 3rd, duke of Holland*"
-- Portuguese: BK 
+- Portuguese: BK
+- French: Jack Warwick
 
