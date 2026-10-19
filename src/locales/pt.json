@@ -1,5 +1,5 @@
 {
-  "String-version": "14",
+  "String-version": "15",
   "app.window_title": "Vacuula-Instalador",
   "app.version": "Instalador v{version}",
   "app.download_logs": "Download dos logs",
@@ -30,7 +30,7 @@
   "serversearch.enter_ip_manually": "Introduzir o IP manualmente",
   "serversearch.manual.placeholder": "Introduz o endereço IP",
   "serversearch.manual.try_connection": "Testar ligação",
-  "serversearch.manual.incompatible": "Não é um servidor Vacuula",
+  "serversearch.manual.not_vacuula": "Não é um servidor Vacuula",
   "serversearch.manual.not_found": "Não foi encontrado nenhum servidor neste endereço IP",
 
   "error.title": "Ocorreu um erro",

@@ -7,6 +7,7 @@ from dataclasses import dataclass
 import usb.core  # type: ignore[reportMissingTypeStubs]
 from PySide6.QtCore import QObject, QTimer, Signal
 
+from vacuula_installer._build_version import APP_VERSION
 from vacuula_installer.core.gen23_ap_poller import _request
 from vacuula_installer.core.robot_detector import SERIAL_BAUDRATE, RobotDetector
 from vacuula_installer.core.robot_serial_monitor import RobotSerialMonitor
@@ -85,7 +86,7 @@ class Gen23Provisioner(QObject):
         target_serial = RobotDetector._get_serial(device)
         self._port = RobotDetector._find_serial_port(device, target_serial)
         body = {
-            "name": f"gen3-{mac}",
+            "name": f"{mac}--IV--{APP_VERSION}",
             "password": password,
             "server_urls": {"beehive": "vacuula", "ntp": "pool.ntp.org", "nucleo": "vacuula"},
             "ssid": ssid,
