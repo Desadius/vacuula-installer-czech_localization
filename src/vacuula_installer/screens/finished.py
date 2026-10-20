@@ -32,8 +32,8 @@ class LinkButtonSpec:
 
 
 LINK_BUTTONS: tuple[LinkButtonSpec, ...] = (
-    LinkButtonSpec(GITHUB_SVG, "Discord", "https://discord.gg/PAgwhWvyD8"),
-    LinkButtonSpec(DISCORD_SVG, "Github", "https://github.com/vacuula/vacuula"),
+    LinkButtonSpec(GITHUB_SVG, "GitHub", "https://github.com/vacuula/vacuula"),
+    LinkButtonSpec(DISCORD_SVG, "Discord", "https://discord.gg/PAgwhWvyD8"),
     LinkButtonSpec(BUYMEACOFFEE_SVG, "Buy Me a Coffee", "https://www.buymeacoffee.com/philip2809"),
     LinkButtonSpec(KOFI_SVG, "Ko-Fi", "https://ko-fi.com/V7V61PBIY6"),
 )
