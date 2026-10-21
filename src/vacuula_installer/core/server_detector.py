@@ -37,6 +37,7 @@ class _ServerDetails:
     gen3_port: int
     gen4_port: int
     version: str
+    timezone: str
 
 
 def _check_server(ip: str, port: int, cert_path: str) -> _ServerDetails:
@@ -80,11 +81,12 @@ def _check_server(ip: str, port: int, cert_path: str) -> _ServerDetails:
 
         gen4_port = int(server_info["gen4_port"])
         gen3_port = int(server_info["gen3_port"])
+        timezone = server_info["timezone"]
     except (KeyError, TypeError, ValueError) as exc:
         raise _ServerCheckError(VERSION_INCOMPATIBLE, f"failed to parse server values: {exc}") from exc
 
     logger.debug("Server at %s:%d is Vacuula v%s (gen3 port %d, gen4 port %d)", ip, port, server_version, gen3_port, gen4_port)
-    return _ServerDetails(ip=ip, cert=cert, port=port, gen3_port=gen3_port, gen4_port=gen4_port, version=server_version)
+    return _ServerDetails(ip=ip, cert=cert, port=port, gen3_port=gen3_port, gen4_port=gen4_port, version=server_version, timezone=timezone)
 
 
 def _parse_address(text: str) -> tuple[str, int]:
@@ -106,7 +108,7 @@ def _parse_address(text: str) -> tuple[str, int]:
 
 
 class _WorkerSignals(QObject):
-    found = Signal(str, str, int, int, int)  # ip, cert, vacuula_port, gen3_port, gen4_port
+    found = Signal(str, str, int, int, int, str)  # ip, cert, vacuula_port, gen3_port, gen4_port, timezone
     failed = Signal(str)
 
 
@@ -180,7 +182,7 @@ class _DetectionWorker(QRunnable):
             return
 
         logger.info("Vacuula server (v%s) found at %s:%d (gen4 port %d)", details.version, details.ip, details.port, details.gen4_port)
-        self.signals.found.emit(details.ip, details.cert, details.port, details.gen3_port, details.gen4_port)
+        self.signals.found.emit(details.ip, details.cert, details.port, details.gen3_port, details.gen4_port, details.timezone)
 
     @staticmethod
     def _discover_vacuula() -> ServiceInfo | None:
@@ -228,15 +230,15 @@ class _ManualCheckWorker(QRunnable):
             "Vacuula server (v%s) (manual) found at %s:%d (gen3 port %d, gen4 port %d)", 
             details.version, details.ip, details.port, details.gen3_port, details.gen4_port
         )
-        self.signals.found.emit(details.ip, details.cert, details.port, details.gen3_port, details.gen4_port)
+        self.signals.found.emit(details.ip, details.cert, details.port, details.gen3_port, details.gen4_port, details.timezone)
 
 
 class ServerDetector(QObject):
     """Polls mDNS for M_DNS_SERVICE_TYPE, or checks a manual address, and
     emits the server's IP + cert once found."""
 
-    # ip, cert, vacuula_port, gen3_port, gen4_port, manual (True = user-entered address)
-    serverDetected = Signal(str, str, int, int, int, bool)
+    # ip, cert, vacuula_port, gen3_port, gen4_port, manual (True = user-entered address), timezone
+    serverDetected = Signal(str, str, int, int, int, bool, str)
     manualCheckFailed = Signal(str)
     invalidServerVersion = Signal()
 
@@ -270,7 +272,7 @@ class ServerDetector(QObject):
         worker = _ManualCheckWorker(address)
         self._workers.add(worker)
         worker.signals.found.connect(
-            lambda ip, cert, port, gen3, gen4, w=worker: self._on_manual_found(w, ip, cert, port, gen3, gen4)
+            lambda ip, cert, port, gen3, gen4, timezone, w=worker: self._on_manual_found(w, ip, cert, port, gen3, gen4, timezone)
         )
         worker.signals.failed.connect(
             lambda kind, w=worker: self._on_manual_failed(w, kind)
@@ -286,17 +288,17 @@ class ServerDetector(QObject):
         worker = _DetectionWorker()
         self._workers.add(worker)
         worker.signals.found.connect(
-            lambda ip, cert, port, gen3, gen4, w=worker: self._on_found(w, ip, cert, port, gen3, gen4)
+            lambda ip, cert, port, gen3, gen4, timezone, w=worker: self._on_found(w, ip, cert, port, gen3, gen4, timezone)
         )
         worker.signals.failed.connect(lambda kind, w=worker: self._on_not_found(w, kind))
         self._pool.start(worker)
 
-    def _on_found(self, worker: QRunnable, ip: str, cert: str, port: int, gen3_port: int, gen4_port: int) -> None:
+    def _on_found(self, worker: QRunnable, ip: str, cert: str, port: int, gen3_port: int, gen4_port: int, timezone: str) -> None:
         self._busy = False
         self._workers.discard(worker)
         if not self._active or self._found:
             return  # stopped, or a manual check already won
-        self._finish(ip, cert, port, gen3_port, gen4_port, manual=False)
+        self._finish(ip, cert, port, gen3_port, gen4_port, manual=False, timezone=timezone)
 
     def _on_not_found(self, worker: QRunnable, kind: str) -> None:
         self._busy = False
@@ -306,12 +308,12 @@ class ServerDetector(QObject):
 
     # -- manual ------------------------------------------------------------------
 
-    def _on_manual_found(self, worker: QRunnable, ip: str, cert: str, port: int, gen3_port: int, gen4_port: int) -> None:
+    def _on_manual_found(self, worker: QRunnable, ip: str, cert: str, port: int, gen3_port: int, gen4_port: int, timezone: str) -> None:
         self._manual_busy = False
         self._workers.discard(worker)
         if self._found:
             return  # mDNS already found one in the meantime
-        self._finish(ip, cert, port, gen3_port, gen4_port, manual=True)
+        self._finish(ip, cert, port, gen3_port, gen4_port, manual=True, timezone=timezone)
 
     def _on_manual_failed(self, worker: QRunnable, kind: str) -> None:
         self._manual_busy = False
@@ -325,8 +327,8 @@ class ServerDetector(QObject):
 
     # -- shared ------------------------------------------------------------------
 
-    def _finish(self, ip: str, cert: str, port: int, gen3_port: int, gen4_port: int, *, manual: bool) -> None:
+    def _finish(self, ip: str, cert: str, port: int, gen3_port: int, gen4_port: int, *, manual: bool, timezone: str) -> None:
         self._found = True
         self._timer.stop()
         self._active = False
-        self.serverDetected.emit(ip, cert, port, gen3_port, gen4_port, manual)
+        self.serverDetected.emit(ip, cert, port, gen3_port, gen4_port, manual, timezone)

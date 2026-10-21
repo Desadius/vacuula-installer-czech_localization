@@ -15,6 +15,7 @@ class SessionData:
     server_certificate: str | None = None
 
     # TODO: clean this up later as well, not really the cleanesy way rn
+    timezone : str | None = None
     vacuula_port: int | None = None
     gen3_port: int | None = None
     gen4_port: int | None = None

@@ -83,8 +83,8 @@ watchdog () {
         slay ${original_pid}
 
         # if modded was running, make sure it cannot restart and start our cron
-        crontab -r
-        crontab /emmc/vacuula/vacuula.cron
+        crontab -r || true
+        crontab /emmc/vacuula/vacuula.cron || true
     fi
 
     if [ -n "$modded_pid" ]; then
@@ -205,8 +205,8 @@ start_mod () {
     # ifconfig lo0 alias 8.8.8.8 netmask 255.255.255.255
 
     # initially, our cron has to run!
-    crontab -r
-    crontab /emmc/vacuula/vacuula.cron
+    crontab -r || true
+    crontab /emmc/vacuula/vacuula.cron || true
 }
 
 

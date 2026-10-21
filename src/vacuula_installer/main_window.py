@@ -173,7 +173,7 @@ class MainWindow(QMainWindow):
         self._firmware_updater = FirmwareUpdater(self)
         self._gen23_wifi_fixer = Gen23WiFiFixer(self)
         self._ap_poller = Gen23ApPoller(self)
-        self._provisioner = Gen23Provisioner(self)
+        self._provisioner = Gen23Provisioner(self, self._session)
         self._gen4_provisioner: Gen4Provisioner | None = None
 
         self._connect_signals()
@@ -340,11 +340,11 @@ class MainWindow(QMainWindow):
             self._server_detector.check_manual
         )
 
-    def _on_server_detected(self, ip: str, cert: str, port: int, gen3_port: int, gen4_port: int, manual: bool) -> None:
+    def _on_server_detected(self, ip: str, cert: str, port: int, gen3_port: int, gen4_port: int, manual: bool, timezone: str) -> None:
         self._session.server_ip_manual = manual
         if manual:
             self._server_search_screen.set_manual_ip_test_result(True)
-        self._goto_connect_robot_screen(ip, cert, port, gen3_port, gen4_port)
+        self._goto_connect_robot_screen(ip, cert, port, gen3_port, gen4_port, timezone)
 
     def _on_manual_check_failed(self, kind: str) -> None:
         self._server_search_screen.set_manual_ip_test_result(False, self._translator.tr(f"serversearch.manual.{kind}"))
@@ -514,7 +514,7 @@ class MainWindow(QMainWindow):
         self._server_detector.start(NETWORK_POLLING_DELAY_MS)
         self._set_back_action(self._back_to_welcome)
 
-    def _goto_connect_robot_screen(self, ip: str, cert: str, vacuula_port: int, gen3_port: int, gen4_port: int) -> None:
+    def _goto_connect_robot_screen(self, ip: str, cert: str, vacuula_port: int, gen3_port: int, gen4_port: int, timezone: str) -> None:
         anim = self._server_search_screen.show_server_detected(ip)
         self._active_animations.append(anim)
         self._session.server_ip = ip
@@ -522,6 +522,7 @@ class MainWindow(QMainWindow):
         self._session.vacuula_port = vacuula_port
         self._session.gen3_port = gen3_port
         self._session.gen4_port = gen4_port
+        self._session.timezone = timezone
         # Dont @ me
         anim.finished.connect(
             lambda: QTimer.singleShot(

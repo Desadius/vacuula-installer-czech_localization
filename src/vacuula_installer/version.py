@@ -4,9 +4,11 @@ import re
 
 from vacuula_installer._build_version import APP_VERSION
 
+# TODO: was this really required? why did i do it as a list again?
 # min server version -> feature required
 FEATURE_VERSIONS = {
     "1.1.0-b1": "gen3 port and nip fix",
+    "1.1.0-b3": "timezone changes",
 }
 
 _VERSION_RE = re.compile(r"^(\d+)\.(\d+)\.(\d+)(?:-b(\d+))?$")

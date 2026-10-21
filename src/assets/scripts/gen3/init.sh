@@ -55,9 +55,12 @@ log "$(qdbc -d /dev/qdb/systemdb "SELECT * FROM IntegerSettings")"
 log "$(qdbc -d /dev/qdb/robotdb "SELECT * FROM CloudServiceLevel")"
 
 log "Setting UTCOFFSET to execute vacuula on boot"
-qdbc -d /dev/qdb/systemdb "INSERT OR REPLACE INTO StringSettings( Name, Value ) VALUES ( 'UTCOFFSET', 'STD-0:00DST-0:00;{ /emmc/vacuula/vacuula.sh start_mod &}' );" || true
+VALUE=$(qdbc -f data -d /dev/qdb/systemdb "SELECT Value FROM StringSettings WHERE Name='UTCOFFSET';")
+OFFSET="${VALUE%%;*}"
+NEW_OFFSET="$OFFSET;{ /emmc/vacuula/vacuula.sh start_mod &}"
+qdbc -d /dev/qdb/systemdb "INSERT OR REPLACE INTO StringSettings( Name, Value ) VALUES ( 'UTCOFFSET', '$NEW_OFFSET' );" || true
 NEW_VALUE=$(qdbc -f data -d /dev/qdb/systemdb "SELECT Value FROM StringSettings WHERE Name='UTCOFFSET';")
-if [ "$NEW_VALUE" != "STD-0:00DST-0:00;{ /emmc/vacuula/vacuula.sh start_mod &}" ]; then
+if [ "$NEW_VALUE" != "$NEW_OFFSET" ]; then
     log "Failed to set UTCOFFSET, got: $NEW_VALUE"
     echo "[[vacuula-installer-failed]]" > /dev/serusb1
     exit 1
@@ -147,6 +150,9 @@ ln -fsP $HOSTS_FILE /etc/hosts
 
 log "print hosts file"
 cat /etc/hosts > /dev/serusb1
+
+log "print vacuula config file"
+cat /emmc/vacuula/config > /dev/serusb1
 
 log "Testing DNS resolution for vacuula.local"
 ping -c 1 -w 2 vacuula.local > /dev/serusb1 2>&1 || true
