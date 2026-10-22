@@ -25,7 +25,8 @@ def parse_version(v: str) -> tuple:
 
 
 def validate_version(min_installer_version: str, server_version: str) -> tuple[bool, str]:
-    if "dev" or "dirty" in (APP_VERSION + min_installer_version + server_version):
+    combined = APP_VERSION + min_installer_version + server_version
+    if "dev" in combined or "dirty" in combined:
         return True, ""
 
     inst = parse_version(APP_VERSION)
