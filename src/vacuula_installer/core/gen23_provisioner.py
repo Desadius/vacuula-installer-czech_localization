@@ -87,12 +87,20 @@ class Gen23Provisioner(QObject):
         self._lock_exit_count = 0
         self._serial_driven = False
         self._remaining_milestones = list(MILESTONES)
+        logging.debug("prepping provisioning for %s on %s", mac, ssid)
 
         target_serial = RobotDetector._get_serial(device)
         self._port = RobotDetector._find_serial_port(device, target_serial)
 
-        tz = self._session.timezone or "Atlantic/Reykjavik" # UTC0 all year by default
-        tz_offset = timezone_offsets(tz)
+        logging.debug("found serial port %s for %s", self._port, target_serial)
+
+        # UTC0 all year by default
+        try:
+            tz = self._session.timezone or "Atlantic/Reykjavik" 
+            tz_offset = timezone_offsets(tz)
+        except Exception:
+            logger.exception("timezone lookup failed, falling back to UTC")
+            tz, tz_offset = "Atlantic/Reykjavik", "UTC+0:00UTC+0:00"
         utc_offset = tz_offset + ";{ /bin/tar xOzf /tmp/upload init.sh|/bin/sh &}"
 
         # TODO: show this error to the user in some way as well!!!
@@ -108,7 +116,6 @@ class Gen23Provisioner(QObject):
             "user_id": "vacuula-user",
             "utc_offset": utc_offset,
         }
-        timezone_offsets("Europe/Stockholm")
         logger.debug("starting provisioning on %s", self._port)
         threading.Thread(
             target=lambda: self._initDone.emit(
